@@ -4,6 +4,19 @@
   
   
   <entry>
+    <title>PYTHON</title>
+    <link href="/2025/03/24/PYTHON/"/>
+    <url>/2025/03/24/PYTHON/</url>
+    
+    <content type="html"><![CDATA[<h1 id="常见PYTHON-包-和-函数"><a href="#常见PYTHON-包-和-函数" class="headerlink" title="常见PYTHON 包 和 函数"></a>常见PYTHON 包 和 函数</h1><h2 id="1-二分查找的函数"><a href="#1-二分查找的函数" class="headerlink" title="1. 二分查找的函数"></a>1. 二分查找的函数</h2><ul><li>首先插入包信息 <strong>from bisect import bisect_left</strong></li><li><strong>bisect_left(a,k) -&gt; lower_bound(a, k)</strong> 取 a中 大于等于 k 的 第一个位置</li><li><strong>bisect_right(a, k) -&gt; upper_bound(a, k)</strong> 取 a 中 大于 k 的 第一个位置</li></ul><h1 id="基础算法模版"><a href="#基础算法模版" class="headerlink" title="基础算法模版"></a>基础算法模版</h1><ol><li>基本图算法</li></ol>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>myfristtime</title>
     <link href="/2025/03/23/myfristtime/"/>
     <url>/2025/03/23/myfristtime/</url>
@@ -11,6 +24,18 @@
     <content type="html"><![CDATA[<h1 id="HAPPY"><a href="#HAPPY" class="headerlink" title="HAPPY!"></a>HAPPY!</h1>]]></content>
     
     
+    <categories>
+      
+      <category>NEW WORD</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>遇见</tag>
+      
+    </tags>
     
   </entry>
   
