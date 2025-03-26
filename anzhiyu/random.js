@@ -1,4 +1,4 @@
-var posts=["2025/03/23/hello-world/","2025/03/25/My-First-NEWCODE-Post/","2025/03/24/Markdown-Introduction/","2025/03/24/PYTHON/","2025/03/23/myfristtime/","2025/03/25/CODING/"];function toRandomPost(){
+var posts=["2025/03/25/CODING/","2025/03/24/Markdown-Introduction/","2025/03/24/PYTHON/","2025/03/23/myfristtime/","2025/03/25/My-First-NEWCODE-Post/","2025/03/23/hello-world/"];function toRandomPost(){
     pjax.loadUrl('/'+posts[Math.floor(Math.random() * posts.length)]);
   };var friend_link_list=[];
     var refreshNum = 1;
