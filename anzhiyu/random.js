@@ -1,4 +1,4 @@
-var posts=["2025/03/25/CODING/","2025/03/25/My-First-NEWCODE-Post/","2025/03/24/PYTHON/","2025/03/23/myfristtime/"];function toRandomPost(){
+var posts=["2025/03/25/My-First-NEWCODE-Post/","2025/03/24/PYTHON/","2025/03/23/myfristtime/","2025/03/25/CODING/"];function toRandomPost(){
     pjax.loadUrl('/'+posts[Math.floor(Math.random() * posts.length)]);
   };var friend_link_list=[{"name":"Hexo","link":"https://hexo.io/zh-tw/","avatar":"https://d33wubrfki0l68.cloudfront.net/6657ba50e702d84afb32fe846bed54fba1a77add/827ae/logo.svg","descr":"快速、简单且强大的网站框架"},{"name":"豹子湾","link":"https://baoziwan.icu","avatar":"https://npm.elemecdn.com/anzhiyu-blog-static@1.0.4/img/avatar.jpg","descr":"技术宅","siteshot":"https://whalefall.fun/img/512.png","color":"vip","tag":"技术"},{"name":"豹子湾","link":"https://baoziwan.icu","avatar":"https://npm.elemecdn.com/anzhiyu-blog-static@1.0.4/img/avatar.jpg","descr":"生活明朗，万物可爱","recommend":true}];
     var refreshNum = 1;
