@@ -1,0 +1,28 @@
+<svg width="600" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景（白色） -->
+  <rect width="600" height="200" fill="#ffffff"/>
+
+  <!-- 鲸鱼（卡通风格，放在左侧） -->
+  <g transform="translate(50, 30) scale(1.5)">
+    <!-- 身体 -->
+    <path d="M20,60 Q60,20 100,60 Q120,80 100,100 Q60,120 20,100 Q0,80 20,60 Z" fill="#4682b4" stroke="#2f5d82" stroke-width="2"/>
+    <!-- 尾巴 -->
+    <path d="M0,80 Q-15,60 -30,70 Q-25,80 -30,90 Q-15,100 0,80" fill="#4682b4" stroke="#2f5d82" stroke-width="2"/>
+    <!-- 背鳍 -->
+    <path d="M60,40 Q70,20 80,40 Q70,50 60,40" fill="#4682b4" stroke="#2f5d82" stroke-width="2"/>
+    <!-- 侧鳍 -->
+    <path d="M50,90 Q60,110 70,100 Q60,90 50,90" fill="#4682b4" stroke="#2f5d82" stroke-width="2"/>
+    <!-- 喷水 -->
+    <path d="M80,30 Q85,15 90,30 M85,30 Q90,15 95,30" fill="none" stroke="#87ceeb" stroke-width="2"/>
+    <!-- 眼睛 -->
+    <circle cx="90" cy="50" r="4" fill="#fff"/>
+    <circle cx="90" cy="50" r="2" fill="#000"/>
+    <!-- 嘴巴 -->
+    <path d="M85,65 Q90,70 95,65" fill="none" stroke="#000" stroke-width="1"/>
+  </g>
+
+  <!-- Jiely 文字（放在右侧，模仿 ICARUS 的字体风格） -->
+  <text x="300" y="130" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="#333333">
+    Jiely
+  </text>
+</svg>
