@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Markdown 中的 Latex - WhaleFall&#039;s blog</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="WhaleFall&#039;s blog"><meta name="msapplication-TileImage" content="/img/whalefall.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="WhaleFall&#039;s blog"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="突然做笔记需要这个就做了一个简单的学习。"><meta property="og:type" content="blog"><meta property="og:title" content="Jiely"><meta property="og:url" content="https://github.com/pa-her0"><meta property="og:site_name" content="Jiely"><meta property="og:description" content="突然做笔记需要这个就做了一个简单的学习。"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://github.com/img/avatar.jpg"><meta property="article:published_time" content="2025-04-28T06:54:33.000Z"><meta property="article:modified_time" content="2025-04-28T06:55:32.296Z"><meta property="article:author" content="removeif"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://github.com/img/avatar.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2025/04/28/Markdown-%E4%B8%AD%E7%9A%84-Latex/"},"headline":"WhaleFall's blog","image":["http://example.com/img/og_image.png"],"datePublished":"2025-04-28T06:54:33.000Z","dateModified":"2025-04-28T06:55:32.296Z","author":{"@type":"Person","name":"Jiely"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject"}},"description":"突然做笔记需要这个就做了一个简单的学习。"}</script><link rel="canonical" href="http://example.com/2025/04/28/Markdown-%E4%B8%AD%E7%9A%84-Latex/"><link rel="icon" href="/img/whalefall.png"><meta name="referrer" content="no-referrer-when-downgrade"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/6.0.0/css/all.min.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css"><link rel="stylesheet" href="https://fonts.loli.net/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/5.12.0/css/all.min.css"><link rel="stylesheet" href="https://fonts.loli.net/css?family=Ubuntu:400,600|Source+Code+Pro|Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Microsoft YaHei:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&amp;amp;subset=latin,latin-ext|Inconsolata|Itim|Lobster.css"><script src="https://cdnjs.loli.net/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src="/js/globalUtils.js"></script><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/lightgallery/1.10.0/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.8.1/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdnjs.loli.net/ajax/libs/pace/1.2.4/pace.min.js"></script><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body class="is-2-column has-navbar-fixed-top"><nav class="navbar navbar-main is-fixed-top"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/ex.svg" alt="WhaleFall&#039;s blog" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/pa-her0"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a><a class="navbar-item" id="night-nav" title="Night Mode" href="javascript:;"><i class="fas fa-moon" id="night-icon"></i></a></div></div></div></nav><script type="text/javascript" src="/js/theme-setting.js"></script><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><!--!--><div class="card"><article class="card-content article" role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><i class="far fa-calendar-plus"> </i>2025-04-28  <a class="commentCountImg" href="/2025/04/28/Markdown-%E4%B8%AD%E7%9A%84-Latex/#comment-container"><span class="display-none-class">/2025/04/28/Markdown-中的-Latex/</span><i class="far fa-comment-dots"></i> <span class="commentCount" id="72b255c2025353686347011b257acb0a">99+</span>  </a><span class="level-item"><i class="far fa-clock"> </i>4 分钟  <i class="fas fa-pencil-alt"> </i>0.5 k</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">Markdown 中的 Latex</h1><div class="content"><p>突然做笔记需要这个就做了一个简单的学习。</p>
+<span id="more"></span>
+<h1 id="Markdown-下的-LATEX"><a href="#Markdown-下的-LATEX" class="headerlink" title="Markdown 下的 LATEX"></a>Markdown 下的 LATEX</h1><p>在 markdown 下进行 Latex 的式子的编写的方法</p>
+<ul>
+<li>使用 $$ 作为行内式子</li>
+<li>$$ + 回车 作为行间式子</li>
+</ul>
+<blockquote>
+<p>以下的公式 皆省去了 $$</p>
+</blockquote>
+<h2 id="符号"><a href="#符号" class="headerlink" title="符号"></a>符号</h2><table>
+<thead>
+<tr>
+<th align="center">符号</th>
+<th align="center">式子</th>
+<th align="center">显示效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">上标</td>
+<td align="center">x^{2}</td>
+<td align="center">$x^{2}$</td>
+</tr>
+<tr>
+<td align="center">下标</td>
+<td align="center">x_{2}</td>
+<td align="center">$x_{2}$</td>
+</tr>
+<tr>
+<td align="center">分式</td>
+<td align="center">\frac{x}{y}</td>
+<td align="center">$\frac{x}{y}$</td>
+</tr>
+<tr>
+<td align="center">乘</td>
+<td align="center">\times</td>
+<td align="center">$\times$</td>
+</tr>
+<tr>
+<td align="center">除</td>
+<td align="center">\div</td>
+<td align="center">$\div$</td>
+</tr>
+<tr>
+<td align="center">加减</td>
+<td align="center">\pm</td>
+<td align="center">$\pm$</td>
+</tr>
+<tr>
+<td align="center">减加</td>
+<td align="center">\mp</td>
+<td align="center">$\mp$</td>
+</tr>
+<tr>
+<td align="center">求和</td>
+<td align="center">\sum</td>
+<td align="center">$\sum$</td>
+</tr>
+<tr>
+<td align="center">求和上下标</td>
+<td align="center">\sum_{infty} ^ {infty}</td>
+<td align="center">$\sum_{-\infty}^{\infty}$</td>
+</tr>
+<tr>
+<td align="center">求积</td>
+<td align="center">\prod</td>
+<td align="center">$\prod$</td>
+</tr>
+<tr>
+<td align="center">微分</td>
+<td align="center">\partial</td>
+<td align="center">$\partial$</td>
+</tr>
+<tr>
+<td align="center">积分</td>
+<td align="center">\int, \displaystyle\int</td>
+<td align="center">$\int,\displaystyle\int$</td>
+</tr>
+<tr>
+<td align="center">不等于</td>
+<td align="center">\neq</td>
+<td align="center">$\neq$</td>
+</tr>
+<tr>
+<td align="center">大于等于</td>
+<td align="center">\geq</td>
+<td align="center">$\geq$</td>
+</tr>
+<tr>
+<td align="center">小于等于</td>
+<td align="center">\leq</td>
+<td align="center">$\leq$</td>
+</tr>
+<tr>
+<td align="center">约等于</td>
+<td align="center">\approx</td>
+<td align="center">$\approx$</td>
+</tr>
+<tr>
+<td align="center">不大于等于</td>
+<td align="center">x + y \ngeq z</td>
+<td align="center">$x + y \ngeq z$</td>
+</tr>
+<tr>
+<td align="center">点乘</td>
+<td align="center">\cdot</td>
+<td align="center">$\cdot$</td>
+</tr>
+<tr>
+<td align="center">星乘</td>
+<td align="center">\ast</td>
+<td align="center">$\ast$</td>
+</tr>
+<tr>
+<td align="center">取整函数</td>
+<td align="center">\left \lfloor \frac{a}{b} \right \rfloot</td>
+<td align="center">$\left \lfloor \frac{a}{b} \right \rfloor $</td>
+</tr>
+<tr>
+<td align="center">取顶函数</td>
+<td align="center">\left \lceil \frac{a}{b} \right \rceil</td>
+<td align="center">$\left \lceil \frac{a}{b} \right \rceil$</td>
+</tr>
+</tbody></table>
+<h2 id="括号"><a href="#括号" class="headerlink" title="括号"></a>括号</h2><hr>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>式子</th>
+<th>显示效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>圆括号</td>
+<td>\left(\frac{a}{b} \right)</td>
+<td>$\left(\frac{a}{b} \right)$</td>
+</tr>
+<tr>
+<td>方括号</td>
+<td>\left[\frac{a}{b} \ right]</td>
+<td>$\left[\frac{a}{b}\right]$</td>
+</tr>
+<tr>
+<td>花括号</td>
+<td>\left{\frac{a}{b} \right}</td>
+<td>$\lbrace \frac{a}{b} \rbrace$</td>
+</tr>
+<tr>
+<td>混合括号</td>
+<td>\left[ a, b\right)</td>
+<td>$\left [a,b \right)$</td>
+</tr>
+</tbody></table>
+<h2 id="基本函数"><a href="#基本函数" class="headerlink" title="基本函数"></a>基本函数</h2><hr>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>式子</th>
+<th>显示效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对数1</td>
+<td>\log_x{y}</td>
+<td>$\log_x{y}$</td>
+</tr>
+<tr>
+<td>对数2</td>
+<td>\ln{\left(x + y\right)}</td>
+<td>$\ln{\left(x + y\right)}$</td>
+</tr>
+</tbody></table>
+<h2 id="数学符号"><a href="#数学符号" class="headerlink" title="数学符号"></a>数学符号</h2><hr>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>式子</th>
+<th>显示效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>无穷</td>
+<td>\infty</td>
+<td>$\infty$</td>
+</tr>
+<tr>
+<td>省略号1</td>
+<td>\cdots</td>
+<td>$\cdots$</td>
+</tr>
+<tr>
+<td>省略号2</td>
+<td>\ldots</td>
+<td>$\ldots$</td>
+</tr>
+<tr>
+<td>省略号3</td>
+<td>\vdots</td>
+<td>$\vdots$</td>
+</tr>
+<tr>
+<td>省略号4</td>
+<td>\ddtos</td>
+<td>$\ddots$</td>
+</tr>
+<tr>
+<td>箭头1</td>
+<td>\rightarrow</td>
+<td>$\rightarrow$</td>
+</tr>
+<tr>
+<td>箭头2</td>
+<td>\leftarrow</td>
+<td>$\leftarrow$</td>
+</tr>
+<tr>
+<td>箭头3</td>
+<td>\Rightarrow</td>
+<td>$\Rightarrow$</td>
+</tr>
+<tr>
+<td>箭头4</td>
+<td>\Leftarrow</td>
+<td>$\Leftarrow$</td>
+</tr>
+<tr>
+<td>箭头5</td>
+<td>\Uparrow</td>
+<td>$\Uparrow$</td>
+</tr>
+<tr>
+<td>箭头6</td>
+<td>\Downarrow</td>
+<td>$\Downarrow$</td>
+</tr>
+<tr>
+<td>箭头7</td>
+<td>\longrightarrow</td>
+<td>$\longrightarrow$</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>…(自行脑补)</td>
+</tr>
+<tr>
+<td>|</td>
+<td>\mid</td>
+<td>$\mid$</td>
+</tr>
+<tr>
+<td>\</td>
+<td>\backslash</td>
+<td>$\backslash$</td>
+</tr>
+<tr>
+<td>任意</td>
+<td>\forall</td>
+<td>$\forall$</td>
+</tr>
+<tr>
+<td>存在</td>
+<td>\exists</td>
+<td>$\exists$</td>
+</tr>
+<tr>
+<td>右箭头</td>
+<td>\implies</td>
+<td>$\implies$</td>
+</tr>
+<tr>
+<td>双向箭头</td>
+<td>\iff</td>
+<td>$\iff$</td>
+</tr>
+<tr>
+<td>左箭头</td>
+<td>\impliedby</td>
+<td>$\impliedby$</td>
+</tr>
+</tbody></table>
+<h2 id="高级运算符"><a href="#高级运算符" class="headerlink" title="高级运算符"></a>高级运算符</h2><hr>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>式子</th>
+<th>显示效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>平均数</td>
+<td>\overline{x}</td>
+<td>$\overline{x}$</td>
+</tr>
+<tr>
+<td>求根</td>
+<td>\sqrt{x}</td>
+<td>$\sqrt{x}$</td>
+</tr>
+<tr>
+<td>开方</td>
+<td>\sqrt[n]{x}</td>
+<td>$\sqrt[n]{x}$</td>
+</tr>
+</tbody></table>
+<h2 id="集合运算"><a href="#集合运算" class="headerlink" title="集合运算"></a>集合运算</h2><hr>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>式子</th>
+<th>显示效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>属于</td>
+<td>\in</td>
+<td>$a \in b$</td>
+</tr>
+<tr>
+<td>不属于</td>
+<td>\notin</td>
+<td>$a \notin b$</td>
+</tr>
+<tr>
+<td>子集</td>
+<td>\subset</td>
+<td>$a \subset b$</td>
+</tr>
+<tr>
+<td>真子集</td>
+<td>\subseteq</td>
+<td>$a \subseteq b$</td>
+</tr>
+<tr>
+<td>并集</td>
+<td>\cup</td>
+<td>$a \cup b$</td>
+</tr>
+<tr>
+<td>交集</td>
+<td>\cap</td>
+<td>$a \cap b$</td>
+</tr>
+<tr>
+<td>异或</td>
+<td>\bigoplus</td>
+<td>$a \bigoplus b$</td>
+</tr>
+</tbody></table>
+<h2 id="常用表达"><a href="#常用表达" class="headerlink" title="常用表达"></a>常用表达</h2><ol>
+<li>分段函数</li>
+</ol>
+<p>$$<br>y &#x3D; \begin{cases}<br>2X + 1 &amp; x \leq 0 \<br>x &amp; x &gt; 0<br>\end{cases}<br>$$</p>
+<p>… 后续会更新矩阵方面的表达式</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>Markdown 中的 Latex</p><p><a href="http://example.com/2025/04/28/Markdown-中的-Latex/">http://example.com/2025/04/28/Markdown-中的-Latex/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><a href="http://example.com"><p>Jiely</p></a></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2025-04-28</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-04-28</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="recommend-area"></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/css/share.min.css"><div class="social-share"></div><script src="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2025/04/17/%E7%AE%97%E6%B3%95%E4%B9%8B%E7%BE%8E/"><span class="level-item">算法之美</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--><div class="card"><div class="card-content"><div class="title is-5">评论</div><script src="https://utteranc.es/client.js" repo="pa-her0/utteranc_comment" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1 is-sticky"><!--!--><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.jpg" alt="Jiely"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">Jiely</p><p class="is-size-6 is-block">ACMer and AI</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>ChengDu</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives/"><p class="title">8</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories/"><p class="title">3</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags/"><p class="title">6</p></a></div></div></nav><div><hr><p id="hitokoto">:D 一言句子获取中...</p><script type="text/javascript" defer>function getYiyan(){
+                                $.getJSON("https://v1.hitokoto.cn/", function (data) {
+                                if(data){
+                                    $('#hitokoto').html("");
+                                    $('#hitokoto').append("<strong style='color: #3273dc;'>"+data.hitokoto+"</strong>"+
+                                    "<p>"+"来源《"+data.from+"》</p><p>提供者-"+data.creator+"</p>");
+                                }});}
+                                $(function (){getYiyan();$('#hitokoto').click(function(){getYiyan();})});</script></div></div></div><div class="column-right-shadow is-hidden-widescreen"></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/ex.svg" alt="WhaleFall&#039;s blog" height="28"></a><p class="size-small"><span>&copy; 2025 Jiely</span>  Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a> &amp; <a href="https://github.com/removeif/hexo-theme-amazing" target="_blank">Amazing</a> <br><span><span id="statistic-times">loading...</span><script>function createTime(time) {
+            var n = new Date(time);
+            now.setTime(now.getTime() + 250),
+                days = (now - n) / 1e3 / 60 / 60 / 24,
+                dnum = Math.floor(days),
+                hours = (now - n) / 1e3 / 60 / 60 - 24 * dnum,
+                hnum = Math.floor(hours),
+            1 == String(hnum).length && (hnum = "0" + hnum),
+                minutes = (now - n) / 1e3 / 60 - 1440 * dnum - 60 * hnum,
+                mnum = Math.floor(minutes),
+            1 == String(mnum).length && (mnum = "0" + mnum),
+                seconds = (now - n) / 1e3 - 86400 * dnum - 3600 * hnum - 60 * mnum,
+                snum = Math.round(seconds),
+            1 == String(snum).length && (snum = "0" + snum),
+                document.getElementById("statistic-times").innerHTML = "❤️本站自 <strong>"+time.split(" ")[0].replace(/\//g,".")+"</strong> 已运行 <strong>" + dnum + "</strong> 天 <strong>" + hnum + "</strong> 小时 <strong>" + mnum + "</strong> 分 <strong>" + snum + "</strong> 秒！❤️";
+        }var now = new Date();setInterval("createTime('2025/4/14 16:35:00')", 250,"");</script><br></span><div class="size-small"><span>❤️感谢 <strong><span id="busuanzi_value_site_uv">99+</span></strong> 小伙伴的 <strong><span id="busuanzi_value_site_pv">99+</span></strong> 次光临！❤️</span></div></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/pa-her0"><i class="fab fa-github"></i></a></p></div><div class="sideMusic"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script><meting-js style="width: auto;height: 2000px;" server="netease" type="playlist" id="13584583094" theme="#2980b9" loop="all" autoplay="false" order="list" storageName="aplayer-setting" lrctype="0" list-max-height="400px" fixed="true"></meting-js></div></div></div></div></footer><script src="https://cdnjs.loli.net/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script><script src="https://cdnjs.loli.net/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" async></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/lightgallery/1.10.0/js/lightgallery.min.js" defer></script><script src="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script data-pjax src="/js/insight.js" defer></script><script data-pjax>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
