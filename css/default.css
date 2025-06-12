@@ -10934,6 +10934,42 @@ a.article-nav-next span {
   word-wrap: break-word;
   white-space: normal;
 }
+.tips {
+  padding-left: 10px;
+  background-color: rgba(52,152,219,0.3);
+  border-left: 4px solid #3498db;
+  color: #196090;
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+.success {
+  padding-left: 10px;
+  background-color: rgba(46,204,113,0.3);
+  border-left: 4px solid #2ecc71;
+  color: #1b7943;
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+.warning {
+  padding-left: 10px;
+  background-color: rgba(241,196,15,0.3);
+  border-left: 4px solid #f1c40f;
+  color: #927608;
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+.danger {
+  padding-left: 10px;
+  background-color: rgba(231,76,60,0.3);
+  border-left: 4px solid #e74c3c;
+  color: #a82315;
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
 .navbar-main {
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
