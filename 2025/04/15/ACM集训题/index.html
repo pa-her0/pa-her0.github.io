@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>ACM集训题 - 🦖</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="🦖"><meta name="msapplication-TileImage" content="/img/Whale.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="🦖"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="Let me alone."><meta property="og:type" content="blog"><meta property="og:title" content="Jiely"><meta property="og:url" content="https://github.com/pa-her0"><meta property="og:site_name" content="Jiely"><meta property="og:description" content="Let me alone."><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://github.com/img/ACM1.png"><meta property="article:published_time" content="2025-04-15T02:07:06.000Z"><meta property="article:modified_time" content="2025-06-10T15:15:10.445Z"><meta property="article:author" content="removeif"><meta property="article:tag" content="坚持"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://github.com/img/ACM1.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://whalefall.fun/2025/04/15/ACM%E9%9B%86%E8%AE%AD%E9%A2%98/"},"headline":"🦖","image":["http://whalefall.fun/img/ACM1.png"],"datePublished":"2025-04-15T02:07:06.000Z","dateModified":"2025-06-10T15:15:10.445Z","author":{"@type":"Person","name":"Jiely"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject"}},"description":"Let me alone."}</script><link rel="canonical" href="http://whalefall.fun/2025/04/15/ACM%E9%9B%86%E8%AE%AD%E9%A2%98/"><link rel="icon" href="/img/Whale.png"><meta name="referrer" content="no-referrer-when-downgrade"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/6.0.0/css/all.min.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/highlight.js/11.7.0/styles/tokyo-night-dark.min.css"><link rel="stylesheet" href="https://fonts.loli.net/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/5.12.0/css/all.min.css"><link rel="stylesheet" href="https://fonts.loli.net/css?family=Ubuntu:400,600|Source+Code+Pro|Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Microsoft YaHei:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&amp;amp;subset=latin,latin-ext|Inconsolata|Itim|Lobster.css"><script src="https://cdnjs.loli.net/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src="/js/globalUtils.js"></script><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/lightgallery/1.10.0/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.8.1/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdnjs.loli.net/ajax/libs/pace/1.2.4/pace.min.js"></script><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body class="is-3-column has-navbar-fixed-top"><nav class="navbar navbar-main is-fixed-top"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/Y1.png" alt="🦖" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">主页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/pa-her0"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a><a class="navbar-item" id="night-nav" title="Night Mode" href="javascript:;"><i class="fas fa-moon" id="night-icon"></i></a></div></div></div></nav><script type="text/javascript" src="/js/theme-setting.js"></script><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><!--!--><div class="card"><article class="card-content article " role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-plus"></i> 2025-04-15</span><span class="level-item"><i class="far fa-calendar-check"></i> 最后修改:<time datetime="2025-06-10T15:15:10.445Z" title="2025-06-10T15:15:10.445Z">2025-06-10</time></span><span class="level-item"><i class="far fa-clock"></i> 3 分钟 <i class="fas fa-pencil-alt"></i> 0.4k</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">ACM集训题</h1><div class="content"><blockquote>
+<p>Let me alone.</p>
+</blockquote>
+<span id="more"></span>
+<hr>
+<blockquote class="alert alert-note">
+<p>注意 本集训题在暑假的时候继续更新（因为这个学期集训次数过少。）</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>题目</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gcd变化次数， <a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/69791/F">https://ac.nowcoder.com/acm/contest/69791/F</a></td>
+</tr>
+<tr>
+<td>线段树二分， 理解01排序，<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P2824">https://www.luogu.com.cn/problem/P2824</a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/95323/K">https://ac.nowcoder.com/acm/contest/95323/K</a></td>
+</tr>
+<tr>
+<td>基环树 <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P1399">https://www.luogu.com.cn/problem/P1399</a></td>
+</tr>
+<tr>
+<td><strong>牛客 基础算法班</strong></td>
+</tr>
+</tbody>
+</table>
+<h1><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/69791/F">GCD 的变化次数</a></h1>
+<blockquote>
+<p>注意到的性质：<strong>gcd(x, y) &lt;= min(x,y) → gcd(x,y) &lt;= x / 2</strong></p>
+<p>相当于 GCD 要不不变，要不<strong>变小 1/2 O(log(n))</strong></p>
+</blockquote>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>对于一个子序列的 最大公约数（GCD），可以认定这个 最大公约数的 可能性是可以枚举的。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> int long long</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> N = <span class="number">6e5</span> + <span class="number">10</span>;</span><br><span class="line">vector&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&gt; pos[N];</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">build</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; a)</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> n = a.<span class="built_in">size</span>() - <span class="number">1</span>;</span><br><span class="line">    pos[<span class="number">1</span>].<span class="built_in">push_back</span>(&#123;<span class="number">1</span>,a[<span class="number">1</span>]&#125;);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">2</span>; i &lt;= n; i++)&#123;</span><br><span class="line">        pos[i].<span class="built_in">push_back</span>(&#123;i,a[i]&#125;);</span><br><span class="line">        <span class="type">int</span> t = a[i];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">auto</span> [x,y] : pos[i - <span class="number">1</span>])&#123;</span><br><span class="line">            <span class="type">int</span> now = <span class="built_in">gcd</span>(t,y);</span><br><span class="line">            <span class="keyword">if</span>(t != now)&#123;</span><br><span class="line">                pos[i].<span class="built_in">push_back</span>(&#123;x,now&#125;);</span><br><span class="line">                t = now;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">signed</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    ios::<span class="built_in">sync_with_stdio</span>(<span class="literal">false</span>);</span><br><span class="line">    cin.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">    cout.<span class="built_in">tie</span>(<span class="number">0</span>);</span><br><span class="line">    <span class="type">int</span> n, m;</span><br><span class="line">    cin &gt;&gt; n &gt;&gt; m;</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">a</span><span class="params">(n + <span class="number">1</span>)</span></span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++) cin &gt;&gt; a[i];</span><br><span class="line">    <span class="built_in">build</span>(a);</span><br><span class="line">	<span class="keyword">while</span>(m --)&#123;</span><br><span class="line">		<span class="type">int</span> l, r;</span><br><span class="line">		cin &gt;&gt; l &gt;&gt; r;</span><br><span class="line">        <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">auto</span> [x,y]: pos[r])&#123;</span><br><span class="line">            <span class="keyword">if</span>(x &gt;= l)&#123;</span><br><span class="line">                ans += <span class="number">1</span>;</span><br><span class="line">            &#125;<span class="keyword">else</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">		cout &lt;&lt; ans &lt;&lt; <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1><a target="_blank" rel="noopener" href="https://acm.hdu.edu.cn/contest/problem?cid=1157&amp;pid=1010">枚举</a></h1>
+<blockquote>
+<p>最近尝试的很多题目，都存在一个关键点，便是如果数据量有限，可以进行暴力枚举可能性。</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://acm.hdu.edu.cn/contest/problem?cid=1157&amp;pid=1010">字符串哈希</a></p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>这个题目不仅应用了枚举还考察了 字符串哈希 不碰撞的特殊性质。</p>
+</li>
+</ul>
+</div><div class="article-licensing box"><div class="licensing-title"><p>ACM集训题</p><p><a href="http://whalefall.fun/2025/04/15/ACM集训题/">http://whalefall.fun/2025/04/15/ACM集训题/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><a href="http://whalefall.fun"><p>Jiely</p></a></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2025-04-15</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-06-10</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="recommend-area"><div class="recommend-post"><span class="is-size-6 has-text-grey has-mr-7"># 相关文章</span><br><span>  1.<a class="is-size-6" href="/2025/05/06/%E7%AE%97%E6%B3%95%E6%9D%BF%E5%AD%90/" target="_blank">算法知识册</a><br></span><span>  2.<a class="is-size-6" href="/2025/04/17/%E7%AE%97%E6%B3%95%E4%B9%8B%E7%BE%8E/" target="_blank">算法之美</a><br></span><span>  3.<a class="is-size-6" href="/2025/03/25/%E8%80%81%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/" target="_blank">老算法笔记</a><br></span><span>  4.<a class="is-size-6" href="/2025/03/24/PYTHON%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0/" target="_blank">PYTHON 算法学习</a><br></span></div></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/css/share.min.css"><div class="social-share"></div><script src="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level-item  link-muted" href="/2025/04/15/OrangePi5-%E9%83%A8%E7%BD%B2-YOLO%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B/"><i class="fas fa-chevron-left"></i><span>OrangePi5部署YOLO推理模型</span></a></div><div class="level-end"><a class="article-nav-next level-item  link-muted" href="/2025/04/12/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/"><span>数据库基础学习</span><i class="fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="is-flex is-mobile" href="#"><span class="mr-2">1</span><span>GCD 的变化次数</span></a></li><li><a class="is-flex is-mobile" href="#"><span class="mr-2">2</span><span>枚举</span></a></li></ul></div></div><style>.menu-list > li > a.is-active + .menu-list { display: block; }.menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.jpg" alt="Jiely"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">Jiely</p><p class="is-size-6 is-block">ACMer and AI</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives/"><p class="title">16</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories/"><p class="title">6</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags/"><p class="title">10</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/pa-her0" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/pa-her0"><i class="fab fa-github"></i></a></div><div><hr><p id="hitokoto">:D 一言句子获取中...</p><script type="text/javascript" defer>function getYiyan(){
+                                $.getJSON("https://v1.hitokoto.cn/", function (data) {
+                                if(data){
+                                    $('#hitokoto').html("");
+                                    $('#hitokoto').append("<strong style='color: #3273dc;'>"+data.hitokoto+"</strong>"+
+                                    "<p>"+"来源《"+data.from+"》</p><p>提供者-"+data.creator+"</p>");
+                                }});}
+                                $(function (){getYiyan();$('#hitokoto').click(function(){getYiyan();})});</script></div></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><figure class="media-left"><a class="image" href="/2025/06/19/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0-%E7%8E%8B%E9%81%93%E8%80%83%E7%A0%94/"><img src="/img/linux.png" alt="操作系统笔记 --王道考研"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-06-19T10:05:38.000Z">2025-06-19</time></p><p class="title"><a href="/2025/06/19/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0-%E7%8E%8B%E9%81%93%E8%80%83%E7%A0%94/">操作系统笔记 --王道考研</a></p><p class="categories"><a href="/categories/%E5%AD%A6%E4%B9%A0/">学习</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/06/14/YOLO/"><img src="img/yolo.png" alt="基于YOLO的神经网络剪枝"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-06-14T03:36:33.000Z">2025-06-14</time></p><p class="title"><a href="/2025/06/14/YOLO/">基于YOLO的神经网络剪枝</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/06/10/Codeforces/"><img src="/img/cf.png" alt="Codeforces"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-06-10T08:30:48.000Z">2025-06-10</time></p><p class="title"><a href="/2025/06/10/Codeforces/">Codeforces</a></p><p class="categories"><a href="/categories/Codeforces/">Codeforces</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/06/10/%E7%89%9B%E5%AE%A2%E8%B5%9B/"><img src="/img/newcode2.png" alt="牛客赛"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-06-10T08:30:25.000Z">2025-06-10</time></p><p class="title"><a href="/2025/06/10/%E7%89%9B%E5%AE%A2%E8%B5%9B/">牛客赛</a></p><p class="categories"><a href="/categories/%E7%89%9B%E5%AE%A2/">牛客</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/05/21/Obisidian%20to%20Typora/"><img src="/img/obisidian.png" alt="Obisidian to Typora"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-05-21T15:33:28.000Z">2025-05-21</time></p><p class="title"><a href="/2025/05/21/Obisidian%20to%20Typora/">Obisidian to Typora</a></p><p class="categories"><a href="/categories/%E7%94%9F%E6%B4%BB/">生活</a></p></div></article></div></div><div class="column-right-shadow is-hidden-widescreen"></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/Y1.png" alt="🦖" height="28"></a><p class="size-small"><span>&copy; 2025 Jiely</span>  Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a> &amp; <a href="https://github.com/removeif/hexo-theme-amazing" target="_blank">Amazing</a> <br><span><span id="statistic-times">loading...</span><script>function createTime(time) {
+            var n = new Date(time);
+            now.setTime(now.getTime() + 250),
+                days = (now - n) / 1e3 / 60 / 60 / 24,
+                dnum = Math.floor(days),
+                hours = (now - n) / 1e3 / 60 / 60 - 24 * dnum,
+                hnum = Math.floor(hours),
+            1 == String(hnum).length && (hnum = "0" + hnum),
+                minutes = (now - n) / 1e3 / 60 - 1440 * dnum - 60 * hnum,
+                mnum = Math.floor(minutes),
+            1 == String(mnum).length && (mnum = "0" + mnum),
+                seconds = (now - n) / 1e3 - 86400 * dnum - 3600 * hnum - 60 * mnum,
+                snum = Math.round(seconds),
+            1 == String(snum).length && (snum = "0" + snum),
+                document.getElementById("statistic-times").innerHTML = "❤️本站自 <strong>"+time.split(" ")[0].replace(/\//g,".")+"</strong> 已运行 <strong>" + dnum + "</strong> 天 <strong>" + hnum + "</strong> 小时 <strong>" + mnum + "</strong> 分 <strong>" + snum + "</strong> 秒！❤️";
+        }var now = new Date();setInterval("createTime('2025/4/14 16:35:00')", 250,"");</script><br></span><div class="size-small"><span>❤️感谢 <strong><span id="busuanzi_value_site_uv">99+</span></strong> 小伙伴的 <strong><span id="busuanzi_value_site_pv">99+</span></strong> 次光临！❤️</span></div></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/pa-her0"><i class="fab fa-github"></i></a></p></div><div class="sideMusic"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script><meting-js style="width: auto;height: 2000px;" server="netease" type="playlist" id="13584583094" theme="#2980b9" loop="all" autoplay="false" order="list" storageName="aplayer-setting" lrctype="0" list-max-height="400px" fixed="true"></meting-js></div></div></div></div></footer><script src="https://cdnjs.loli.net/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script><script src="https://cdnjs.loli.net/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" async></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/lightgallery/1.10.0/js/lightgallery.min.js" defer></script><script src="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/KaTeX/0.15.1/katex.min.css"><script src="https://cdnjs.loli.net/ajax/libs/KaTeX/0.15.1/katex.min.js" defer></script><script src="https://cdnjs.loli.net/ajax/libs/KaTeX/0.15.1/contrib/auto-render.min.js" defer></script><script src="https://cdnjs.loli.net/ajax/libs/KaTeX/0.15.1/contrib/mhchem.min.js" defer></script><script>window.addEventListener("load", function() {
+            document.querySelectorAll('[role="article"] > .content').forEach(function(element) {
+                renderMathInElement(element);
+            });
+        });</script><script type="text/javascript" id="MathJax-script" async>MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      },
+      chtml: {
+        matchFontHeight: false
+      }
+    };</script><script src="https://cdnjs.loli.net/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script data-pjax src="/js/insight.js" defer></script><script data-pjax>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script><script type="text/javascript">var pjax = new Pjax({
+            elements: "a",//代表点击链接就更新
+            selectors: [  //代表要更新的节点
+                ".section",
+                "title"
+            ],
+            cache: true,
+            cacheBust:false
+        })
+
+        function loadBusuanzi(){
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js", function () {});
+        }
+
+        function loadMathJax() { //加载mathjax
+            $.getScript("//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML", function () {
+                MathJax.Hub.Config({ tex2jax: { inlineMath: [['$', '$'], ['\(', '\)']] } });
+                var math = document.getElementsByClassName("entry-content")[0];
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);
+            });
+        };
+
+        // 开始 PJAX 执行的函数
+        document.addEventListener('pjax:send', function () {
+        });
+        
+        // PJAX 完成之后执行的函数，可以和上面的重载放在一起
+        document.addEventListener('pjax:complete', function () {
+            $(".section").css({opacity:1});
+            if(false){
+                $.getScript('/js/comment-issue-data.js',function(){loadIssueData('undefined','undefined','undefined','undefined',undefined);});
+            }
+            if(false){
+                loadMathJax();
+            }
+            loadMainJs(jQuery, window.moment, window.ClipboardJS, window.IcarusThemeSettings);
+            loadBackTop();
+            loadBusuanzi();
+            if(typeof loadBanner == 'function'){
+                loadBanner();
+            }
+        });</script></body></html>

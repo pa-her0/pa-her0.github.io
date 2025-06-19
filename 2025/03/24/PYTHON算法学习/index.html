@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>PYTHON 算法学习 - 🦖</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="🦖"><meta name="msapplication-TileImage" content="/img/Whale.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="🦖"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="14天 PY 成神计划"><meta property="og:type" content="blog"><meta property="og:title" content="Jiely"><meta property="og:url" content="https://github.com/pa-her0"><meta property="og:site_name" content="Jiely"><meta property="og:description" content="14天 PY 成神计划"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://github.com/img/python.png"><meta property="article:published_time" content="2025-03-24T09:16:00.000Z"><meta property="article:modified_time" content="2025-06-18T15:38:39.918Z"><meta property="article:author" content="removeif"><meta property="article:tag" content="花式"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://github.com/img/python.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://whalefall.fun/2025/03/24/PYTHON%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0/"},"headline":"🦖","image":["http://whalefall.fun/img/python.png"],"datePublished":"2025-03-24T09:16:00.000Z","dateModified":"2025-06-18T15:38:39.918Z","author":{"@type":"Person","name":"Jiely"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject"}},"description":"14天 PY 成神计划"}</script><link rel="canonical" href="http://whalefall.fun/2025/03/24/PYTHON%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0/"><link rel="icon" href="/img/Whale.png"><meta name="referrer" content="no-referrer-when-downgrade"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/6.0.0/css/all.min.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/highlight.js/11.7.0/styles/tokyo-night-dark.min.css"><link rel="stylesheet" href="https://fonts.loli.net/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/font-awesome/5.12.0/css/all.min.css"><link rel="stylesheet" href="https://fonts.loli.net/css?family=Ubuntu:400,600|Source+Code+Pro|Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Microsoft YaHei:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&amp;amp;subset=latin,latin-ext|Inconsolata|Itim|Lobster.css"><script src="https://cdnjs.loli.net/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src="/js/globalUtils.js"></script><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" defer></script><!--!--><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/lightgallery/1.10.0/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.8.1/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdnjs.loli.net/ajax/libs/pace/1.2.4/pace.min.js"></script><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body class="is-3-column has-navbar-fixed-top"><nav class="navbar navbar-main is-fixed-top"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/Y1.png" alt="🦖" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">主页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/pa-her0"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a><a class="navbar-item" id="night-nav" title="Night Mode" href="javascript:;"><i class="fas fa-moon" id="night-icon"></i></a></div></div></div></nav><script type="text/javascript" src="/js/theme-setting.js"></script><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-9-widescreen"><!--!--><div class="card"><article class="card-content article " role="article"><div class="article-meta size-small is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><i class="far fa-calendar-plus"></i> 2025-03-24</span><span class="level-item"><i class="far fa-calendar-check"></i> 最后修改:<time datetime="2025-06-18T15:38:39.918Z" title="2025-06-18T15:38:39.918Z">2025-06-18</time></span><span class="level-item"><i class="far fa-clock"></i> 18 分钟 <i class="fas fa-pencil-alt"></i> 2.6k</span><span class="level-item" id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">0</span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">PYTHON 算法学习</h1><div class="content"><blockquote>
+<p><strong>14天 PY 成神计划</strong></p>
+</blockquote>
+<span id="more"></span>
+<div class="warning">
+<p><strong>OVER</strong><br>
+学习结束！可能以后都不会用PYTHON写算法题目了，因为PYTHON的一些算法语法基础不牢固导致一道题看了2个小时！</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>题目链接</th>
+<th>完成情况</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.29</td>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106557">比赛链接：https://www.nowcoder.com/acm/contest/106557</a></td>
+<td>百分之50</td>
+</tr>
+<tr>
+<td>3.30</td>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106558">比赛链接：https://www.nowcoder.com/acm/contest/106558</a></td>
+<td></td>
+</tr>
+<tr>
+<td>3.31</td>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106559">比赛链接：https://www.nowcoder.com/acm/contest/106559</a></td>
+<td></td>
+</tr>
+<tr>
+<td>4.1</td>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106560">比赛链接：https://www.nowcoder.com/acm/contest/106560</a></td>
+<td></td>
+</tr>
+<tr>
+<td>4.2</td>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106562">比赛链接：https://www.nowcoder.com/acm/contest/106562</a></td>
+<td>优先队列 + 并查集</td>
+</tr>
+<tr>
+<td>4.3</td>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106563">比赛链接：https://www.nowcoder.com/acm/contest/106563</a></td>
+<td>搜索 + 剪枝</td>
+</tr>
+<tr>
+<td>4.4</td>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106564">比赛链接：https://www.nowcoder.com/acm/contest/106564</a></td>
+<td>动态规划1</td>
+</tr>
+<tr>
+<td>4.5</td>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106565">比赛链接：https://www.nowcoder.com/acm/contest/106565</a></td>
+<td>动态规划2</td>
+</tr>
+<tr>
+<td>4.6</td>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106566">比赛链接：https://www.nowcoder.com/acm/contest/106566</a></td>
+<td>图论 + 最短路</td>
+</tr>
+<tr>
+<td>4.7</td>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106567">比赛链接：https://www.nowcoder.com/acm/contest/106567</a></td>
+<td>数学</td>
+</tr>
+<tr>
+<td>4.8</td>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106568">比赛链接：https://www.nowcoder.com/acm/contest/106568</a></td>
+<td>线段树 + 树状数组</td>
+</tr>
+<tr>
+<td>4.9</td>
+<td><a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106569">比赛链接：https://www.nowcoder.com/acm/contest/106569</a></td>
+<td>LCA + RMQ</td>
+</tr>
+<tr>
+<td>4.10</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>4.11</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>4.12</td>
+<td>蓝桥杯</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1>知识点完成情况</h1>
+<table>
+<thead>
+<tr>
+<th>待办</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数学</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>LCA + RMQ树上问题</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h1>PY 笔记</h1>
+<h2 id="递归">递归</h2>
+<blockquote>
+<p><strong>先递归的后算</strong>，递归的特性是 自下而上</p>
+</blockquote>
+<figure class="highlight python"><figcaption><span>fold title:递归</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">fun</span>(<span class="params">x</span>):</span><br><span class="line">   <span class="keyword">if</span> exam():</span><br><span class="line">       <span class="keyword">return</span> </span><br><span class="line">   <span class="keyword">return</span> fun(min_x)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="DFS-和-BFS-的实现">DFS 和 BFS 的实现</h3>
+<blockquote>
+<p>DFS 是属于 递归迭代 的算法过程， BFS 是属于 层次扩展（队列完成）</p>
+<p>因为有时候<strong>DFS</strong>的时间复杂度是 2 的n次方，所以如果层次足够少的话，便可以使用BFS来实现</p>
+</blockquote>
+<h2 id="PY中的DP-缓存">PY中的DP 缓存</h2>
+<figure class="highlight python"><figcaption><span>fold title:DP缓存</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dp = &#123;&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="PY-内置函数">PY 内置函数</h2>
+<figure class="highlight python"><figcaption><span>fold title:内置函数</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> 快速幂</span><br><span class="line"><span class="built_in">pow</span>(a,b,mod)</span><br><span class="line"><span class="built_in">pow</span>(a,b)</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> gcd（最大公约数）</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line">math.gcd(a,b)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">gcd</span>(<span class="params">a, b</span>):</span><br><span class="line">	<span class="keyword">if</span> b == <span class="number">0</span>:</span><br><span class="line">		<span class="keyword">return</span> a</span><br><span class="line">	<span class="keyword">return</span> gcd(b, a % b)</span><br><span class="line"></span><br><span class="line"><span class="number">3.</span> 找满足值</span><br><span class="line"></span><br><span class="line"><span class="built_in">next</span>(i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n - <span class="number">1</span>) <span class="keyword">if</span> <span class="keyword">not</span> fa[i])</span><br></pre></td></tr></table></figure>
+<h2 id="Deque-队列">Deque(队列)</h2>
+<figure class="highlight python"><figcaption><span>fold title:队列基本操作</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> deque</span><br><span class="line"></span><br><span class="line">origin = <span class="built_in">int</span>(<span class="built_in">input</span>())</span><br><span class="line"></span><br><span class="line">q = deque([origin]) <span class="comment"># 需要列表存入</span></span><br><span class="line"></span><br><span class="line">x1, x2 = <span class="built_in">map</span>(<span class="built_in">int</span>, <span class="built_in">input</span>().split())</span><br><span class="line">q.append(x1)</span><br><span class="line">q.appendleft(x2)</span><br><span class="line"></span><br><span class="line">x = q.popleft()</span><br><span class="line">y = q.pop()</span><br><span class="line"><span class="built_in">print</span>(q[<span class="number">0</span>],q[-<span class="number">1</span>],x,y,<span class="built_in">len</span>(q))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> q:</span><br><span class="line">	<span class="built_in">print</span>(<span class="string">&quot;YES&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="排序算法">排序算法</h2>
+<h3 id="基础排序">基础排序</h3>
+<figure class="highlight python"><figcaption><span>fold title:结构体排序</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">nums.sort(key=())</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Node</span>:</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, a, b,c</span>):</span><br><span class="line">		<span class="variable language_">self</span>.a = a</span><br><span class="line">		<span class="variable language_">self</span>.b = b</span><br><span class="line">		<span class="variable language_">self</span>.c = c</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__repr__</span>(<span class="params">self</span>):</span><br><span class="line">		<span class="keyword">return</span> <span class="string">f&#x27;(<span class="subst">&#123;self.a&#125;</span>, <span class="subst">&#123;self.b&#125;</span>, <span class="subst">&#123;self.c&#125;</span>)&#x27;</span></span><br><span class="line">		</span><br><span class="line">t = <span class="built_in">int</span>(<span class="built_in">input</span>())</span><br><span class="line">nodes = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(t):</span><br><span class="line">	a, b, c = <span class="built_in">map</span>(<span class="built_in">int</span>, <span class="built_in">input</span>().split())</span><br><span class="line">	nodes.append(Node(a,b,c))</span><br><span class="line"></span><br><span class="line">nodes = <span class="built_in">sorted</span>(nodes, key = <span class="keyword">lambda</span> x : (x.a, -x.b,x.c))</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="基数排序（基于每一位的大小排序）">基数排序（基于每一位的大小排序）</h3>
+<h4 id="归并排序">归并排序</h4>
+<figure class="highlight python"><figcaption><span>fold title:归并算法</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">guibing</span>(<span class="params">arr</span>):</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(arr) == <span class="number">1</span>:</span><br><span class="line">		<span class="keyword">return</span> arr</span><br><span class="line">	mid = (<span class="built_in">len</span>(arr)) // <span class="number">1</span></span><br><span class="line">	left = guibing(arr[:mid])</span><br><span class="line">	right = guibing(arr[mid:])</span><br><span class="line">	<span class="keyword">return</span> merge(left, right)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">merge</span>(<span class="params">left ,right</span>):</span><br><span class="line">	ans = []</span><br><span class="line">	i = j = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span>(i &lt; <span class="built_in">len</span>(left) <span class="keyword">and</span> j &lt; <span class="built_in">len</span>(right)):</span><br><span class="line">		<span class="keyword">if</span>(left[i] &lt; right[j]):</span><br><span class="line">			ans.append(left[i])</span><br><span class="line">			i += <span class="number">1</span></span><br><span class="line">		<span class="keyword">else</span>:</span><br><span class="line">			ans.appemd(right[j])</span><br><span class="line">			j += <span class="number">1</span></span><br><span class="line">	ans.extend(left[i:])</span><br><span class="line">	ans.extend(right[j:])</span><br><span class="line">	<span class="keyword">return</span> ans</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="归并排序-求-逆序队">归并排序 求 逆序队</h4>
+<figure class="highlight python"><figcaption><span>fold title:逆序队</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">count = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">merge</span>(<span class="params">left, right</span>):</span><br><span class="line">	<span class="keyword">global</span> count</span><br><span class="line">	ans = []</span><br><span class="line">	i = j = <span class="number">0</span></span><br><span class="line">   </span><br><span class="line">	<span class="keyword">while</span> i &lt; <span class="built_in">len</span>(left) <span class="keyword">and</span> j &lt; <span class="built_in">len</span>(right):</span><br><span class="line">		<span class="keyword">if</span>(left[i] &lt;= right[j]): <span class="comment"># 一定要 = </span></span><br><span class="line">			ans.append(left[i])</span><br><span class="line">			i += <span class="number">1</span></span><br><span class="line">		<span class="keyword">else</span>:</span><br><span class="line">			ans.append(right[j])</span><br><span class="line">			count += (<span class="built_in">len</span>(left) - i)</span><br><span class="line">			j += <span class="number">1</span></span><br><span class="line">	ans.extend(left[i:])</span><br><span class="line">	ans.extend(right[j:])</span><br><span class="line">	<span class="keyword">return</span> ans</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">f</span>(<span class="params">arr</span>):</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(arr) == <span class="number">1</span>:</span><br><span class="line">		<span class="keyword">return</span> arr</span><br><span class="line">	mid = <span class="built_in">len</span>(arr) // <span class="number">2</span></span><br><span class="line">	left = f(arr[:mid])</span><br><span class="line">	right = f(arr[mid:])</span><br><span class="line">	<span class="keyword">return</span> merge(left, right)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="快排">快排</h4>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>理解 第一种快排的排序方法</p>
+</li>
+</ul>
+<figure class="highlight python"><figcaption><span>fold title:C++版本</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">quick_sort</span>(<span class="params">l, r,arr</span>):</span><br><span class="line">	<span class="keyword">if</span> l &gt;= r:</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	i ,j = l, r</span><br><span class="line">	x = arr[l]</span><br><span class="line">	<span class="keyword">while</span> i &lt; j:</span><br><span class="line">		<span class="keyword">while</span> i &lt; j <span class="keyword">and</span> arr[j] &gt;= x:</span><br><span class="line">			j -= <span class="number">1</span></span><br><span class="line">		<span class="keyword">while</span> i &lt; j <span class="keyword">and</span> arr[i] &lt;= x:</span><br><span class="line">			i += <span class="number">1</span></span><br><span class="line">		<span class="keyword">if</span> i &lt; j:</span><br><span class="line">			arr[i], arr[j] = arr[j], arr[i]</span><br><span class="line"></span><br><span class="line">	arr[l], arr[i] = arr[i], arr[l]</span><br><span class="line">	quick_sort(l, i - <span class="number">1</span>, arr)</span><br><span class="line">	quick_sort(i + <span class="number">1</span>, r, arr)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><figcaption><span>fold title:PY版本</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">quick_sort1</span>(<span class="params">arr</span>):</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(arr) &lt;= <span class="number">1</span>:</span><br><span class="line">		<span class="keyword">return</span> arr</span><br><span class="line">	povit = arr[<span class="number">0</span>]</span><br><span class="line">	left = [x <span class="keyword">for</span> x <span class="keyword">in</span> arr[<span class="number">1</span>:] <span class="keyword">if</span> x &lt;= povit]</span><br><span class="line">	right = [x <span class="keyword">for</span> x <span class="keyword">in</span> arr[<span class="number">1</span>:] <span class="keyword">if</span> x &gt; povit]</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> quick_sort1(left) + [povit] + quick_sort1(right) </span><br></pre></td></tr></table></figure>
+<h2 id="建树">建树</h2>
+<figure class="highlight python"><figcaption><span>fold title:vector 建树</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> 有权</span><br><span class="line">dj = [[] <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(n + <span class="number">1</span>)]</span><br><span class="line">dj[a].append((b,w))</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> 无权</span><br><span class="line">dj[a].append(b)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="二分查找">二分查找</h2>
+<p>C++</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>lower_bound() 查找可插入元素的最小位置</p>
+</li>
+<li class="lvl-2">
+<p>upper_bound() 查找可插入元素的最大位置</p>
+</li>
+<li class="lvl-2">
+<p>binary_bound() 查找元素是否存在</p>
+</li>
+</ul>
+<p>PY</p>
+<figure class="highlight python"><figcaption><span>fold title:bisect</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> bisect</span><br><span class="line">bisect.bisect_left() <span class="comment"># 靠左 &gt;= 严格大于等于</span></span><br><span class="line">bisect.bisect_right() <span class="comment"># 靠右 &gt; 严格大于</span></span><br><span class="line"><span class="comment"># 从 lo -&gt; hi</span></span><br><span class="line"> x = bisect.bisect_right(a, need, lo=<span class="number">1</span>, hi=i) </span><br></pre></td></tr></table></figure>
+<h2 id="三分">三分</h2>
+<blockquote>
+<p>三分用来求<strong>函数极值</strong></p>
+<p>一般 有 先增后减，先减后增 的特性</p>
+</blockquote>
+<p><strong>三分模版</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> l &lt; r:</span><br><span class="line">       mid1 = l + (r - l) // <span class="number">3</span></span><br><span class="line">       mid2 = r - (r - l) // <span class="number">3</span></span><br><span class="line">       <span class="keyword">if</span> f(mid1) &gt; f(mid2):</span><br><span class="line">           r = mid2 - <span class="number">1</span></span><br><span class="line">       <span class="keyword">else</span>:</span><br><span class="line">           l = mid1 + <span class="number">1</span></span><br><span class="line">   <span class="built_in">print</span>(f(l))</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>常考<strong>三分嵌套</strong>问题</p>
+<ol>
+<li class="lvl-5">
+<p>最小圆覆盖问题</p>
+<p>🔗：<a target="_blank" rel="noopener" href="https://ac.nowcoder.com/acm/contest/106559/1009">https://ac.nowcoder.com/acm/contest/106559/1009</a></p>
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="分治常见题目">分治常见题目</h2>
+<h4 id="解决最近曼哈顿距离">解决最近曼哈顿距离</h4>
+<h2 id="优先队列-heapq">优先队列 heapq</h2>
+<blockquote>
+<p>heapq是 默认为 <strong>小根堆</strong><br>
+需要用大根堆的话可以 可以用 值 * -1来存储</p>
+</blockquote>
+<p>当 a 初始化 为heapq后, 优先队列的长度 和 是否为空的判断都是 判断 <strong>a 这个列表</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> heapq</span><br><span class="line"></span><br><span class="line">a = []</span><br><span class="line"><span class="comment"># 插入</span></span><br><span class="line">heapq.heappush(a, item)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 弹出</span></span><br><span class="line">heapq.heappop(a)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 判断是否为空 或者 长度 以 a 为判断</span></span><br><span class="line"><span class="built_in">len</span>(a)</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> a</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果要将 list(a) 直接变成 优先队列</span></span><br><span class="line">heapq.heapify(a)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 取 前 n 大 用队列存</span></span><br><span class="line">heapq.nlargest(n, a)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 取 钱前 n 小 用队列存</span></span><br><span class="line">heapq.nsmallest(n, a)</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="优先队列-自定义排序结构">优先队列 自定义排序结构</h3>
+<figure class="highlight python"><figcaption><span>fold title:自定义排序结构</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a = []</span><br><span class="line">heapq.heappush(a, (-item[<span class="number">0</span>], item[<span class="number">1</span>], item[<span class="number">2</span>]))</span><br></pre></td></tr></table></figure>
+<h3 id="优先队列相关问题">优先队列相关问题</h3>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>中位数问题：</p>
+<blockquote>
+<p>一个小根堆，一个大根队来维护中位数</p>
+</blockquote>
+</li>
+<li class="lvl-2">
+<p>前 k 大问题</p>
+<blockquote>
+<p>一个 <strong>长度为 k</strong>  小根堆来维护</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="Python-的输入处理">Python 的输入处理</h2>
+<figure class="highlight python"><figcaption><span>fold title:快读</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="built_in">input</span> = sys.stdin.readline</span><br></pre></td></tr></table></figure>
+<ol>
+<li class="lvl-3">
+<p>单个读取：n = int(input())</p>
+</li>
+<li class="lvl-3">
+<p>一行读取：a = list(map(int, input().split()))</p>
+</li>
+<li class="lvl-3">
+<p>多行读取 每行一个元素：nums = [int(input()) for _ in range(n)]</p>
+</li>
+<li class="lvl-3">
+<p>多行读取 每行多个元素：nums = [list(map(int, input().split())) for _ in range(n)]</p>
+</li>
+</ol>
+<h3 id="Python-的输出处理">Python 的输出处理</h3>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>将字符串连接:</p>
+<ul class="lvl-2">
+<li class="lvl-4"><strong>‘m’.join(list)</strong>：将列表中的字符串用m连接起来</li>
+</ul>
+</li>
+<li class="lvl-2">
+<p>将列表中的元素先转化为 字符串再输出：</p>
+<ul class="lvl-2">
+<li class="lvl-4"><strong>‘m’.join(map(str, list))</strong>
+<ul class="lvl-4">
+<li class="lvl-6">map的意思是将list中的每一个元素都转化为字符</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="lvl-2">
+<p>格式化输出：</p>
+<ul class="lvl-2">
+<li class="lvl-4">print(f “{x : .2f}”) 保留两位小数</li>
+<li class="lvl-4">print(f&quot;{name} got {score} points.&quot;)</li>
+<li class="lvl-4">print(x, end = ’ ')</li>
+</ul>
+</li>
+</ul>
+<h2 id="多组测试">多组测试</h2>
+<figure class="highlight python"><figcaption><span>fold title:多组测试</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    <span class="keyword">try</span>:            </span><br><span class="line">    <span class="keyword">except</span> EOFError:  <span class="comment"># 输入结束时退出</span></span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">except</span> ValueError:  <span class="comment"># 无效输入时退出</span></span><br><span class="line">        <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+<h2 id="字典的操作">字典的操作</h2>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>基础map</p>
+</li>
+</ul>
+<figure class="highlight python"><figcaption><span>fold title:ma</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mp = &#123;&#125;</span><br><span class="line"><span class="comment"># 防止访问没有存在的字典，如果不存在 就返回 k</span></span><br><span class="line">mp.get(a[r], k)</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>更方便的map</p>
+</li>
+</ul>
+<figure class="highlight python"><figcaption><span>fold title:MAP</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> defaultdict</span><br><span class="line"><span class="comment"># 可以避免访问不存在的字典出现报错</span></span><br><span class="line">mp = defaultdict(<span class="built_in">int</span>)</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><strong>MAP去重离散化</strong></p>
+</li>
+</ul>
+<figure class="highlight python"><figcaption><span>fold title:离散化</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 排序 + 去重</span></span><br><span class="line"><span class="built_in">sorted</span>(<span class="built_in">set</span>(arr))</span><br><span class="line"><span class="comment"># enumerate 返回的是 (index, vavlue)</span></span><br><span class="line"><span class="comment"># 现在需要的是 key : index</span></span><br><span class="line"><span class="comment"># 所以需要 将 i, x 反转</span></span><br><span class="line">mp = &#123;x : i <span class="keyword">for</span> i , x <span class="keyword">in</span> <span class="built_in">enumerate</span>(<span class="built_in">sorted</span>(<span class="built_in">set</span>(arr)))&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="栈和队列">栈和队列</h2>
+<blockquote>
+<p>在 PY 中， 栈和队列都可以使用 deque(双端队列)来实现</p>
+</blockquote>
+<h3 id="栈">栈</h3>
+<figure class="highlight python"><figcaption><span>fold title:栈</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> deque</span><br><span class="line">stack = deque()</span><br><span class="line">stack.append(x)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 访问栈头</span></span><br><span class="line">top = stack[-<span class="number">1</span>]</span><br><span class="line">top = stack.pop()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 清空栈</span></span><br><span class="line">stack.clear()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="队列">队列</h3>
+<figure class="highlight python"><figcaption><span>fold title:队列</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> deque</span><br><span class="line">q = deque()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加入</span></span><br><span class="line">q.append(x)</span><br><span class="line">q.appendleft(x)</span><br><span class="line">q.insert(l, item)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 出队</span></span><br><span class="line">left = q.popleft()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="01-分数规划">01 分数规划</h2>
+<blockquote>
+<p>最大化 (∑a[i]) / (∑b[i])</p>
+</blockquote>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p><strong>二分 + 贪心</strong><br>
+设 X = (∑a[i]) / (∑b[i]) -&gt; ∑a[i] - X * ∑b[i] = 0<br>
+二分查找 X，看 X 对于 这个式子的影响是过大还是过小。</p>
+</li>
+</ul>
+<figure class="highlight python"><figcaption><span>fold title:浮点二分</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">l = <span class="number">0</span></span><br><span class="line">r = <span class="number">1e6</span></span><br><span class="line">eps = <span class="number">1e-6</span></span><br><span class="line"><span class="keyword">while</span> (r - l) &gt; eps:</span><br><span class="line">    mid = (r + l) / <span class="number">2</span></span><br><span class="line">    <span class="keyword">if</span> exam(mid):</span><br><span class="line">        l = mid</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        r = mid</span><br></pre></td></tr></table></figure>
+<h2 id="动态规划">动态规划</h2>
+<blockquote>
+<p>一定是 <strong>从最优 到 最优</strong></p>
+</blockquote>
+<blockquote>
+<p>计算当前节点时，统计需要的历史信息（dp的存储）</p>
+</blockquote>
+<h3 id="01-背包-完全背包">01 背包 / 完全背包</h3>
+<p><code>dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - w[i]] + v[i])</code></p>
+<blockquote>
+<p>一个是 价值 <strong>从小到大</strong>（完全背包）   一个是 价值 <strong>从大到小</strong>（01 背包）</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 01 背包</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n+<span class="number">1</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(C, w[i]-<span class="number">1</span>, -<span class="number">1</span>): </span><br><span class="line">        f[j] = <span class="built_in">max</span>(f[j], f[j - w[i]] + v[i])</span><br><span class="line"><span class="comment"># 完全背包</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n+<span class="number">1</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(C, w[i]-<span class="number">1</span>, -<span class="number">1</span>):</span><br><span class="line">        f[j] = <span class="built_in">max</span>(f[j], f[j - w[i]] + v[i])</span><br></pre></td></tr></table></figure>
+<h3 id="多重背包">多重背包</h3>
+<p>问题：每一个物品有 选择次数限制 s[i]</p>
+<blockquote>
+<p>使用二进制优化 转化成<strong>01</strong>背包</p>
+<p>将 <strong>s[i]</strong> 使用二进制进行拆分 (k * w, k * v) k是 2 的 n次方</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">new = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">	w, v, s = W[i], V[i], S[i]</span><br><span class="line">	k = <span class="number">1</span></span><br><span class="line">	<span class="keyword">while</span> k &lt; s:</span><br><span class="line">		new.append((w * k, v * k))</span><br><span class="line">		s -= k</span><br><span class="line">		k &lt;&lt;= <span class="number">1</span></span><br><span class="line">	<span class="keyword">if</span> s &gt; <span class="number">0</span>:</span><br><span class="line">		new.append((w * s, v * s))</span><br><span class="line">	<span class="comment"># 转化成新的 01 背包</span></span><br></pre></td></tr></table></figure>
+<h3 id="分组背包">分组背包</h3>
+<hr>
+<p>问题：分成 n 组，每一组 选 一个 的最大价值</p>
+<p><code>dp[i][j] = max(dp[i][j],dp[i - 1][j - w[i]] + v[i])</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> group <span class="keyword">in</span> groups:</span><br><span class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(V,-<span class="number">1</span>,-<span class="number">1</span>):</span><br><span class="line">		<span class="keyword">for</span> w,v <span class="keyword">in</span> group:</span><br><span class="line">			<span class="keyword">if</span> j &gt;= w:</span><br><span class="line">				f[j] = <span class="built_in">max</span>(f[j],f[j - w] + v)</span><br></pre></td></tr></table></figure>
+<h3 id="有依赖背包">有依赖背包</h3>
+<h3 id="树型DP">树型DP</h3>
+<h3 id="区间DP">区间DP</h3>
+<h2 id="数论">数论</h2>
+<h3 id="埃式筛">埃式筛</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">prime = []</span><br><span class="line">is_prime = [<span class="literal">True</span>] * (n + <span class="number">1</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>,n):</span><br><span class="line">    <span class="keyword">if</span> if_prime[i]:</span><br><span class="line">        prime.append(i)</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(i * i, n + <span class="number">1</span>, i):</span><br><span class="line">            is_prime[j] = <span class="literal">False</span></span><br><span class="line"><span class="keyword">return</span> prime</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="拆分因子">拆分因子</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ans = <span class="built_in">set</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">int</span>(n ** <span class="number">0.5</span>) + <span class="number">1</span>):</span><br><span class="line">    <span class="keyword">if</span> n % i == <span class="number">0</span>:</span><br><span class="line">        ans.add(i)</span><br><span class="line">        ans.add(n // i)</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">sorted</span>(ans)	</span><br></pre></td></tr></table></figure>
+<h4 id="因子预处理">因子预处理</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">fac = [[] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n + <span class="number">1</span>)]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n + <span class="number">1</span>):</span><br><span class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(i, n + <span class="number">1</span>, i):</span><br><span class="line">		fac[j].append(i)</span><br><span class="line"><span class="keyword">return</span> fac</span><br></pre></td></tr></table></figure>
+<h2 id="Python-解决字符串分割问题">Python 解决字符串分割问题</h2>
+<blockquote>
+<p>巧妙的使用 split(‘char’)</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="built_in">input</span>().strip()</span><br><span class="line"></span><br><span class="line">terms = s.split(<span class="string">&#x27;+&#x27;</span>)</span><br><span class="line"></span><br><span class="line">ans = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> fa <span class="keyword">in</span> terms:</span><br><span class="line">	s1 = fa.split(<span class="string">&#x27;*&#x27;</span>)</span><br><span class="line">	temp = <span class="number">1</span></span><br><span class="line">	<span class="keyword">for</span> fac <span class="keyword">in</span> s1:</span><br><span class="line">		<span class="keyword">if</span> fac:</span><br><span class="line">			temp *= <span class="built_in">int</span>(fac)</span><br><span class="line">	ans += temp</span><br><span class="line">		</span><br><span class="line">	</span><br></pre></td></tr></table></figure>
+<h2 id="字符串">字符串</h2>
+<h3 id="KMP">KMP</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># NEXT[I] 表示 前 i - 1 个元素的 最长前后缀匹配长度</span></span><br><span class="line"><span class="built_in">next</span> = [<span class="number">0</span>] * <span class="built_in">len</span>(s2) </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_next</span>(<span class="params">s2</span>):</span><br><span class="line">    n = <span class="built_in">len</span>(s2)</span><br><span class="line">    <span class="built_in">next</span>[<span class="number">0</span>] = -<span class="number">1</span></span><br><span class="line">    <span class="built_in">next</span>[<span class="number">1</span>] = <span class="number">0</span></span><br><span class="line">    i, cn = <span class="number">2</span>,<span class="number">0</span> <span class="comment"># cn 表示 i - 1 的next值</span></span><br><span class="line">    <span class="keyword">while</span> i &lt; n:</span><br><span class="line">        <span class="keyword">if</span> s2[i - <span class="number">1</span>] == s2[cn]:</span><br><span class="line">            <span class="built_in">next</span>[i++] = ++cn</span><br><span class="line">        <span class="keyword">elif</span> cn &gt; <span class="number">0</span>:</span><br><span class="line">            cn = <span class="built_in">next</span>[cn]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">next</span>[i++] = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">kmp</span>(<span class="params">s1, s2</span>):</span><br><span class="line">    n, m = <span class="built_in">len</span>(s1),<span class="built_in">len</span>(s2)</span><br><span class="line">    x, y = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">    get_next(s2)</span><br><span class="line">    <span class="keyword">while</span> x &lt; n <span class="keyword">and</span> y &lt; m:</span><br><span class="line">        <span class="keyword">if</span> s1[x] == s2[y]:</span><br><span class="line">            x += <span class="number">1</span></span><br><span class="line">            y += <span class="number">1</span></span><br><span class="line">        <span class="keyword">elif</span> y == <span class="number">0</span>:</span><br><span class="line">            x += <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            y = <span class="built_in">next</span>[y]</span><br><span class="line">            </span><br><span class="line">	</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="字典树">字典树</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">cnt = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">n, s <span class="comment"># n 表示 层, s 表示 种类</span></span><br><span class="line"><span class="comment"># 第一层什么不都存储，相当于空字符</span></span><br><span class="line">tree = [[<span class="number">0</span>]*s <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n)]</span><br><span class="line"><span class="comment"># pass 表示 每一个前缀的 访问次数</span></span><br><span class="line"><span class="keyword">pass</span> = [<span class="number">0</span>] * N </span><br><span class="line"><span class="comment"># end 表示 每一个字符串的结尾 访问次数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">insert</span>(<span class="params">word</span>):</span><br><span class="line">	cur = <span class="number">1</span></span><br><span class="line">    <span class="keyword">pass</span>[cur] += <span class="number">1</span> </span><br><span class="line">	<span class="keyword">for</span> x <span class="keyword">in</span> word:</span><br><span class="line">       	path = x - <span class="string">&#x27;a&#x27;</span></span><br><span class="line">        <span class="keyword">if</span> tree[cur][path] == <span class="number">0</span>:</span><br><span class="line">            tree[cur][path] = ++cnt</span><br><span class="line">        cur = tree[cur][path]</span><br><span class="line">        <span class="keyword">pass</span>[cur] += <span class="number">1</span></span><br><span class="line">    end[cur] += <span class="number">1</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">prenum</span>(<span class="params">pre</span>):</span><br><span class="line">    cur = <span class="number">1</span></span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> pre:</span><br><span class="line">        path = x - <span class="string">&#x27;a&#x27;</span></span><br><span class="line">        <span class="keyword">if</span> tree[cur][path] == <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">        cur = tree[cur][path]</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">pass</span>[cur]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">word</span>):</span><br><span class="line">    <span class="keyword">if</span> prenum(word) &gt; <span class="number">0</span>:</span><br><span class="line">        cur = <span class="number">1</span></span><br><span class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> word:</span><br><span class="line">            path = x - <span class="string">&#x27;a&#x27;</span></span><br><span class="line">            <span class="keyword">pass</span>[tree[cur][path]] -= <span class="number">1</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">pass</span>[tree[cur][path]] == <span class="number">0</span>:</span><br><span class="line">            	tree[cur][path] = <span class="number">0</span></span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            cur = tree[cur][path]</span><br><span class="line">        end[cur] -= <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h3 id="Dijkstra">Dijkstra</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> heapq</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dj</span>(<span class="params">n, g, start</span>):</span><br><span class="line">    dist = [<span class="built_in">float</span>(<span class="string">&#x27;inf&#x27;</span>)] * n</span><br><span class="line">    dist[start] = <span class="number">0</span></span><br><span class="line">    heap = [(<span class="number">0</span>,start)]</span><br><span class="line">    <span class="keyword">while</span> heap:</span><br><span class="line">        d, u = heapq.heappop(heap)</span><br><span class="line">        <span class="keyword">if</span> d &gt; dist[u]:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">for</span> v, w <span class="keyword">in</span> g[u]:</span><br><span class="line">            <span class="keyword">if</span> dist[v] &gt; dist[u] + w:</span><br><span class="line">                dist[v] = dist[u] + w</span><br><span class="line">                heapq.heappush(heap,(dist[v],v))</span><br><span class="line">     <span class="keyword">return</span> dist</span><br><span class="line">	</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</div><div class="article-licensing box"><div class="licensing-title"><p>PYTHON 算法学习</p><p><a href="http://whalefall.fun/2025/03/24/PYTHON算法学习/">http://whalefall.fun/2025/03/24/PYTHON算法学习/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><a href="http://whalefall.fun"><p>Jiely</p></a></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2025-03-24</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-06-18</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="recommend-area"><div class="recommend-post"><span class="is-size-6 has-text-grey has-mr-7"># 相关文章</span><br><span>  1.<a class="is-size-6" href="/2025/05/06/%E7%AE%97%E6%B3%95%E6%9D%BF%E5%AD%90/" target="_blank">算法知识册</a><br></span><span>  2.<a class="is-size-6" href="/2025/04/17/%E7%AE%97%E6%B3%95%E4%B9%8B%E7%BE%8E/" target="_blank">算法之美</a><br></span><span>  3.<a class="is-size-6" href="/2025/04/15/ACM%E9%9B%86%E8%AE%AD%E9%A2%98/" target="_blank">ACM集训题</a><br></span><span>  4.<a class="is-size-6" href="/2025/03/25/%E8%80%81%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/" target="_blank">老算法笔记</a><br></span></div></div><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/css/share.min.css"><div class="social-share"></div><script src="https://cdnjs.loli.net/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script></article></div><!--!--><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level-item  link-muted" href="/2025/03/25/%E5%8D%9A%E5%AE%A2%E5%BC%80%E7%AB%AF/"><i class="fas fa-chevron-left"></i><span>第一个博客！新的世界！</span></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="is-flex is-mobile" href="#"><span class="mr-2">1</span><span>知识点完成情况</span></a></li><li><a class="is-flex is-mobile" href="#"><span class="mr-2">2</span><span>PY 笔记</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#递归"><span class="mr-2">2.1</span><span>递归</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#DFS-和-BFS-的实现"><span class="mr-2">2.1.1</span><span>DFS 和 BFS 的实现</span></a></li></ul></li><li><a class="is-flex is-mobile" href="#PY中的DP-缓存"><span class="mr-2">2.2</span><span>PY中的DP 缓存</span></a></li><li><a class="is-flex is-mobile" href="#PY-内置函数"><span class="mr-2">2.3</span><span>PY 内置函数</span></a></li><li><a class="is-flex is-mobile" href="#Deque-队列"><span class="mr-2">2.4</span><span>Deque(队列)</span></a></li><li><a class="is-flex is-mobile" href="#排序算法"><span class="mr-2">2.5</span><span>排序算法</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#基础排序"><span class="mr-2">2.5.1</span><span>基础排序</span></a></li><li><a class="is-flex is-mobile" href="#快排"><span class="mr-2">2.5.2</span><span>快排</span></a></li></ul></li><li><a class="is-flex is-mobile" href="#建树"><span class="mr-2">2.6</span><span>建树</span></a></li><li><a class="is-flex is-mobile" href="#二分查找"><span class="mr-2">2.7</span><span>二分查找</span></a></li><li><a class="is-flex is-mobile" href="#三分"><span class="mr-2">2.8</span><span>三分</span></a></li><li><a class="is-flex is-mobile" href="#分治常见题目"><span class="mr-2">2.9</span><span>分治常见题目</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#解决最近曼哈顿距离"><span class="mr-2">2.9.1</span><span>解决最近曼哈顿距离</span></a></li></ul></li><li><a class="is-flex is-mobile" href="#优先队列-heapq"><span class="mr-2">2.10</span><span>优先队列 heapq</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#优先队列-自定义排序结构"><span class="mr-2">2.10.1</span><span>优先队列 自定义排序结构</span></a></li><li><a class="is-flex is-mobile" href="#优先队列相关问题"><span class="mr-2">2.10.2</span><span>优先队列相关问题</span></a></li></ul></li><li><a class="is-flex is-mobile" href="#Python-的输入处理"><span class="mr-2">2.11</span><span>Python 的输入处理</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#Python-的输出处理"><span class="mr-2">2.11.1</span><span>Python 的输出处理</span></a></li></ul></li><li><a class="is-flex is-mobile" href="#多组测试"><span class="mr-2">2.12</span><span>多组测试</span></a></li><li><a class="is-flex is-mobile" href="#字典的操作"><span class="mr-2">2.13</span><span>字典的操作</span></a></li><li><a class="is-flex is-mobile" href="#栈和队列"><span class="mr-2">2.14</span><span>栈和队列</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#栈"><span class="mr-2">2.14.1</span><span>栈</span></a></li><li><a class="is-flex is-mobile" href="#队列"><span class="mr-2">2.14.2</span><span>队列</span></a></li></ul></li><li><a class="is-flex is-mobile" href="#01-分数规划"><span class="mr-2">2.15</span><span>01 分数规划</span></a></li><li><a class="is-flex is-mobile" href="#动态规划"><span class="mr-2">2.16</span><span>动态规划</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#01-背包-完全背包"><span class="mr-2">2.16.1</span><span>01 背包 / 完全背包</span></a></li><li><a class="is-flex is-mobile" href="#多重背包"><span class="mr-2">2.16.2</span><span>多重背包</span></a></li><li><a class="is-flex is-mobile" href="#分组背包"><span class="mr-2">2.16.3</span><span>分组背包</span></a></li><li><a class="is-flex is-mobile" href="#有依赖背包"><span class="mr-2">2.16.4</span><span>有依赖背包</span></a></li><li><a class="is-flex is-mobile" href="#树型DP"><span class="mr-2">2.16.5</span><span>树型DP</span></a></li><li><a class="is-flex is-mobile" href="#区间DP"><span class="mr-2">2.16.6</span><span>区间DP</span></a></li></ul></li><li><a class="is-flex is-mobile" href="#数论"><span class="mr-2">2.17</span><span>数论</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#埃式筛"><span class="mr-2">2.17.1</span><span>埃式筛</span></a></li><li><a class="is-flex is-mobile" href="#因子预处理"><span class="mr-2">2.17.2</span><span>因子预处理</span></a></li></ul></li><li><a class="is-flex is-mobile" href="#Python-解决字符串分割问题"><span class="mr-2">2.18</span><span>Python 解决字符串分割问题</span></a></li><li><a class="is-flex is-mobile" href="#字符串"><span class="mr-2">2.19</span><span>字符串</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#KMP"><span class="mr-2">2.19.1</span><span>KMP</span></a></li><li><a class="is-flex is-mobile" href="#字典树"><span class="mr-2">2.19.2</span><span>字典树</span></a></li><li><a class="is-flex is-mobile" href="#Dijkstra"><span class="mr-2">2.19.3</span><span>Dijkstra</span></a></li></ul></li></ul></li></ul></div></div><style>.menu-list > li > a.is-active + .menu-list { display: block; }.menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.jpg" alt="Jiely"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">Jiely</p><p class="is-size-6 is-block">ACMer and AI</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives/"><p class="title">16</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories/"><p class="title">6</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags/"><p class="title">10</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/pa-her0" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/pa-her0"><i class="fab fa-github"></i></a></div><div><hr><p id="hitokoto">:D 一言句子获取中...</p><script type="text/javascript" defer>function getYiyan(){
+                                $.getJSON("https://v1.hitokoto.cn/", function (data) {
+                                if(data){
+                                    $('#hitokoto').html("");
+                                    $('#hitokoto').append("<strong style='color: #3273dc;'>"+data.hitokoto+"</strong>"+
+                                    "<p>"+"来源《"+data.from+"》</p><p>提供者-"+data.creator+"</p>");
+                                }});}
+                                $(function (){getYiyan();$('#hitokoto').click(function(){getYiyan();})});</script></div></div></div><div class="card widget"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><figure class="media-left"><a class="image" href="/2025/06/19/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0-%E7%8E%8B%E9%81%93%E8%80%83%E7%A0%94/"><img src="/img/linux.png" alt="操作系统笔记 --王道考研"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-06-19T10:05:38.000Z">2025-06-19</time></p><p class="title"><a href="/2025/06/19/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0-%E7%8E%8B%E9%81%93%E8%80%83%E7%A0%94/">操作系统笔记 --王道考研</a></p><p class="categories"><a href="/categories/%E5%AD%A6%E4%B9%A0/">学习</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/06/14/YOLO/"><img src="img/yolo.png" alt="基于YOLO的神经网络剪枝"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-06-14T03:36:33.000Z">2025-06-14</time></p><p class="title"><a href="/2025/06/14/YOLO/">基于YOLO的神经网络剪枝</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/06/10/Codeforces/"><img src="/img/cf.png" alt="Codeforces"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-06-10T08:30:48.000Z">2025-06-10</time></p><p class="title"><a href="/2025/06/10/Codeforces/">Codeforces</a></p><p class="categories"><a href="/categories/Codeforces/">Codeforces</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/06/10/%E7%89%9B%E5%AE%A2%E8%B5%9B/"><img src="/img/newcode2.png" alt="牛客赛"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-06-10T08:30:25.000Z">2025-06-10</time></p><p class="title"><a href="/2025/06/10/%E7%89%9B%E5%AE%A2%E8%B5%9B/">牛客赛</a></p><p class="categories"><a href="/categories/%E7%89%9B%E5%AE%A2/">牛客</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/05/21/Obisidian%20to%20Typora/"><img src="/img/obisidian.png" alt="Obisidian to Typora"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-05-21T15:33:28.000Z">2025-05-21</time></p><p class="title"><a href="/2025/05/21/Obisidian%20to%20Typora/">Obisidian to Typora</a></p><p class="categories"><a href="/categories/%E7%94%9F%E6%B4%BB/">生活</a></p></div></article></div></div><div class="column-right-shadow is-hidden-widescreen"></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/Y1.png" alt="🦖" height="28"></a><p class="size-small"><span>&copy; 2025 Jiely</span>  Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank">Icarus</a> &amp; <a href="https://github.com/removeif/hexo-theme-amazing" target="_blank">Amazing</a> <br><span><span id="statistic-times">loading...</span><script>function createTime(time) {
+            var n = new Date(time);
+            now.setTime(now.getTime() + 250),
+                days = (now - n) / 1e3 / 60 / 60 / 24,
+                dnum = Math.floor(days),
+                hours = (now - n) / 1e3 / 60 / 60 - 24 * dnum,
+                hnum = Math.floor(hours),
+            1 == String(hnum).length && (hnum = "0" + hnum),
+                minutes = (now - n) / 1e3 / 60 - 1440 * dnum - 60 * hnum,
+                mnum = Math.floor(minutes),
+            1 == String(mnum).length && (mnum = "0" + mnum),
+                seconds = (now - n) / 1e3 - 86400 * dnum - 3600 * hnum - 60 * mnum,
+                snum = Math.round(seconds),
+            1 == String(snum).length && (snum = "0" + snum),
+                document.getElementById("statistic-times").innerHTML = "❤️本站自 <strong>"+time.split(" ")[0].replace(/\//g,".")+"</strong> 已运行 <strong>" + dnum + "</strong> 天 <strong>" + hnum + "</strong> 小时 <strong>" + mnum + "</strong> 分 <strong>" + snum + "</strong> 秒！❤️";
+        }var now = new Date();setInterval("createTime('2025/4/14 16:35:00')", 250,"");</script><br></span><div class="size-small"><span>❤️感谢 <strong><span id="busuanzi_value_site_uv">99+</span></strong> 小伙伴的 <strong><span id="busuanzi_value_site_pv">99+</span></strong> 次光临！❤️</span></div></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/pa-her0"><i class="fab fa-github"></i></a></p></div><div class="sideMusic"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="/js/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script><meting-js style="width: auto;height: 2000px;" server="netease" type="playlist" id="13584583094" theme="#2980b9" loop="all" autoplay="false" order="list" storageName="aplayer-setting" lrctype="0" list-max-height="400px" fixed="true"></meting-js></div></div></div></div></footer><script src="https://cdnjs.loli.net/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script><script src="https://cdnjs.loli.net/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" async></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdnjs.loli.net/ajax/libs/lightgallery/1.10.0/js/lightgallery.min.js" defer></script><script src="https://cdnjs.loli.net/ajax/libs/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><link rel="stylesheet" href="https://cdnjs.loli.net/ajax/libs/KaTeX/0.15.1/katex.min.css"><script src="https://cdnjs.loli.net/ajax/libs/KaTeX/0.15.1/katex.min.js" defer></script><script src="https://cdnjs.loli.net/ajax/libs/KaTeX/0.15.1/contrib/auto-render.min.js" defer></script><script src="https://cdnjs.loli.net/ajax/libs/KaTeX/0.15.1/contrib/mhchem.min.js" defer></script><script>window.addEventListener("load", function() {
+            document.querySelectorAll('[role="article"] > .content').forEach(function(element) {
+                renderMathInElement(element);
+            });
+        });</script><script type="text/javascript" id="MathJax-script" async>MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      },
+      chtml: {
+        matchFontHeight: false
+      }
+    };</script><script src="https://cdnjs.loli.net/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script data-pjax src="/js/insight.js" defer></script><script data-pjax>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.js"></script><script type="text/javascript">var pjax = new Pjax({
+            elements: "a",//代表点击链接就更新
+            selectors: [  //代表要更新的节点
+                ".section",
+                "title"
+            ],
+            cache: true,
+            cacheBust:false
+        })
+
+        function loadBusuanzi(){
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js", function () {});
+        }
+
+        function loadMathJax() { //加载mathjax
+            $.getScript("//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML", function () {
+                MathJax.Hub.Config({ tex2jax: { inlineMath: [['$', '$'], ['\(', '\)']] } });
+                var math = document.getElementsByClassName("entry-content")[0];
+                MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);
+            });
+        };
+
+        // 开始 PJAX 执行的函数
+        document.addEventListener('pjax:send', function () {
+        });
+        
+        // PJAX 完成之后执行的函数，可以和上面的重载放在一起
+        document.addEventListener('pjax:complete', function () {
+            $(".section").css({opacity:1});
+            if(false){
+                $.getScript('/js/comment-issue-data.js',function(){loadIssueData('undefined','undefined','undefined','undefined',undefined);});
+            }
+            if(false){
+                loadMathJax();
+            }
+            loadMainJs(jQuery, window.moment, window.ClipboardJS, window.IcarusThemeSettings);
+            loadBackTop();
+            loadBusuanzi();
+            if(typeof loadBanner == 'function'){
+                loadBanner();
+            }
+        });</script></body></html>
