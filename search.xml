@@ -11,6 +11,18 @@
         <content type="html"><![CDATA[<blockquote class="alert alert-note"><p>这是针对于暑假的一些任务安排，也是发个博客督促一下自己</p></blockquote><span id="more"></span><h2 id="任务安排">任务安排</h2><ul class="lvl-0"><li class="lvl-2"><p>针对于 <strong>并行化(MPI)</strong> 的学习 – 截止7月20日</p></li><li class="lvl-2"><p>算法学习 + 一个月的算法训练营 – 截止开学</p></li><li class="lvl-2"><p>FPGA开发版的学习(有时间的话)</p></li></ul>]]></content>
       
       
+      <categories>
+          
+          <category> 计划 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计划 </tag>
+            
+        </tags>
       
     </entry>
     
@@ -58,7 +70,7 @@
       
         <tags>
             
-            <tag> 学习 </tag>
+            <tag> 日常学习 </tag>
             
         </tags>
       
@@ -277,7 +289,7 @@
       
         <tags>
             
-            <tag> 学习 </tag>
+            <tag> 日常学习 </tag>
             
         </tags>
       
@@ -427,7 +439,7 @@
       
         <tags>
             
-            <tag> 花式 </tag>
+            <tag> 算法 </tag>
             
         </tags>
       
