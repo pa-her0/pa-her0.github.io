@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>情绪传播机制--Mechanism of emotion diffusion - 🦖</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="🦖"><meta name="msapplication-TileImage" content="/img/Whale.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="🦖"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="查找学习关于&amp;quot;人工网络中的情绪传播机制&amp;quot;,以下是两篇我阅读学习的文献 --精读的很烂,太浮躁了,没有脚踏&amp;gt; 实地的去读,如果内容有问题,请多包涵 ：）"><meta property="og:type" content="article"><meta property="og:title" content="情绪传播机制--Mechanism of emotion diffusion"><meta property="og:url" content="http://whalefall.fun/2025/07/05/%E6%83%85%E7%BB%AA%E4%BC%A0%E6%92%AD%E6%9C%BA%E5%88%B6-Mechanism-of-emotion-diffusion/"><meta property="og:site_name" content="🦖"><meta property="og:description" content="查找学习关于&amp;quot;人工网络中的情绪传播机制&amp;quot;,以下是两篇我阅读学习的文献 --精读的很烂,太浮躁了,没有脚踏&amp;gt; 实地的去读,如果内容有问题,请多包涵 ：）"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://dns.whalefall.fun/wenxian2_1.png"><meta property="article:published_time" content="2025-07-05T11:54:27.000Z"><meta property="article:modified_time" content="2025-07-05T12:17:57.119Z"><meta property="article:author" content="Jiely"><meta property="article:tag" content="科研"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://dns.whalefall.fun/wenxian2_1.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://whalefall.fun/2025/07/05/%E6%83%85%E7%BB%AA%E4%BC%A0%E6%92%AD%E6%9C%BA%E5%88%B6-Mechanism-of-emotion-diffusion/"},"headline":"情绪传播机制--Mechanism of emotion diffusion","image":["https://dns.whalefall.fun/wenxian2_1.png"],"datePublished":"2025-07-05T11:54:27.000Z","dateModified":"2025-07-05T12:17:57.119Z","author":{"@type":"Person","name":"Jiely"},"publisher":{"@type":"Organization","name":"🦖","logo":{"@type":"ImageObject","url":{"light":"/img/drange2.png","dark":"/img/ex4.png"}}},"description":"查找学习关于&quot;人工网络中的情绪传播机制&quot;,以下是两篇我阅读学习的文献 --精读的很烂,太浮躁了,没有脚踏&gt; 实地的去读,如果内容有问题,请多包涵 ：）"}</script><link rel="canonical" href="http://whalefall.fun/2025/07/05/%E6%83%85%E7%BB%AA%E4%BC%A0%E6%92%AD%E6%9C%BA%E5%88%B6-Mechanism-of-emotion-diffusion/"><link rel="alternate" href="/atom.xml" title="🦖" type="application/atom+xml"><link rel="icon" href="/img/Whale.png"><link rel="stylesheet" href="/css/font/fontawesome/css/all.min.css"><link data-pjax rel="stylesheet" href="/js/imaegoo/highlight.js/11.7.0/styles/tokyo-night-dark.css"><link data-pjax rel="stylesheet" href="/css/default.css"><!--!--><!--!--><script src="https://vercount.one/js" defer></script><link rel="stylesheet" href="/js/imaegoo/lightgallery/1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="/js/imaegoo/justifiedGallery/3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-RCCCLYKRH5" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-RCCCLYKRH5');</script><!--!--><!--!--><link rel="stylesheet" href="/js/imaegoo/cookieconsent/3.1.1/build/cookieconsent.min.css"><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><body class="is-2-column"><script type="text/javascript" src="/js/imaegoo/night.js"></script><canvas id="universe"></canvas><style>
+                    /* 针对桌面端 (desktop) 视口，设置最大宽度 */
+                    @media screen and (min-width: 1024px) {
+                        .container {
+                            max-width: 900px !important; /* 进一步调整为更小的宽度 */
+                        }
+                    }
+                    /* 针对宽屏 (widescreen) 视口，设置最大宽度 */
+                    @media screen and (min-width: 1216px) {
+                        .container {
+                            max-width: 1000px !important; /* 进一步调整为更小的宽度 */
+                        }
+                    }
+                    /* 针对全高清 (fullhd) 视口，设置最大宽度 */
+                    @media screen and (min-width: 1408px) {
+                        .container {
+                            max-width: 1100px !important; /* 进一步调整为更小的宽度 */
+                        }
+                    }
+                </style><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img class="logo-img" src="/img/drange2.png" alt="🦖" height="28"><img class="logo-img-dark" src="/img/ex4.png" alt="🦖" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives/">时间轴</a><a class="navbar-item" href="/categories/">分类</a><a class="navbar-item" href="/tags/">标签</a><a class="navbar-item" href="/about/">关于</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i><span>  目录</span></a><a class="navbar-item night" id="night-nav" title="Night Mode" href="javascript:;"><i class="fas fa-moon" id="night-icon"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-10-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2025-07-05T11:54:27.000Z" title="2025/7/5 19:54:27">2025-07-05</time>发表</span><span class="level-item"><time dateTime="2025-07-05T12:17:57.119Z" title="2025/7/5 20:17:57">2025-07-05</time>更新</span><span class="level-item"><a class="link-muted" href="/categoriehexo-theme-claudias/%E7%A7%91%E7%A0%94/">科研</a></span><span class="level-item">14 分钟读完 (大约2114个字)</span><span class="level-item leancloud_visitors" id="/2025/07/05/%E6%83%85%E7%BB%AA%E4%BC%A0%E6%92%AD%E6%9C%BA%E5%88%B6-Mechanism-of-emotion-diffusion/" data-flag-title="情绪传播机制--Mechanism of emotion diffusion"><i class="far fa-eye"></i>&nbsp;&nbsp;<span id="twikoo_visitors"><i class="fa fa-spinner fa-spin"></i></span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">情绪传播机制--Mechanism of emotion diffusion</h1><div class="content"><blockquote class="alert alert-note">
+<p>查找学习关于&quot;人工网络中的情绪传播机制&quot;,以下是两篇我阅读学习的文献 --精读的很烂,太浮躁了,没有脚踏&gt; 实地的去读,如果内容有问题,请多包涵 ：）</p>
+</blockquote>
+<span id="more"></span>
+<h1>An agent-based model for emotion contagion and competition in online social media</h1>
+<h2 id="项目目的">项目目的</h2>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>综合 “情绪相关性”,“情绪传播与网络结构的耦合性”</p>
+</li>
+<li class="lvl-2">
+<p>提出了一个&quot;结合情绪影响力和联系强度偏好的特征&quot;的情绪传染模型</p>
+</li>
+</ul>
+<h2 id="网络结构基本信息">网络结构基本信息</h2>
+<p>采用推特上面的真实数据集构建的有向网络结构</p>
+<ol>
+<li class="lvl-3">
+<p>节点: 推特账户</p>
+</li>
+<li class="lvl-3">
+<p>边: 账号关注的有向边</p>
+</li>
+<li class="lvl-3">
+<p>边权重: 关系强度(共同好友, 互相关注, 互相转发量)</p>
+</li>
+<li class="lvl-3">
+<p>信息列表: (发送方id + 带有情绪 i 的文章)</p>
+</li>
+</ol>
+<h2 id="信息传播关键步骤">信息传播关键步骤</h2>
+<ol>
+<li class="lvl-3">
+<p>推文发表通过一个固定的概率 P 进行决定是否发表, P是通过真实数据集计算得来, 文章在发表的时候会赋予情绪, 不会随着转发的改变而改变</p>
+</li>
+<li class="lvl-3">
+<p>推文转发如果没有发送推文, 用户会在 信息列表中查询,如果 t(转发倾向) 大于阈值 t0,就会将文章进行转发</p>
+</li>
+<li class="lvl-3">
+<p>推文接收如果用户收到关注用户的推文,会将推文放置信息列表中,如果信息列表长度已满会删除最早放置列表中的推文<br>
+<img src="https://dns.whalefall.fun/wenxian1_1.png" alt=""></p>
+</li>
+</ol>
+<h2 id="相关计算公式">相关计算公式</h2>
+<ol>
+<li class="lvl-3">
+<p>t(转发倾向) = 边权重 * 情绪相关性可以通过调整情绪相关性来控制不同的情绪在网络中的传播范围)</p>
+</li>
+<li class="lvl-3">
+<p>文章的情绪是由固定的概率给出的(推特的数据集总结)</p>
+</li>
+<li class="lvl-3">
+<p>文章的发表也是固定的概率给出</p>
+</li>
+</ol>
+<h2 id="信息的关键流程">信息的关键流程</h2>
+<ol>
+<li class="lvl-3">
+<p>随机选择用户 U<br>
+2.1 $P$ 概率选择推文发送,发送至所有关注者<br>
+2.2 $1-P$ 概率选择查看信息列表,然后检查是否需要进行推文转发,转发给所有关注者</p>
+</li>
+</ol>
+<h1>Agent-Based Simulations of Emotional Dialogs in the Online Social Network MySpace</h1>
+<h2 id="研究内容和目的">研究内容和目的</h2>
+<p>通过模拟社交网络,理解在线社交网络的传播机制在线社交网络中的情绪传播不是随机的，它受到网络结构、用户活动情绪本身特性的影响, 可以进行迁移, 但是相关参数需要从网络的相关数据集中进行推断</p>
+<h2 id="网络结构基本信息-2">网络结构基本信息</h2>
+<p>来自MySpace 社交网络中用户之间公开可用的对话数据集<br>
+<img src="https://dns.whalefall.fun/wenxian2_1.png" alt=""></p>
+<ol>
+<li class="lvl-3">
+<p>节点:表示社交软件的用户</p>
+</li>
+<li class="lvl-3">
+<p>边: 用户发送消息的有向边</p>
+</li>
+<li class="lvl-3">
+<p>边的权重: 表示发送消息的数量</p>
+</li>
+<li class="lvl-3">
+<p>情感变量(基于心理学罗素模型): 效价 V (情绪的消极或者积极程度[-1,1]), 唤醒度 a (情绪引发的活动水平(活跃性)[0,1]),两者都会随时间的变化而变化(布朗代理)<br>
+$$<br>
+v_{i}(t+1) = (1 - \gamma_a) v_{i}(t) + \delta_{\theta_i,1} \mathcal{F}<em>v(t)<br>
+$$<br>
+$$<br>
+a</em>{i}(t+1) = (1 - \gamma_a) a_{i}(t) + \delta_{\theta_i,1} \mathcal{F}<em>a(t)<br>
+$$<br>
+相关概念: $\gamma_a, \gamma_a表示实验固定常数, \delta</em>{\theta_i,1} 表示 delta 函数(取0,1), \mathcal{F}_a(t),\mathcal{F}_v(t)表示非线性函数,捕获信息墙如何影响情绪$</p>
+</li>
+<li class="lvl-3">
+<p>信息墙影响函数:</p>
+</li>
+</ol>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>效价驱动函数<br>
+$$<br>
+\mathcal{F}<em>v(t) = [(1-q)h_i^v(t) + qh</em>{mf}^v(t)] \times [c_1 + c_2(v_i(t) - v_i^3(t))][1 - |v_i(t)|]<br>
+$$</p>
+</li>
+</ul>
+<p>$$<br>
+\mathcal{F}<em>a(t) = {(1-q)[\epsilon h_i^a(t) + (1-\epsilon)\overline{h}<em>i^a(t)] + qh</em>{mf}^a(t)}[1 - a_i(t)]<br>
+$$<br>
+相关概念:$h</em>{mf}平均场信息,h_i^v(t)自身墙效价信,c1,c2,q为固定常数$</p>
+<p>即情感越接近极端，其对相同强度的外部刺激的响应可能越趋于平缓,当 $V_i(t) 趋向于 0, 这一项的影响最大, 如果 V_i(t) 情绪极端, 趋向于 1,情绪墙的影响就小$</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>唤醒度驱动函数</p>
+</li>
+</ul>
+<ol start="6">
+<li class="lvl-3">
+<p>活动状态 e (0|1): 是否处于活跃状态(根据 Myspace 设置的时间钟有关)</p>
+</li>
+</ol>
+<h2 id="三种聚合情绪信息存储">三种聚合情绪信息存储:</h2>
+<ol>
+<li class="lvl-3">
+<p>自身墙信息 $h_i^z(t)$(包括 $h_i<sup>v(t),h_i</sup>a(t)$: 自己收到的情绪信息进行聚合计算 – 体现自己收到的消息的情绪<br>
+$$<br>
+h_{i}^{z}(t) = \frac{\sum_{j}\sum_{m\in M_{ji}}\theta(t,t_{m})z_{j}(t_{m})W_{ji}e<sup>{-\gamma</sup>{h}(t_{ji}^{lm}-t_{m})}}{\sum_{j}\sum_{m\in M_{ji}}\theta(t,t_{m})W_{ji}e<sup>{-\gamma</sup>{h}(t_{ji}<sup>{lm}-t_{m})}}e</sup>{-\gamma<sup>{h}(t-t_{ji}</sup>{lm})}<br>
+$$<br>
+相关概念:</p>
+</li>
+</ol>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>$z 代表效价 v 或唤醒度 a$</p>
+</li>
+<li class="lvl-2">
+<p>$M_{ji} 是从代理 j 到代理 i 的消息序列$</p>
+</li>
+<li class="lvl-2">
+<p>$\theta(t,t_m) 是 Heaviside阶梯函数，确保消息影响从创建时间 t_m 开始,超过范围自动设置为0$</p>
+</li>
+<li class="lvl-2">
+<p>$z_j(t_m) 是发送者 j 在消息创建时间 t_m 的情绪内容(效价V或者唤醒度a,取决于你计算的是哪一个的聚合信息)$</p>
+</li>
+<li class="lvl-2">
+<p>$W_{ji} 是从 j 到 i 的有向链接的权重$</p>
+</li>
+<li class="lvl-2">
+<p>$\gamma^h 是信息影响的衰减率$</p>
+</li>
+<li class="lvl-2">
+<p>$t_{ji}^{lm} 是发送到代理 i 墙上的最后一条消息的时间$</p>
+</li>
+<li class="lvl-2">
+<p>$e<sup>{-\gamma</sup>{h}(t-t_{ji}^{lm})}$其实是用来表示 过去情绪会随着时间的增加而消散</p>
+</li>
+</ul>
+<ol start="2">
+<li class="lvl-3">
+<p>朋友墙信息 $\overline{h}_i^a(t)$: 朋友收到的情绪信息进行聚合计算 – “羊群效应,别人的情绪可能也会影响自己”</p>
+</li>
+</ol>
+<p>$$<br>
+\overline{h}<em>{i}^{a}(t) = \frac{\sum</em>{j}W_{ij}h_{j}<sup>{a}(t)(1+h_{j}</sup>{v}(t)v_{i}(t))}{\sum_{j}W_{ij}(1+h_{j}^{v}(t)v_{i}(t))}<br>
+$$<br>
+相关概念:</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>$W_{i,j}表示链接权重$</p>
+</li>
+<li class="lvl-2">
+<p>$h_j^v(t) 和 V_i(t) 越相近,乘积越大, 朋友的情绪对自己的影响更大$</p>
+</li>
+</ul>
+<ol start="3">
+<li class="lvl-3">
+<p>平均场信息 h3: 网络社区的普遍情绪进行聚合计算</p>
+</li>
+</ol>
+<h2 id="情绪列表更新规则">情绪列表更新规则</h2>
+<ol>
+<li class="lvl-3">
+<p>效价 V 受到 $h_i^V(t)$影响, 唤醒度 a 受到 $h_i^v(t), h_i^a(t), \overline{h}_{i}^{a}(t)$影响</p>
+</li>
+<li class="lvl-3">
+<p>外部重置: 外部影响导致部分代理人情绪重置 – 存在 $P_0$ 的概率重置,持续随机出现</p>
+</li>
+<li class="lvl-3">
+<p>V,A是受信息墙影响的,如果没有更为强烈的强许信息,V, a 会趋向平静(0,0)</p>
+</li>
+</ol>
+<h2 id="消息传播机制">消息传播机制</h2>
+<p><img src="https://dns.whalefall.fun/11111.png" alt=""></p>
+<ol>
+<li class="lvl-3">
+<p>消息发送</p>
+</li>
+</ol>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>节点处于活跃状态</p>
+</li>
+<li class="lvl-2">
+<p>发送概率 W = 唤醒度 a * P(Myspace 数据集得来)</p>
+</li>
+<li class="lvl-2">
+<p>发送人选择: 概率选择$(h_{ij}(i和j的情绪聚合,j给 i带来的情绪价值) + h_j^v(t) 和 v_i(t)相关$)</p>
+</li>
+</ul>
+<p>$$<br>
+h_{ji}^{a}(t)=\frac{\sum_{m\in M_{ji}}\Theta(t,t_{m})a_{j}(t_{m})e<sup>{-\gamma</sup>{h}(t_{ji}^{lm}-t_{m})}}{\sum_{m\in M_{ji}}\Theta(t,t_{m})e<sup>{-\gamma</sup>{h}(t_{ji}<sup>{lm}-t_{m})}}e</sup>{-\gamma<sup>{h}(t-t_{ji}</sup>{lm})}<br>
+$$</p>
+<p>$$<br>
+s_{j}(t) = \omega^{\prime} \left[ \beta \frac{W_{ij}h_{ji}^{a}(t)}{\sum_{k}W_{ik}} + (1-\beta) \frac{W_{ji}h_{ji}<sup>{a}(t)(1+h_{j}</sup>{v}(t)v_{i}(t))}{\sum_{k}W_{ik}(1+h_{k}^{v}(t)v_{i}(t))} \right]<br>
+$$</p>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>消息内容为 (效价 V, 唤醒度 a)</p>
+</li>
+</ul>
+<ol start="2">
+<li class="lvl-3">
+<p>消息接受</p>
+</li>
+</ol>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>接受人接受消息会将消息带来的情绪放置自身情绪墙中</p>
+</li>
+</ul>
+<h2 id="模型的运行机制">模型的运行机制:</h2>
+<ol>
+<li class="lvl-3">
+<p>先计算每个代理人列表的最新信息 – 更新自身情绪价值(V, a, 聚合情绪信息)</p>
+</li>
+<li class="lvl-3">
+<p>随机重置一些代理人的情绪(模拟外部刺激)</p>
+</li>
+<li class="lvl-3">
+<p>判断哪些代理状态为&quot;在线&quot;,并且活跃状态 – 在线状态根据 Myspace 数据集的经验得到的分布<br>
+4.1 活跃代理会根据规则更新自己的情绪列表<br>
+4.2 活跃代理会发送消息,并选择接受者(经常联系的人) --会发送情绪信息(效价 V 和 唤醒度 a)</p>
+</li>
+</ol>
+<h2 id="实验结果">实验结果</h2>
+<h3 id="模拟情绪和实际数据集情绪比较">模拟情绪和实际数据集情绪比较</h3>
+<p><img src="https://dns.whalefall.fun/wenxian2_3.png" alt=""><br>
+深色是 真实数据集, 灰色是模拟情绪, 存在统一单调性,情绪分布一致</p>
+<p><img src="https://dns.whalefall.fun/wenxian2_2.png" alt=""><br>
+斜率(0.5 ~ 1) 表示长期相关性当 s 变大的时候(长时间尺度),N_c-Data(真实数据集)和 N_c-ABM(模拟数据集)的斜率一致, clcle 表示对照实验,如果没有外部影响,斜率不可估计,没有长期相关性(不会时间的变化而改变,而是收到事件的长期影响,表明情绪不是随机传播然后消散,而是能够持续影响,形成集体情绪状态)</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>情绪传播机制--Mechanism of emotion diffusion</p><p><a href="http://whalefall.fun/2025/07/05/情绪传播机制-Mechanism-of-emotion-diffusion/">http://whalefall.fun/2025/07/05/情绪传播机制-Mechanism-of-emotion-diffusion/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>Jiely</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2025-07-05</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-07-05</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E7%A7%91%E7%A0%94/">科研</a></div><!--!--></article></div><!--!--><div class="card"><nav class="post-navigation mt-4 level is-mobile card-content"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2025/06/29/Summer/"><span class="level-item">Summer</span><i class="level-item fas fa-chevron-right"></i></a></div></nav></div><div class="card" id="comments"><div class="card-content"><h3 class="title is-5">评论</h3><script src="https://utteranc.es/client.js" repo="pa-her0/utteranc_comment" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script></div></div></div><style>.column.column-left,.column.column-right{display:none}</style><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget is-sticky" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="is-flex is-mobile" href="#"><span class="mr-2">1</span><span>An agent-based model for emotion contagion and competition in online social media</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#项目目的"><span class="mr-2">1.1</span><span>项目目的</span></a></li><li><a class="is-flex is-mobile" href="#网络结构基本信息"><span class="mr-2">1.2</span><span>网络结构基本信息</span></a></li><li><a class="is-flex is-mobile" href="#信息传播关键步骤"><span class="mr-2">1.3</span><span>信息传播关键步骤</span></a></li><li><a class="is-flex is-mobile" href="#相关计算公式"><span class="mr-2">1.4</span><span>相关计算公式</span></a></li><li><a class="is-flex is-mobile" href="#信息的关键流程"><span class="mr-2">1.5</span><span>信息的关键流程</span></a></li></ul></li><li><a class="is-flex is-mobile" href="#"><span class="mr-2">2</span><span>Agent-Based Simulations of Emotional Dialogs in the Online Social Network MySpace</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#研究内容和目的"><span class="mr-2">2.1</span><span>研究内容和目的</span></a></li><li><a class="is-flex is-mobile" href="#网络结构基本信息-2"><span class="mr-2">2.2</span><span>网络结构基本信息</span></a></li><li><a class="is-flex is-mobile" href="#三种聚合情绪信息存储"><span class="mr-2">2.3</span><span>三种聚合情绪信息存储:</span></a></li><li><a class="is-flex is-mobile" href="#情绪列表更新规则"><span class="mr-2">2.4</span><span>情绪列表更新规则</span></a></li><li><a class="is-flex is-mobile" href="#消息传播机制"><span class="mr-2">2.5</span><span>消息传播机制</span></a></li><li><a class="is-flex is-mobile" href="#模型的运行机制"><span class="mr-2">2.6</span><span>模型的运行机制:</span></a></li><li><a class="is-flex is-mobile" href="#实验结果"><span class="mr-2">2.7</span><span>实验结果</span></a><ul class="menu-list"><li><a class="is-flex is-mobile" href="#模拟情绪和实际数据集情绪比较"><span class="mr-2">2.7.1</span><span>模拟情绪和实际数据集情绪比较</span></a></li></ul></li></ul></li></ul></div></div><style>.menu-list > li > a.is-active + .menu-list { display: block; }.menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.jpg" alt="Jiely"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">Jiely</p><p class="is-size-6 is-block">ACMer and AI</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives/"><p class="title">19</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories/"><p class="title">8</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags/"><p class="title">12</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/pa-her0" target="_blank" rel="me noopener" id="widget-follow">GitHub</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="me noopener" title="Github" href="https://github.com/pa-her0"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><figure class="media-left"><a class="image" href="/2025/07/05/%E6%83%85%E7%BB%AA%E4%BC%A0%E6%92%AD%E6%9C%BA%E5%88%B6-Mechanism-of-emotion-diffusion/"><img src="https://dns.whalefall.fun/wenxian2_1.png" alt="情绪传播机制--Mechanism of emotion diffusion"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-07-05T11:54:27.000Z">2025-07-05</time></p><p class="title"><a href="/2025/07/05/%E6%83%85%E7%BB%AA%E4%BC%A0%E6%92%AD%E6%9C%BA%E5%88%B6-Mechanism-of-emotion-diffusion/">情绪传播机制--Mechanism of emotion diffusion</a></p><p class="categories"><a href="/categoriehexo-theme-claudias/%E7%A7%91%E7%A0%94/">科研</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/06/29/Summer/"><img src="https://dns.whalefall.fun/WechatIMG42.jpg" alt="Summer"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-06-29T03:33:40.000Z">2025-06-29</time></p><p class="title"><a href="/2025/06/29/Summer/">Summer</a></p><p class="categories"><a href="/categoriehexo-theme-claudias/%E8%AE%A1%E5%88%92/">计划</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/06/29/%E6%AF%9B%E6%A6%82%E5%A4%8D%E4%B9%A0%EF%BC%88%E5%85%A8%E9%9D%A2%E7%89%88%EF%BC%89/"><img src="/img/fuxi.png" alt="毛概复习（全面版）"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-06-29T03:05:48.000Z">2025-06-29</time></p><p class="title"><a href="/2025/06/29/%E6%AF%9B%E6%A6%82%E5%A4%8D%E4%B9%A0%EF%BC%88%E5%85%A8%E9%9D%A2%E7%89%88%EF%BC%89/">毛概复习（全面版）</a></p><p class="categories"><a href="/categoriehexo-theme-claudias/%E6%97%A5%E5%B8%B8%E5%AD%A6%E4%B9%A0/">日常学习</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/06/19/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0-%E7%8E%8B%E9%81%93%E8%80%83%E7%A0%94/"><img src="/img/linux.png" alt="操作系统笔记 --王道考研"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-06-19T10:05:38.000Z">2025-06-19</time></p><p class="title"><a href="/2025/06/19/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0-%E7%8E%8B%E9%81%93%E8%80%83%E7%A0%94/">操作系统笔记 --王道考研</a></p><p class="categories"><a href="/categoriehexo-theme-claudias/%E6%97%A5%E5%B8%B8%E5%AD%A6%E4%B9%A0/">日常学习</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/06/17/%E7%AE%97%E6%B3%95%E4%B9%8B%E7%BE%8E/"><img src="/img/ACM.png" alt="算法之美"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-06-17T05:44:43.000Z">2025-06-17</time></p><p class="title"><a href="/2025/06/17/%E7%AE%97%E6%B3%95%E4%B9%8B%E7%BE%8E/">算法之美</a></p><p class="categories"><a href="/categoriehexo-theme-claudias/%E7%AE%97%E6%B3%95/">算法</a></p></div></article></div></div></div><!--!--><style>.column.column-left,.column.column-right{display:block}</style></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img class="logo-img" src="/img/drange2.png" alt="🦖" height="28"><img class="logo-img-dark" src="/img/ex4.png" alt="🦖" height="28"></a><p class="is-size-7"><span>&copy; 2025 Jiely</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/imaegoo/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">总访问量&nbsp;<span id="busuanzi_value_site_pv">-</span>&nbsp;次&nbsp;&nbsp;总访客数&nbsp;<span id="busuanzi_value_site_uv">-</span>&nbsp;人</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/deed.zh"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="/js/imaegoo/jquery/3.3.1/dist/jquery.min.js"></script><script src="/js/imaegoo/moment/2.22.2/min/moment-with-locales.min.js"></script><script src="/js/imaegoo/clipboard/2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script data-pjax src="/js/column.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script data-pjax src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="/js/imaegoo/lightgallery/1.10.0/dist/js/lightgallery.min.js" defer></script><script src="/js/imaegoo/justifiedGallery/3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><link rel="stylesheet" href="/js/imaegoo/katex/0.15.1/dist/katex.min.css"><script src="/js/imaegoo/katex/0.15.1/dist/katex.min.js" defer></script><script src="/js/imaegoo/katex/0.15.1/dist/contrib/auto-render.min.js" defer></script><script src="/js/imaegoo/katex/0.15.1/dist/contrib/mhchem.min.js" defer></script><script>window.addEventListener("load", function() {
+            document.querySelectorAll('[role="article"] > .content').forEach(function(element) {
+                renderMathInElement(element);
+            });
+        });</script><script src="/js/imaegoo/cookieconsent/3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-right",
+        content: {
+          message: "此网站使用 Cookie，以启用评论系统和分析功能。",
+          dismiss: "知道了",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "/cookies/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script data-pjax src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><div class="searchbox-pinyin"><label class="checkbox"><input id="search-by-pinyin" type="checkbox" checked="checked"><span> 拼音检索</span></label></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/imaegoo/pinyin.js" defer></script><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script><script type="text/javascript" src="/js/imaegoo/imaegoo.js"></script><script type="text/javascript" src="/js/imaegoo/universe.js"></script></body></html>
