@@ -92,7 +92,7 @@
     bannerEl.className = 'third-party-link-banner';
     var descEl = document.createElement('div');
     descEl.className = 'third-party-link-desc';
-    descEl.innerText = '您即将离开虹墨空间站，打开第三方页面： ' + href;
+    descEl.innerText = '您即将离开Jiely的小屋，打开第三方页面： ' + href;
     var btnGroupEl = document.createElement('div');
     btnGroupEl.className = 'third-party-link-btn-group';
     var btnCancelEl = document.createElement('button');
