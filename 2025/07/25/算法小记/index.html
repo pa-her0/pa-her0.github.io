@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>算法小记 - 🦖</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="🦖"><meta name="msapplication-TileImage" content="/img/Whale.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="🦖"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="对最近的自己的一些问题的总结"><meta property="og:type" content="article"><meta property="og:title" content="算法小记"><meta property="og:url" content="http://whalefall.fun/2025/07/25/%E7%AE%97%E6%B3%95%E5%B0%8F%E8%AE%B0/"><meta property="og:site_name" content="🦖"><meta property="og:description" content="对最近的自己的一些问题的总结"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://dns.whalefall.fun/zijian1.png"><meta property="article:published_time" content="2025-07-25T13:25:49.000Z"><meta property="article:modified_time" content="2025-07-25T16:08:44.320Z"><meta property="article:author" content="Jiely"><meta property="article:tag" content="算法"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="https://dns.whalefall.fun/zijian1.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://whalefall.fun/2025/07/25/%E7%AE%97%E6%B3%95%E5%B0%8F%E8%AE%B0/"},"headline":"算法小记","image":["https://dns.whalefall.fun/zijian1.png"],"datePublished":"2025-07-25T13:25:49.000Z","dateModified":"2025-07-25T16:08:44.320Z","author":{"@type":"Person","name":"Jiely"},"publisher":{"@type":"Organization","name":"🦖","logo":{"@type":"ImageObject","url":{"light":"/img/drange.png","dark":"/img/ex4.png"}}},"description":"对最近的自己的一些问题的总结"}</script><link rel="canonical" href="http://whalefall.fun/2025/07/25/%E7%AE%97%E6%B3%95%E5%B0%8F%E8%AE%B0/"><link rel="alternate" href="/atom.xml" title="🦖" type="application/atom+xml"><link rel="icon" href="/img/Whale.png"><link rel="stylesheet" href="/css/font/fontawesome/css/all.min.css"><link data-pjax rel="stylesheet" href="/js/imaegoo/highlight.js/11.7.0/styles/tokyo-night-dark.css"><link data-pjax rel="stylesheet" href="/css/default.css"><!--!--><!--!--><script src="https://vercount.one/js" defer></script><link rel="stylesheet" href="/js/imaegoo/lightgallery/1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="/js/imaegoo/justifiedGallery/3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-RCCCLYKRH5" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-RCCCLYKRH5');</script><!--!--><link rel="stylesheet" href="/js/imaegoo/cookieconsent/3.1.1/build/cookieconsent.min.css"><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><head><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"></head><body class="is-2-column"><script type="text/javascript" src="/js/imaegoo/night.js"></script><canvas id="universe"></canvas><style>
+                    @media screen and (min-width: 1024px) {
+                        .container {
+                            max-width: 900px !important;
+                        }
+                    }
+                    @media screen and (min-width: 1216px) {
+                        .container {
+                            max-width: 1000px !important;
+                        }
+                    }
+                    @media screen and (min-width: 1408px) {
+                        .container {
+                            max-width: 1100px !important;
+                        }
+                    }
+                </style><nav class="navbar navbar-main"><div class="container navbar-container" style="paddingLeft:2rem;paddingRight:2rem;"><div class="navbar-brand"><a class="navbar-item navbar-logo" href="/"><img class="logo-img" src="/img/drange.png" alt="🦖" height="28"><img class="logo-img-dark" src="/img/ex4.png" alt="🦖" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives/">时间轴</a><a class="navbar-item" href="/categories/">分类</a><a class="navbar-item" href="/tags/">标签</a><a class="navbar-item" href="/about/">关于</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i><span>  目录</span></a><a class="navbar-item night" id="night-nav" title="Night Mode" href="javascript:;"><i class="fas fa-moon" id="night-icon"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-10-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2025-07-25T13:25:49.000Z" title="2025/7/25 21:25:49">2025-07-25</time>发表</span><span class="level-item"><time dateTime="2025-07-25T16:08:44.320Z" title="2025/7/26 00:08:44">2025-07-26</time>更新</span><span class="level-item"><a class="link-muted" href="/categoriehexo-theme-claudias/%E7%94%9F%E6%B4%BB/">生活</a></span><span class="level-item">4 分钟读完 (大约595个字)</span><span class="level-item leancloud_visitors" id="/2025/07/25/%E7%AE%97%E6%B3%95%E5%B0%8F%E8%AE%B0/" data-flag-title="算法小记"><i class="far fa-eye"></i>&nbsp;&nbsp;<span id="twikoo_visitors"><i class="fa fa-spinner fa-spin"></i></span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">算法小记</h1><div class="content"><blockquote class="alert alert-note">
+<p>对最近的自己的一些问题的总结</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="做题问题">做题问题</h2>
+<p>感觉一直都有一种感觉,如果我一开始有思路或者感觉可以做的题目,我才有攻克的愿望,但是对于那些没有什么思路甚至题目都没怎么看懂的题目,我有一种难以行动的感觉,感觉很难静下心去攻克一道题目,有点急于求成了,还是需要一个安静且不能过分舒适的环境,在自己很舒适的环境下,难以控制自己,不由自主的就会去干一些无意义的事情,影响自己思路,感觉这个问题是我现在最迫切急需解决的问题。</p>
+<h2 id="论文问题">论文问题</h2>
+<p>针对于看论文的问题,我在以前的心得中写过不少,主要是针对于看论文的时候存在的一些问题的,但是我现在还是要检讨一下自己的态度问题,对于英文有一种原始的畏惧感,不能很静下心来去看文章,容易使用 AI 翻译,但是其实有一些单词我们没有看懂影响不大的,主要是文章的核心意思,就和高中的阅读理解一样,我们不能太依赖翻译,AI的帮助,因为如果我们需要自己创新的话,是很难依靠别人的。</p>
+<h2 id="最近问题总结">最近问题总结</h2>
+<p>首先就是做草稿和看文章的问题,我的ipad感觉没怎么用,然后现在还没有会员了,我连笔记软件都用不了了,但是我现在思考一个问题,就是我的笔记软件要不要续费的问题,但是其实现在我大部分做笔记都是用电脑做笔记,对于做草稿还是喜欢用纸质的纸(所以我网购了500张A4纸),哎,主要还是心态问题,感觉没有一个平稳的心态,做什么效率都很低。</p>
+<h2 id="附加日常">附加日常</h2>
+<p>最近生活很紧凑,特别紧凑,让我对放假的定义都变得不太清晰,感觉活的不明不白,总是忙里偷闲,一忙里偷闲我就感觉这一天都荒废了😭<sup>…</sup></p>
+<p>压力很大…希望想小狗一样开心…</p>
+<p><img src="https://dns.whalefall.fun/zijian2.png" alt=""></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>算法小记</p><p><a href="http://whalefall.fun/2025/07/25/算法小记/">http://whalefall.fun/2025/07/25/算法小记/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>Jiely</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2025-07-25</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-07-26</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E7%AE%97%E6%B3%95/">算法</a></div><!--!--></article></div><!--!--><div class="card"><nav class="post-navigation mt-4 level is-mobile card-content"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2025/07/25/%E7%89%9B%E5%AE%A2%E5%A4%9A%E6%A0%A1/"><span class="level-item">牛客多校2025</span><i class="level-item fas fa-chevron-right"></i></a></div></nav></div><div class="card" id="comments"><div class="card-content"><h3 class="title is-5">评论</h3><div class="content twikoo" id="twikoo"></div><script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script><script>twikoo.init({
+            envId: 'https://visionary-gecko-25af79.netlify.app/.netlify/functions/twikoo',
+            
+            lang: "zh-CN",
+            onCommentLoaded: function () {
+              var commentContents = document.getElementsByClassName('tk-content');
+              for (var i = 0; i < commentContents.length; i++) {
+                var commentItem = commentContents[i];
+                var imgEls = commentItem.getElementsByTagName('img');
+                if (imgEls.length > 0) {
+                  for (var j = 0; j < imgEls.length; j++) {
+                    var imgEl = imgEls[j];
+                    var aEl = document.createElement('a');
+                    aEl.setAttribute('class', 'tk-lg-link');
+                    aEl.setAttribute('href', imgEl.getAttribute('src'));
+                    aEl.setAttribute('data-src', imgEl.getAttribute('src'));
+                    aEl.appendChild(imgEl.cloneNode(false));
+                    imgEl.parentNode.insertBefore(aEl, imgEl.nextSibling);
+                    imgEl.remove();
+                  }
+                  if (typeof $.fn.lightGallery === 'function') {
+                    $(commentItem).lightGallery({
+                      selector: '.tk-lg-link'
+                    });
+                  }
+                }
+                handleThirdPartyLink && handleThirdPartyLink(commentItem);
+              }
+            }
+        });</script></div></div></div><style>.column.column-left,.column.column-right{display:none}</style><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1 is-sticky"><div class="card widget is-sticky" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="is-flex is-mobile" href="#做题问题"><span class="mr-2">1</span><span>做题问题</span></a></li><li><a class="is-flex is-mobile" href="#论文问题"><span class="mr-2">2</span><span>论文问题</span></a></li><li><a class="is-flex is-mobile" href="#最近问题总结"><span class="mr-2">3</span><span>最近问题总结</span></a></li><li><a class="is-flex is-mobile" href="#附加日常"><span class="mr-2">4</span><span>附加日常</span></a></li></ul></div></div><style>.menu-list > li > a.is-active + .menu-list { display: block; }.menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.jpg" alt="Jiely"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">Jiely</p><p class="is-size-6 is-block">ACMer and AI</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>China</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives/"><p class="title">25</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories/"><p class="title">8</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags/"><p class="title">12</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/pa-her0" target="_blank" rel="me noopener" id="widget-follow">GitHub</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="me noopener" title="Github" href="https://github.com/pa-her0"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><figure class="media-left"><a class="image" href="/2025/07/25/%E7%AE%97%E6%B3%95%E5%B0%8F%E8%AE%B0/"><img src="https://dns.whalefall.fun/zijian1.png" alt="算法小记"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-07-25T13:25:49.000Z">2025-07-25</time></p><p class="title"><a href="/2025/07/25/%E7%AE%97%E6%B3%95%E5%B0%8F%E8%AE%B0/">算法小记</a></p><p class="categories"><a href="/categoriehexo-theme-claudias/%E7%94%9F%E6%B4%BB/">生活</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/07/25/%E7%89%9B%E5%AE%A2%E5%A4%9A%E6%A0%A1/"><img src="/img/newcode2.png" alt="牛客多校2025"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-07-25T08:49:45.000Z">2025-07-25</time></p><p class="title"><a href="/2025/07/25/%E7%89%9B%E5%AE%A2%E5%A4%9A%E6%A0%A1/">牛客多校2025</a></p><p class="categories"><a href="/categoriehexo-theme-claudias/%E7%89%9B%E5%AE%A2/">牛客</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/07/21/%E5%BF%83%E5%BE%97-7-21/"><img src="https://dns.whalefall.fun/note1.jpg" alt="心得-7.21"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-07-21T14:19:58.000Z">2025-07-21</time></p><p class="title"><a href="/2025/07/21/%E5%BF%83%E5%BE%97-7-21/">心得-7.21</a></p><p class="categories"><a href="/categoriehexo-theme-claudias/%E7%A7%91%E7%A0%94/">科研</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/07/16/%E5%BF%83%E5%BE%97-7-16/"><img src="https://dns.whalefall.fun/note1.jpg" alt="心得-7.18"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-07-16T09:35:26.000Z">2025-07-16</time></p><p class="title"><a href="/2025/07/16/%E5%BF%83%E5%BE%97-7-16/">心得-7.18</a></p><p class="categories"><a href="/categoriehexo-theme-claudias/%E7%A7%91%E7%A0%94/">科研</a></p></div></article><article class="media"><figure class="media-left"><a class="image" href="/2025/07/12/GAN%E5%AF%B9%E6%8A%97%E7%94%9F%E6%88%90%E7%BD%91%E7%BB%9C/"><img src="https://dns.whalefall.fun/GAN1.png" alt="生成式对抗网络-GAN"></a></figure><div class="media-content"><p class="date"><time dateTime="2025-07-12T09:33:47.000Z">2025-07-12</time></p><p class="title"><a href="/2025/07/12/GAN%E5%AF%B9%E6%8A%97%E7%94%9F%E6%88%90%E7%BD%91%E7%BB%9C/">生成式对抗网络-GAN</a></p><p class="categories"><a href="/categoriehexo-theme-claudias/%E7%A7%91%E7%A0%94/">科研</a></p></div></article></div></div></div><!--!--><style>.column.column-left,.column.column-right{display:block}</style></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img class="logo-img" src="/img/drange.png" alt="🦖" height="28"><img class="logo-img-dark" src="/img/ex4.png" alt="🦖" height="28"></a><p class="is-size-7"><span>&copy; 2025 Jiely</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/imaegoo/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">总访问量&nbsp;<span id="busuanzi_value_site_pv">-</span>&nbsp;次&nbsp;&nbsp;总访客数&nbsp;<span id="busuanzi_value_site_uv">-</span>&nbsp;人</span></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/deed.zh"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="/js/imaegoo/jquery/3.3.1/dist/jquery.min.js"></script><script src="/js/imaegoo/moment/2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script><script src="/js/imaegoo/clipboard/2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script data-pjax src="/js/column.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script data-pjax src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="/js/imaegoo/lightgallery/1.10.0/dist/js/lightgallery.min.js" defer></script><script src="/js/imaegoo/justifiedGallery/3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script src="/js/imaegoo/cookieconsent/3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-right",
+        content: {
+          message: "此网站使用 Cookie，以启用评论系统和分析功能。",
+          dismiss: "知道了",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "/cookies/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script data-pjax src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><div class="searchbox-pinyin"><label class="checkbox"><input id="search-by-pinyin" type="checkbox" checked="checked"><span> 拼音检索</span></label></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/imaegoo/pinyin.js" defer></script><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script><script type="text/javascript" src="/js/imaegoo/imaegoo.js"></script><script type="text/javascript" src="/js/imaegoo/universe.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js">
+                            document.addEventListener("DOMContentLoaded", function() {
+                                renderMathInElement(document.body, {
+                                    delimiters: [
+                                        {left: "$$", right: "$$", display: true},
+                                        {left: "$", right: "$", display: false}
+                                    ]
+                                });
+                            });
+                        </script></body></html>
