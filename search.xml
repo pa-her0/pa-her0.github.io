@@ -8,7 +8,7 @@
       <link href="/2025/07/27/GCN-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/"/>
       <url>/2025/07/27/GCN-%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/</url>
       
-        <content type="html"><![CDATA[<blockquote><p>卷积神经网络(Convolutional Neural Network, CNN)是一种前馈神经网络,它的人工神经元组形成网格状的拓扑,与生物神经网络相似。卷积神经网络利用线性代数中的卷积运算来提取输入数据的局部特征,并通过池化运算来减少特征维度,从而提高模型的泛化能力。本文章将用来讲解卷积神经网络以及python实现过程😚</p></blockquote><span id="more"></span><h1>核心概念</h1><p>卷积神经网络的核心公式</p>]]></content>
+        <content type="html"><![CDATA[<blockquote><p>图卷积神经网络(Graph Convolutional Network, GCN)是一种前馈神经网络,它的人工神经元组形成网格状的拓扑,与生物神经网络相似。图卷积神经网络利用线性代数中的卷积运算来提取输入数据的局部特征,并通过池化运算来减少特征维度,从而提高模型的泛化能力。本文章将用来讲解图卷积神经网络以及python实现过程😚</p></blockquote><span id="more"></span><h1>核心概念</h1><p>卷积神经网络的核心公式</p>]]></content>
       
       
       <categories>
