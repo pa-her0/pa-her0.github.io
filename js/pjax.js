@@ -53,5 +53,5 @@
         // TODO pace stop loading animation
     });
 
-    document.addEventListener('DOMContentLoaded', () => initPjax());
+    // document.addEventListener('DOMContentLoaded', () => initPjax());
 }());
