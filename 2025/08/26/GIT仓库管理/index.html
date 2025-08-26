@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>GIT仓库管理 - 霸王龙的小窝🦖</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="霸王龙的小窝🦖"><meta name="msapplication-TileImage" content="/img/Whale.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="霸王龙的小窝🦖"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="针对于GIT进行仓库管理,一个很重要有意义的工具.(分布式管理工具)"><meta property="og:type" content="article"><meta property="og:title" content="GIT仓库管理"><meta property="og:url" content="http://whalefall.fun/2025/08/26/GIT%E4%BB%93%E5%BA%93%E7%AE%A1%E7%90%86/"><meta property="og:site_name" content="霸王龙的小窝🦖"><meta property="og:description" content="针对于GIT进行仓库管理,一个很重要有意义的工具.(分布式管理工具)"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="http://whalefall.fun/images/og_image.png"><meta property="article:published_time" content="2025-08-26T09:39:43.000Z"><meta property="article:modified_time" content="2025-08-26T12:52:45.733Z"><meta property="article:author" content="Jiely"><meta property="article:tag" content="日常学习"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://whalefall.fun/images/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://whalefall.fun/2025/08/26/GIT%E4%BB%93%E5%BA%93%E7%AE%A1%E7%90%86/"},"headline":"GIT仓库管理","image":["http://whalefall.fun/images/og_image.png"],"datePublished":"2025-08-26T09:39:43.000Z","dateModified":"2025-08-26T12:52:45.733Z","author":{"@type":"Person","name":"Jiely"},"publisher":{"@type":"Organization","name":"霸王龙的小窝🦖","logo":{"@type":"ImageObject","url":{"light":"/img/JIELY.png","dark":"/img/JIELY.png"}}},"description":"针对于GIT进行仓库管理,一个很重要有意义的工具.(分布式管理工具)"}</script><link rel="canonical" href="http://whalefall.fun/2025/08/26/GIT%E4%BB%93%E5%BA%93%E7%AE%A1%E7%90%86/"><link rel="alternate" href="/atom.xml" title="霸王龙的小窝🦖" type="application/atom+xml"><link rel="icon" href="/img/Whale.png"><link rel="stylesheet" href="/css/font/fontawesome/css/all.min.css"><link data-pjax rel="stylesheet" href="/js/imaegoo/highlight.js/11.7.0/styles/tokyo-night-dark.css"><link data-pjax rel="stylesheet" href="/css/default.css"><style>
+                /* 主要容器圆角 */
+                .card, .box, .notification {
+                    border-radius: 12px;
+                }
+                
+                /* 文章卡片 */
+                .card-content, .media, .timeline-item {
+                    border-radius: 8px;
+                }
+                
+                /* 导航栏 */
+                .navbar {
+                    border-radius: 0 0 12px 12px;
+                }
+                
+                /* 侧边栏组件 */
+                .widget, .menu-list a {
+                    border-radius: 8px;
+                }
+                
+                /* 按钮 */
+                .button {
+                    border-radius: 6px;
+                }
+                
+                /* 输入框 */
+                .input, .textarea, .select select {
+                    border-radius: 6px;
+                }
+                
+                /* 代码块 */
+                pre, code {
+                    border-radius: 6px;
+                }
+                
+                /* 引用块 */
+                blockquote {
+                    border-radius: 0 8px 8px 0;
+                }
+                
+                /* 图片 */
+                img {
+                    border-radius: 8px;
+                }
+                
+                /* 标签 */
+                .tag {
+                    border-radius: 12px;
+                }
+                
+                /* 分页器 */
+                .pagination-link, .pagination-previous, .pagination-next {
+                    border-radius: 6px;
+                }
+                
+                /* 评论区域 */
+                .comments {
+                    border-radius: 12px;
+                }
+                
+                /* 目录 */
+                .toc {
+                    border-radius: 8px;
+                }
+                
+                /* Mac风格的轻微阴影效果 */
+                .card {
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                    transition: box-shadow 0.3s ease;
+                }
+                
+                .card:hover {
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+                }
+            </style><!--!--><!--!--><script src="https://vercount.one/js" defer></script><link rel="stylesheet" href="/js/imaegoo/lightgallery/1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="/js/imaegoo/justifiedGallery/3.8.1/dist/css/justifiedGallery.min.css"><script src="https://www.googletagmanager.com/gtag/js?id=G-RCCCLYKRH5" async></script><script>window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        gtag('config', 'G-RCCCLYKRH5');</script><!--!--><link rel="stylesheet" href="/js/imaegoo/cookieconsent/3.1.1/build/cookieconsent.min.css"><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const id = '#' + CSS.escape(location.hash.substring(1));
+          const $tabMenu = document.querySelector(`.tabs a[href="${id}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(id);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"></head><head><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"></head><body class="is-2-column"><script type="text/javascript" src="/js/imaegoo/night.js"></script><canvas id="universe"></canvas><style>
+                    @media screen and (min-width: 1024px) {
+                        .container {
+                            max-width: 900px !important;
+                        }
+                    }
+                    @media screen and (min-width: 1216px) {
+                        .container {
+                            max-width: 1000px !important;
+                        }
+                    }
+                    @media screen and (min-width: 1408px) {
+                        .container {
+                            max-width: 1100px !important;
+                        }
+                    }
+                </style><nav class="navbar navbar-main"><div class="container navbar-container" style="paddingLeft:0.25rem;paddingRight:0.5rem;"><div class="navbar-brand" style="marginLeft:-2rem;"><a class="navbar-item navbar-logo" href="/"><img class="logo-img" src="/img/JIELY.png" alt="霸王龙的小窝🦖" height="28"><img class="logo-img-dark" src="/img/JIELY.png" alt="霸王龙的小窝🦖" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">首页</a><a class="navbar-item" href="/archives/">时间轴</a><a class="navbar-item" href="/categories/">分类</a><a class="navbar-item" href="/tags/">标签</a><a class="navbar-item" href="/about/">关于</a></div><div class="navbar-end"><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i><span>  目录</span></a><a class="navbar-item night" id="night-nav" title="Night Mode" href="javascript:;"><i class="fas fa-moon" id="night-icon"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-10-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2025-08-26T09:39:43.000Z" title="8/26/2025, 5:39:43 PM">2025-08-26</time>发表</span><span class="level-item"><time dateTime="2025-08-26T12:52:45.733Z" title="8/26/2025, 8:52:45 PM">2025-08-26</time>更新</span><span class="level-item"><a class="link-muted" href="/categoriehexo-theme-claudias/%E6%97%A5%E5%B8%B8%E5%AD%A6%E4%B9%A0/">日常学习</a></span><span class="level-item">5 分钟读完 (大约816个字)</span><span class="level-item leancloud_visitors" id="/2025/08/26/GIT%E4%BB%93%E5%BA%93%E7%AE%A1%E7%90%86/" data-flag-title="GIT仓库管理"><i class="far fa-eye"></i>&nbsp;&nbsp;<span id="twikoo_visitors"><i class="fa fa-spinner fa-spin"></i></span>次访问</span></div></div><h1 class="title is-3 is-size-4-mobile">GIT仓库管理</h1><div class="content"><blockquote class="alert alert-note">
+<p>针对于GIT进行仓库管理,一个很重要有意义的工具.(分布式管理工具)</p>
+</blockquote>
+<span id="more"></span>
+<p>我一直不喜欢用这种命令行式的操作,因为我感觉这种操作很耽误时间,就是感觉有比较大的学习成本,然后命令行中总是报一些奇怪的错误,但是我最近感觉命令式的操作其实是一个必须的工具,因为GUI界面有一些问题是不能解决的,因为它有一层外壳,然后在后面的学习还是工作中,这种工程式的项目管理手段也是必须的.</p>
+<h2 id="GIT的核心流程">GIT的核心流程</h2>
+<ol>
+<li class="lvl-3">
+<p>仓库初始化在你指定的文件夹目录下进行 <code>init</code> 操作,相当于将你这个仓库是进行了GIT管理,你可以将这个仓库push到你的服务器或者托管平台基本语法:</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
+<p>或者你复制别人github上或者远端服务器上的文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone /path/to/repository</span><br><span class="line">git clone username@host:/path/to/repository</span><br></pre></td></tr></table></figure>
+<h3 id="工作流">工作流</h3>
+<p>本地仓库其实是由Git维护的<strong>三棵树</strong>,第一个是<strong>工作目录(文件实际位置)</strong>,第二个是<strong>暂存区(Index)<strong>临时保存更改,第三个是</strong>Head</strong>,指向最后一次提交</p>
+<ol>
+<li class="lvl-3">
+<p>添加和修改将更改的问题添加到暂存区.</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add &lt;filename&gt; \\ </span><br><span class="line">git add * \\ </span><br><span class="line">git add .</span><br></pre></td></tr></table></figure>
+<p>提交更改</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit -m &quot;提交信息&quot;</span><br></pre></td></tr></table></figure>
+<p>这个是上传到了HEAD位置,但是并没有上传到<strong>远端仓库</strong></p>
+<ol start="2">
+<li class="lvl-3">
+<p>推送改动如果你的更改已经存储到仓库的HEAD中,可以执行以下操作将HEAD中的更改提交到远端仓库中</p>
+</li>
+</ol>
+<p>已经有远端仓库的情况下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin master(指定分支)</span><br></pre></td></tr></table></figure>
+<p>如果是想要将当前的仓库连接到某个远程服务器中:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin &lt;server&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="分支">分支</h3>
+<p>其实分支是 GIT的一个重要特性,进行分布式开发,然后将它们合并到主分支上</p>
+<ol>
+<li class="lvl-3">
+<p>创建分支并且切换到分支:</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b new_branch</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li class="lvl-3">
+<p>切换回主分支</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout master</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li class="lvl-3">
+<p>删除分支</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch -d new_branch</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li class="lvl-3">
+<p>将分支上传到远端仓库</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin &lt;branch&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="更新与合并">更新与合并</h3>
+<p>这个是GIT的一个非常重要的操作</p>
+<ol>
+<li class="lvl-3">
+<p>更新本地仓库到最新改动</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li class="lvl-3">
+<p>合并其他分支到你当前的分支</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git merge &lt;branch&gt;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li class="lvl-3">
+<p><strong>合并冲突</strong><br>
+上面的合并操作都可能发生合并冲突,针对于冲突文件</p>
+</li>
+</ol>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>将它们标记为合并成功</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git add &lt;filename&gt;</span><br></pre></td></tr></table></figure>
+<ul class="lvl-0">
+<li class="lvl-2">
+<p>在合并改动之前你还可以查看文件差异</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git diff &lt;source_branch&gt; &lt;target_branch&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="GIT实际运用">GIT实际运用</h2>
+<blockquote class="alert alert-tip">
+<p>常见手段就是: PULL(拉取仓库最新信息) -&gt; Edit -&gt; PUSH(上传修改)</p>
+</blockquote>
+<h3 id="PULL操作">PULL操作</h3>
+<p>更新你的本地仓库到最新的改动基本语法:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull </span><br></pre></td></tr></table></figure>
+<p>1.但是如果你在本地进行修改后并没有将更改放到 HEAD 暂存区的话会导致 pull失败.<br>
+所以你一定要记得将更改的文件放到 HEAD中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add . // git add &lt;filename&gt;</span><br><span class="line">git commit &quot;提交信息&quot;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li class="lvl-3">
+<p>如果你本地的文件版本太老(远程服务器中的文件早就有别人进行修改,你也不能简单的PULL下来,你会遇到文件冲突)</p>
+</li>
+</ol>
+</div><div class="article-licensing box"><div class="licensing-title"><p>GIT仓库管理</p><p><a href="http://whalefall.fun/2025/08/26/GIT仓库管理/">http://whalefall.fun/2025/08/26/GIT仓库管理/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>Jiely</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2025-08-26</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2025-08-26</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E6%97%A5%E5%B8%B8%E5%AD%A6%E4%B9%A0/">日常学习</a></div><!--!--></article></div><!--!--><div class="card"><nav class="post-navigation mt-4 level is-mobile card-content"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2025/08/07/%E7%A7%8B/"><span class="level-item">秋</span><i class="level-item fas fa-chevron-right"></i></a></div></nav></div><div class="card" id="comments"><div class="card-content"><h3 class="title is-5">评论</h3><div class="content twikoo" id="twikoo"></div><script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script><script>twikoo.init({
+            envId: 'https://visionary-gecko-25af79.netlify.app/.netlify/functions/twikoo',
+            
+            lang: "zh-CN",
+            onCommentLoaded: function () {
+              var commentContents = document.getElementsByClassName('tk-content');
+              for (var i = 0; i < commentContents.length; i++) {
+                var commentItem = commentContents[i];
+                var imgEls = commentItem.getElementsByTagName('img');
+                if (imgEls.length > 0) {
+                  for (var j = 0; j < imgEls.length; j++) {
+                    var imgEl = imgEls[j];
+                    var aEl = document.createElement('a');
+                    aEl.setAttribute('class', 'tk-lg-link');
+                    aEl.setAttribute('href', imgEl.getAttribute('src'));
+                    aEl.setAttribute('data-src', imgEl.getAttribute('src'));
+                    aEl.appendChild(imgEl.cloneNode(false));
+                    imgEl.parentNode.insertBefore(aEl, imgEl.nextSibling);
+                    imgEl.remove();
+                  }
+                  if (typeof $.fn.lightGallery === 'function') {
+                    $(commentItem).lightGallery({
+                      selector: '.tk-lg-link'
+                    });
+                  }
+                }
+                handleThirdPartyLink && handleThirdPartyLink(commentItem);
+              }
+            }
+        });</script></div></div></div><style>.column.column-left,.column.column-right{display:none}</style><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget toc-widget" id="toc" data-type="toc"><div class="toc-header"><h3 class="menu-label"><i class="fas fa-list toc-icon"></i>目录</h3></div><div class="toc-content"><ul class="toc-list toc-level-1"><li class="toc-item toc-h2"><a class="toc-link" href="#GIT的核心流程" data-level="2" data-target="GIT的核心流程"><span class="toc-index">1</span><span class="toc-text">GIT的核心流程</span></a><ul class="toc-list toc-level-2"><li class="toc-item toc-h3"><a class="toc-link" href="#工作流" data-level="3" data-target="工作流"><span class="toc-index">1.1</span><span class="toc-text">工作流</span></a></li><li class="toc-item toc-h3"><a class="toc-link" href="#分支" data-level="3" data-target="分支"><span class="toc-index">1.2</span><span class="toc-text">分支</span></a></li><li class="toc-item toc-h3"><a class="toc-link" href="#更新与合并" data-level="3" data-target="更新与合并"><span class="toc-index">1.3</span><span class="toc-text">更新与合并</span></a></li></ul></li><li class="toc-item toc-h2"><a class="toc-link" href="#GIT实际运用" data-level="2" data-target="GIT实际运用"><span class="toc-index">2</span><span class="toc-text">GIT实际运用</span></a><ul class="toc-list toc-level-2"><li class="toc-item toc-h3"><a class="toc-link" href="#PULL操作" data-level="3" data-target="PULL操作"><span class="toc-index">2.1</span><span class="toc-text">PULL操作</span></a></li></ul></li></ul></div><style>
+            .toc-widget {
+                position: sticky;
+                top: 1rem;
+                max-height: calc(100vh - 2rem);
+                display: flex;
+                flex-direction: column;
+                border-radius: 6px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                overflow: hidden;
+                background: white;
+                border: 1px solid rgba(0, 0, 0, 0.08);
+            }
+            
+            .toc-header {
+                flex-shrink: 0;
+                padding: 1.25rem 1.25rem 0.75rem;
+                background: white;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            }
+            
+            .toc-header .menu-label {
+                margin: 0;
+                font-size: 1rem;
+                font-weight: 600;
+                color: #363636;
+                display: flex;
+                align-items: center;
+            }
+            
+            .toc-header .toc-icon {
+                margin-right: 0.5rem;
+                color: #4a90e2;
+                font-size: 1rem;
+            }
+            
+            .toc-content {
+                flex: 1;
+                overflow-y: auto;
+                padding: 0.75rem 0 1.25rem;
+                background: white;
+                max-height: 450px;
+                position: relative;
+            }
+            
+            .toc-content::-webkit-scrollbar {
+                width: 4px;
+            }
+            
+            .toc-content::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            
+            .toc-content::-webkit-scrollbar-thumb {
+                background: rgba(0, 0, 0, 0.15);
+                border-radius: 2px;
+            }
+            
+            .toc-content::-webkit-scrollbar-thumb:hover {
+                background: rgba(0, 0, 0, 0.25);
+            }
+            
+            .toc-list {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                position: relative;
+            }
+            
+            .toc-item {
+                margin: 0;
+                position: relative;
+            }
+            
+            .toc-link {
+                display: flex;
+                align-items: flex-start;
+                padding: 0.4rem 1.25rem;
+                text-decoration: none;
+                color: #4a4a4a;
+                transition: all 0.2s ease;
+                line-height: 1.4;
+                position: relative;
+            }
+            
+            .toc-link:hover {
+                color: #4a90e2;
+                background-color: rgba(74, 144, 226, 0.05);
+            }
+            
+            .toc-link.is-active {
+                color: #4a90e2;
+                background-color: rgba(74, 144, 226, 0.08);
+                font-weight: 500;
+                border-left: 3px solid #4a90e2;
+                padding-left: calc(1.25rem - 3px);
+            }
+            
+            .toc-index {
+                color: #4a90e2;
+                font-weight: 500;
+                margin-right: 0.5rem;
+                font-size: 0.85rem;
+                flex-shrink: 0;
+                min-width: 2rem;
+            }
+            
+            .toc-text {
+                flex: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+            }
+            
+            /* H1 标题 - 主标题 */
+            .toc-h1 .toc-link {
+                font-size: 0.95rem;
+                font-weight: 600;
+                padding: 0.6rem 1.25rem;
+                margin: 0.1rem 0;
+                border-left: 2px solid transparent;
+            }
+            
+            .toc-h1 .toc-link.is-active {
+                border-left: 3px solid #4a90e2;
+                padding-left: calc(1.25rem - 3px);
+                background-color: rgba(74, 144, 226, 0.1);
+            }
+            
+            .toc-h1 .toc-index {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: #4a90e2;
+            }
+            
+            /* H2 标题 - 二级标题 */
+            .toc-h2 {
+                position: relative;
+            }
+            
+            .toc-h2::before {
+                content: '';
+                position: absolute;
+                left: 1.5rem;
+                top: 0;
+                bottom: 0;
+                width: 1px;
+                background: rgba(74, 144, 226, 0.2);
+                z-index: 0;
+            }
+            
+            .toc-h2 .toc-link {
+                font-size: 0.9rem;
+                padding-left: 2.25rem;
+                position: relative;
+            }
+            
+            .toc-h2 .toc-link::before {
+                content: '';
+                position: absolute;
+                left: 1.25rem;
+                top: 50%;
+                width: 6px;
+                height: 6px;
+                background: #4a90e2;
+                border-radius: 50%;
+                transform: translateY(-50%);
+                opacity: 0.6;
+            }
+            
+            .toc-h2 .toc-link:hover::before,
+            .toc-h2 .toc-link.is-active::before {
+                opacity: 1;
+            }
+            
+            .toc-h2 .toc-link.is-active {
+                padding-left: calc(2.25rem - 3px);
+            }
+            
+            /* H3 标题 - 三级标题 */
+            .toc-h3 {
+                position: relative;
+            }
+            
+            .toc-h3::before {
+                content: '';
+                position: absolute;
+                left: 2.25rem;
+                top: 0;
+                bottom: 0;
+                width: 1px;
+                background: rgba(74, 144, 226, 0.15);
+                z-index: 0;
+            }
+            
+            .toc-h3 .toc-link {
+                font-size: 0.85rem;
+                padding-left: 3rem;
+                color: #6a6a6a;
+                position: relative;
+            }
+            
+            .toc-h3 .toc-link::before {
+                content: '';
+                position: absolute;
+                left: 2rem;
+                top: 50%;
+                width: 4px;
+                height: 4px;
+                background: rgba(74, 144, 226, 0.6);
+                border-radius: 50%;
+                transform: translateY(-50%);
+            }
+            
+            .toc-h3 .toc-link:hover::before,
+            .toc-h3 .toc-link.is-active::before {
+                background: #4a90e2;
+            }
+            
+            .toc-h3 .toc-link.is-active {
+                padding-left: calc(3rem - 3px);
+                color: #4a90e2;
+            }
+            
+            .toc-h3 .toc-index {
+                color: rgba(74, 144, 226, 0.8);
+                font-size: 0.8rem;
+            }
+            
+            /* H4, H5, H6 标题 - 更深层级 */
+            .toc-h4 .toc-link,
+            .toc-h5 .toc-link,
+            .toc-h6 .toc-link {
+                font-size: 0.8rem;
+                padding-left: 3.75rem;
+                color: #888;
+                position: relative;
+            }
+            
+            .toc-h4 .toc-link::before,
+            .toc-h5 .toc-link::before,
+            .toc-h6 .toc-link::before {
+                content: '•';
+                position: absolute;
+                left: 2.75rem;
+                top: 50%;
+                font-size: 8px;
+                color: rgba(74, 144, 226, 0.4);
+                transform: translateY(-50%);
+            }
+            
+            .toc-h4 .toc-link:hover::before,
+            .toc-h5 .toc-link:hover::before,
+            .toc-h6 .toc-link:hover::before,
+            .toc-h4 .toc-link.is-active::before,
+            .toc-h5 .toc-link.is-active::before,
+            .toc-h6 .toc-link.is-active::before {
+                color: #4a90e2;
+            }
+            
+            .toc-h4 .toc-link.is-active,
+            .toc-h5 .toc-link.is-active,
+            .toc-h6 .toc-link.is-active {
+                padding-left: calc(3.75rem - 3px);
+                color: #4a90e2;
+            }
+            
+            .toc-h4 .toc-index,
+            .toc-h5 .toc-index,
+            .toc-h6 .toc-index {
+                color: rgba(74, 144, 226, 0.7);
+                font-size: 0.75rem;
+            }
+            
+            /* 嵌套列表层次感 */
+            .toc-level-1 {
+                margin-top: 0;
+            }
+            
+            .toc-level-2,
+            .toc-level-3,
+            .toc-level-4,
+            .toc-level-5,
+            .toc-level-6 {
+                margin: 0.2rem 0;
+                padding-left: 0;
+            }
+            
+            /* 分组间距 */
+            .toc-h1:not(:first-child) {
+                margin-top: 0.5rem;
+                border-top: 1px solid rgba(0, 0, 0, 0.06);
+                padding-top: 0.5rem;
+            }
+            
+            /* 响应式设计 */
+            @media (max-width: 768px) {
+                .toc-widget {
+                    max-height: 300px;
+                }
+                
+                .toc-content {
+                    max-height: 250px;
+                }
+                
+                .toc-h2 .toc-link {
+                    padding-left: 2rem;
+                }
+                
+                .toc-h3 .toc-link {
+                    padding-left: 2.5rem;
+                }
+                
+                .toc-h4 .toc-link,
+                .toc-h5 .toc-link,
+                .toc-h6 .toc-link {
+                    padding-left: 3rem;
+                }
+            }
+        </style><script src="/js/toc.js" defer></script><script>
+            (function() {
+                let currentActiveLink = null;
+                let headings = [];
+                let tocLinks = [];
+                let isUserScrolling = true;
+                let scrollTimeout = null;
+                
+                // 配置常量 - 当标题到达页面中间偏上位置时激活
+                const SCROLL_OFFSET = 80; // 点击滚动时的偏移量
+                const ACTIVATION_POSITION = window.innerHeight * 0.3; // 激活位置：视口高度的30%处（中间偏上）
+                
+                function initTocTracking() {
+                    // 获取所有标题元素
+                    headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).filter(h => h.id);
+                    
+                    // 获取所有TOC链接
+                    tocLinks = Array.from(document.querySelectorAll('.toc-link[data-target]'));
+                    
+                    if (headings.length === 0 || tocLinks.length === 0) return;
+                    
+                    // 为TOC链接添加点击事件
+                    tocLinks.forEach(link => {
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const targetId = link.getAttribute('data-target');
+                            const targetElement = document.getElementById(targetId);
+                            
+                            if (targetElement) {
+                                isUserScrolling = false; // 标记为程序控制的滚动
+                                
+                                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - SCROLL_OFFSET;
+                                
+                                window.scrollTo({
+                                    top: targetPosition,
+                                    behavior: 'smooth'
+                                });
+                                
+                                // 立即更新激活状态
+                                updateActiveLink(targetId);
+                                
+                                // 滚动完成后恢复用户滚动标记
+                                setTimeout(() => {
+                                    isUserScrolling = true;
+                                }, 1000);
+                            }
+                        });
+                    });
+                    
+                    // 设置滚动监听
+                    setupScrollTracking();
+                    
+                    // 初始化时检查当前位置
+                    setTimeout(() => {
+                        updateActiveFromScroll();
+                    }, 300);
+                }
+                
+                function setupScrollTracking() {
+                    window.addEventListener('scroll', () => {
+                        if (!isUserScrolling) return;
+                        
+                        clearTimeout(scrollTimeout);
+                        scrollTimeout = setTimeout(() => {
+                            updateActiveFromScroll();
+                        }, 10);
+                    }, { passive: true });
+                }
+                
+                function updateActiveFromScroll() {
+                    if (headings.length === 0) return;
+                    
+                    let activeHeading = null;
+                    let minDistance = Infinity;
+                    
+                    // 遍历所有标题，找到距离激活位置最近的标题
+                    headings.forEach(heading => {
+                        const rect = heading.getBoundingClientRect();
+                        const headingTop = rect.top;
+                        
+                        // 计算标题距离激活位置的距离
+                        const distance = Math.abs(headingTop - ACTIVATION_POSITION);
+                        
+                        // 只考虑在激活位置之上或刚好经过激活位置的标题
+                        if (headingTop <= ACTIVATION_POSITION + 50 && distance < minDistance) {
+                            minDistance = distance;
+                            activeHeading = heading;
+                        }
+                    });
+                    
+                    // 特殊处理：如果没有找到合适的标题
+                    if (!activeHeading) {
+                        // 检查是否在页面顶部 - 激活第一个标题
+                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                        if (scrollTop < 100 && headings.length > 0) {
+                            activeHeading = headings[0];
+                        }
+                        
+                        // 检查是否在页面底部 - 激活最后一个标题
+                        const documentHeight = Math.max(
+                            document.body.scrollHeight,
+                            document.body.offsetHeight,
+                            document.documentElement.clientHeight,
+                            document.documentElement.scrollHeight,
+                            document.documentElement.offsetHeight
+                        );
+                        
+                        if (scrollTop + window.innerHeight >= documentHeight - 50 && headings.length > 0) {
+                            activeHeading = headings[headings.length - 1];
+                        }
+                    }
+                    
+                    // 更新激活状态
+                    if (activeHeading) {
+                        updateActiveLink(activeHeading.id);
+                    } else {
+                        // 如果没有找到任何合适的标题，清除激活状态
+                        if (currentActiveLink) {
+                            currentActiveLink.classList.remove('is-active');
+                            currentActiveLink = null;
+                        }
+                    }
+                }
+                
+                function updateActiveLink(targetId) {
+                    // 如果目标ID与当前激活的相同，不需要更新
+                    if (currentActiveLink && currentActiveLink.getAttribute('data-target') === targetId) {
+                        return;
+                    }
+                    
+                    // 移除当前激活状态
+                    if (currentActiveLink) {
+                        currentActiveLink.classList.remove('is-active');
+                    }
+                    
+                    // 找到对应的TOC链接并激活
+                    const newActiveLink = tocLinks.find(link => 
+                        link.getAttribute('data-target') === targetId
+                    );
+                    
+                    if (newActiveLink) {
+                        newActiveLink.classList.add('is-active');
+                        currentActiveLink = newActiveLink;
+                        
+                        // 滚动TOC容器以确保激活链接可见
+                        scrollTocToActive(newActiveLink);
+                    }
+                }
+                
+                function scrollTocToActive(activeLink) {
+                    const tocContent = document.querySelector('.toc-content');
+                    if (!tocContent || !activeLink) return;
+                    
+                    const tocRect = tocContent.getBoundingClientRect();
+                    const linkRect = activeLink.getBoundingClientRect();
+                    
+                    // 计算链接相对于TOC容器的位置
+                    const linkOffsetTop = activeLink.offsetTop;
+                    const containerHeight = tocContent.clientHeight;
+                    
+                    // 如果链接不在可视区域内，则滚动到合适位置
+                    if (linkRect.top < tocRect.top + 20 || linkRect.bottom > tocRect.bottom - 20) {
+                        const targetScrollTop = linkOffsetTop - containerHeight / 2;
+                        
+                        tocContent.scrollTo({
+                            top: Math.max(0, targetScrollTop),
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+                
+                // 防抖函数
+                function debounce(func, wait) {
+                    let timeout;
+                    return function executedFunction(...args) {
+                        const later = () => {
+                            clearTimeout(timeout);
+                            func(...args);
+                        };
+                        clearTimeout(timeout);
+                        timeout = setTimeout(later, wait);
+                    };
+                }
+                
+                // 页面加载完成后初始化
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', initTocTracking);
+                } else {
+                    initTocTracking();
+                }
+                
+                // 处理页面尺寸变化
+                window.addEventListener('resize', debounce(() => {
+                    updateActiveFromScroll();
+                }, 250));
+                
+                // 清理函数
+                window.addEventListener('beforeunload', () => {
+                    if (observer) {
+                        observer.disconnect();
+                    }
+                });
+            })();
+        </script></div></div><!--!--><style>.column.column-left,.column.column-right{display:block}</style></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img class="logo-img" src="/img/JIELY.png" alt="霸王龙的小窝🦖" height="28"><img class="logo-img-dark" src="/img/JIELY.png" alt="霸王龙的小窝🦖" height="28"></a><p class="is-size-7"><span>&copy; 2025 Jiely</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/imaegoo/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a><br><span id="busuanzi_container_site_uv">总访问量&nbsp;<span id="busuanzi_value_site_pv">-</span>&nbsp;次&nbsp;&nbsp;总访客数&nbsp;<span id="busuanzi_value_site_uv">-</span>&nbsp;人</span></p></div><div class="level-item has-text-centered"><img src="/img/animals.png" alt="Footer Photo" style="max-width: 500px; height: auto;"></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/deed.zh"><i class="fab fa-creative-commons-by"></i></a></p></div></div></div></div></footer><script src="/js/imaegoo/jquery/3.3.1/dist/jquery.min.js"></script><script src="/js/imaegoo/moment/2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js"></script><script src="/js/imaegoo/clipboard/2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-cn");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script data-pjax src="/js/column.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script data-pjax src="/js/back_to_top.js" defer></script><!--!--><!--!--><script src="/js/imaegoo/lightgallery/1.10.0/dist/js/lightgallery.min.js" defer></script><script src="/js/imaegoo/justifiedGallery/3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script src="/js/imaegoo/cookieconsent/3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-right",
+        content: {
+          message: "此网站使用 Cookie，以启用评论系统和分析功能。",
+          dismiss: "知道了",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "/cookies/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script data-pjax src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><div class="searchbox-pinyin"><label class="checkbox"><input id="search-by-pinyin" type="checkbox" checked="checked"><span> 拼音检索</span></label></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/imaegoo/pinyin.js" defer></script><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script><script type="text/javascript" src="/js/imaegoo/imaegoo.js"></script><script type="text/javascript" src="/js/imaegoo/universe.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js">
+                            document.addEventListener("DOMContentLoaded", function() {
+                                renderMathInElement(document.body, {
+                                    delimiters: [
+                                        {left: "$$", right: "$$", display: true},
+                                        {left: "$", right: "$", display: false}
+                                    ]
+                                });
+                            });
+                        </script></body></html>
