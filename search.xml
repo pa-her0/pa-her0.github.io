@@ -4,19 +4,6 @@
   
     
     <entry>
-      <title>GCN</title>
-      <link href="/2025/08/31/GCN/"/>
-      <url>/2025/08/31/GCN/</url>
-      
-        <content type="html"><![CDATA[<h2 id="激活函数">激活函数</h2><p>设特征矩阵:<br>$$X = AH<sup>{(l)}W</sup>{(l)} \in \mathbb{R}^{n \times d}$$<br>GCN传播公式为:<br>$$H^{(l + 1)} = \sigma(X^{(l)}) $$<br>$\sigma$ 的作用,对于 $X_{ij}$ 进行非线性化操作</p><h2 id="激活函数-sigma-的影响">激活函数$\sigma$的影响</h2><h3 id="无激活函数时">无激活函数时</h3><p>$$<br>\frac{\partial \mathcal{L}}{\partial W^{(l)}}<br>= \big(\hat{A} H<sup>{(l)}\big)</sup>{\top} , \Delta^{(l+1)}<br>$$</p><h3 id="有激活函数时">有激活函数时</h3><p>$$<br>\frac{\partial \mathcal{L}}{\partial W^{(l)}}<br>= \big(\hat{A} H<sup>{(l)}\big)</sup>{\top} , \Delta^{(l+1)} D^{(l)}<br>$$</p><hr><h3 id="符号说明">符号说明</h3><ul class="lvl-0"><li class="lvl-2"><p>$$D<sup>{(l)}=\mathrm{diag}!\big(\sigma’(Z</sup>{(l)})\big)$$:由激活函数导数构成的矩阵</p></li><li class="lvl-2"><p>$$\Delta^{(l+1)}=\frac{\partial \mathcal{L}}{\partial H^{(l+1)}} \in \mathbb{R}^{n\times d_{l+1}}$$：从上一层传下来的上游梯度</p></li></ul><p>理解:</p><ol><li class="lvl-3"><p>这个 $D<sup>{(l)}$相当于对特征矩阵$X</sup>l$中的每一个节点进行放缩[0,1],从而防止梯度爆炸</p></li><li class="lvl-3"><p>因为节点的特征存在对称性,所以一般我只需要学习正特征就可以了,但是防止节点一直都是负特征(死神经元),所以需要学习少量负特征,保证训练的稳定性</p></li></ol><h3 id="1-无激活函数">1. 无激活函数</h3><p>$$<br>\Delta^{(0)} ;=; \Delta^{(L)} \prod_{l=1}^{L} \big(W^{(l)\top} A^{\top}\big)<br>$$</p><h3 id="2-ReLU-激活">2. ReLU 激活</h3><p>$$<br>\Delta^{(0)} ;=; \Delta^{(L)} \prod_{l=1}^{L} \big(D_{\text{ReLU}}^{(l)} W^{(l)\top} A^{\top}\big),<br>\quad<br>D_{\text{ReLU}}^{(l)} = \mathrm{diag}\big(\mathbf{1}_{Z^{(l)}&gt;0}\big)<br>$$</p><h3 id="3-LeakyReLU-激活">3. LeakyReLU 激活</h3><p>$$<br>\Delta^{(0)} ;=; \Delta^{(L)} \prod_{l=1}^{L} \big(D_{\text{LReLU}}^{(l)} W^{(l)\top} A^{\top}\big),<br>\quad<br>D_{\text{LReLU}}^{(l)} = \mathrm{diag}\big(\mathbf{1}<em>{Z^{(l)}&gt;0} + \alpha,\mathbf{1}</em>{Z^{(l)}\le 0}\big)<br>$$</p><h3 id="4-混合激活">4. 混合激活</h3><p>$$<br>\Delta^{(0)} ;=; \Delta^{(L)} \prod_{l=1}^{L} \big(M^{(l)} W^{(l)\top} A^{\top}\big),<br>\quad<br>M^{(l)} = \beta I + (C-\beta) D^{(l)},<br>\quad<br>D^{(l)} = \mathrm{diag}(\sigma’(Z^{(l)}))<br>$$</p><h3 id="传统-LeakyReLU">传统 LeakyReLU</h3><p>$$<br>\text{LReLU}_{\alpha}(Z) ;=; \alpha Z ;+; (1-\alpha),\max(0,Z)<br>$$</p><h3 id="你的公式（代入-LeakyReLU-后）">你的公式（代入 LeakyReLU 后）</h3><p>$$<br>X^{(l+1)} ;=; \beta Z ;+; (C-\beta),\Big(\alpha Z ;+; (1-\alpha),\max(0,Z)\Big)<br>$$</p>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>Time out</title>
       <link href="/2025/08/27/%E8%A7%A3%E5%86%B3%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8AConnet-Error-%E9%97%AE%E9%A2%98/"/>
       <url>/2025/08/27/%E8%A7%A3%E5%86%B3%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8AConnet-Error-%E9%97%AE%E9%A2%98/</url>
