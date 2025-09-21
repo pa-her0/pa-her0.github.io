@@ -33,7 +33,7 @@
       <link href="/2025/09/21/%E7%AC%9B%E5%8D%A1%E5%B0%94%E6%A0%91-Cartesian-Tree/"/>
       <url>/2025/09/21/%E7%AC%9B%E5%8D%A1%E5%B0%94%E6%A0%91-Cartesian-Tree/</url>
       
-        <content type="html"><![CDATA[<p>我感觉将算法放到一个板子里面容易忘记自己学了什么,所以我以后单独开个专栏来记录算法知识点</p><span id="more"></span><p>OK,数据结构第一舞目前想学知识点:</p><ol><li class="lvl-3">笛卡尔树</li><li class="lvl-3">线段树</li></ol>]]></content>
+        <content type="html"><![CDATA[<blockquote class="alert alert-note"><p>我感觉将算法放到一个板子里面容易忘记自己学了什么,所以我以后单独开个专栏来记录算法知识点</p></blockquote><span id="more"></span><p>OK,数据结构第一舞目前想学知识点:</p><ol><li class="lvl-3">笛卡尔树</li><li class="lvl-3">线段树</li></ol><h2 id="笛卡尔树">笛卡尔树</h2><p>笛卡尔树的结构主要是: 一个数字有两个属性:<strong>数列中的位置和数值</strong>,满足两个性质,将位置作为键值,是一颗BST树,对这颗树进行中序遍历,返回的就是这个序列的顺序(其实就是满足一个性质,节点的左孩子小于当前节点,节点的右孩子大于当前节点)</p><p>实现方法:</p><ol><li class="lvl-3"><p>当前插入节点 x, 根据 x 的 value 不断从单调栈中弹出节点(根据你需要的笛卡尔树需要满足小根堆还是大根堆的性质)</p></li><li class="lvl-3"><p>最晚弹出的节点 y 以及y的整棵子树成为 x 的左子树</p></li><li class="lvl-3"><p>假设 x 在 单调栈中还压着 z 节点, x 成为 z 的右孩子</p></li><li class="lvl-3"><p>将节点 x 根据 value 加入单调栈</p></li></ol>]]></content>
       
       
       <categories>
@@ -45,7 +45,7 @@
       
         <tags>
             
-            <tag> 算法板子 </tag>
+            <tag> 算法 </tag>
             
         </tags>
       
