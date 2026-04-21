@@ -32,6 +32,8 @@ jobs:
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
           FEISHU_APP_TOKEN: ${{ secrets.FEISHU_APP_TOKEN }}
           FEISHU_TABLE_ID: ${{ secrets.FEISHU_TABLE_ID }}
+          FEISHU_TABLE_ID_COMICS: ${{ secrets.FEISHU_TABLE_ID_COMICS }}
+          FEISHU_TABLE_ID_PAPERS: ${{ secrets.FEISHU_TABLE_ID_PAPERS }}
         run: |
           python scripts/test_feishu_bitable.py
 
@@ -39,5 +41,6 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add public/data/books.json public/images/books/*
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update books data [skip ci]" && git push)
+          git add public/data/books.json public/data/comics.json public/data/papers.json
+          git add public/images/books/* public/images/comics/* 2>/dev/null || true
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update bookshelf data [skip ci]" && git push)

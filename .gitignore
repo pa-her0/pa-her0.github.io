@@ -8,4 +8,5 @@ dist
 AGENTS.md
 CLAUDE.md
 TODO.md
-Design/
+Design/scripts/__pycache__/
+scripts/__pycache__/
