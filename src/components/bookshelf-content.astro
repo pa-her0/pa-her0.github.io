@@ -33,6 +33,11 @@ interface ComicFields {
   推荐状态?: "推荐" | "中庸" | "不行"
   连载状态?: "连载中" | "完结" | "腰斩"
   追读状态?: "追更中" | "已读完" | "弃坑" | "想读"
+  最新话数?: string
+  最新卷数?: string
+  分类?: string[]
+  年份?: number
+  komiic_url?: string
 }
 interface ComicRecord {
   fields: ComicFields
@@ -142,6 +147,9 @@ const comicsForClient = allComics.map((c) => ({
   serial: c.fields.连载状态 ?? "",
   tracking: c.fields.追读状态 ?? "",
   status: c.fields.推荐状态 ?? "",
+  chapters: c.fields.最新话数 ?? "",
+  categories: c.fields.分类 ?? [],
+  url: c.fields.komiic_url ?? "",
 }))
 
 const papersForClient = allPapers.map((p) => ({
@@ -460,57 +468,65 @@ const recommendBadge = (status?: string) => {
                 <p class="text-xs text-muted-foreground/70">去飞书添加几部作品，下次同步后就会出现在这里。</p>
               </div>
             ) : (
-              <div class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
                 {allComics.map((c) => {
                   const cover = getComicCover(c)
                   const serialClass = c.fields.连载状态 === "连载中"
-                    ? "bg-primary/10 text-primary"
+                    ? "bg-primary/90 text-white"
                     : c.fields.连载状态 === "腰斩"
                     ? "bg-muted text-muted-foreground line-through"
-                    : "bg-muted text-muted-foreground"
+                    : "bg-black/60 text-white"
+                  const trackingClass = c.fields.追读状态 === "追更中"
+                    ? "bg-primary/90 text-white"
+                    : c.fields.追读状态 === "已读完"
+                    ? "bg-green-600/90 text-white"
+                    : c.fields.追读状态 === "弃坑"
+                    ? "bg-muted/90 text-muted-foreground line-through"
+                    : "bg-black/55 text-white/90"
+                  const href = c.fields.komiic_url || undefined
+                  const Tag = href ? "a" : "div"
                   return (
-                    <article
+                    <Tag
+                      {...(href ? { href, target: "_blank", rel: "noopener noreferrer" } : {})}
                       data-comic-card
                       data-comic-id={c.id}
                       data-serial={c.fields.连载状态 || ""}
                       data-status={c.fields.推荐状态 || ""}
                       data-title={(c.fields.作品名 || "").toLowerCase()}
                       data-author={(c.fields.作者 || "").toLowerCase()}
-                      class="group bg-background rounded-lg border border-border/60 overflow-hidden hover:shadow-md hover:border-border transition-all"
+                      class="group block cursor-pointer focus:outline-none"
                     >
-                      <div class="relative aspect-[16/9] overflow-hidden bg-muted/40">
+                      <div class="relative aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-muted/30 shadow-sm group-hover:shadow-xl transition-shadow duration-300">
                         {cover ? (
                           <img src={cover} alt={c.fields.作品名} loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         ) : (
-                          <div class="w-full h-full flex items-end p-4 bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5">
-                            <h4 class="text-xl font-bold text-foreground font-serif leading-tight line-clamp-2">{c.fields.作品名}</h4>
+                          <div class="w-full h-full flex items-end p-3 bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5">
+                            <h4 class="text-sm font-bold text-foreground font-serif leading-tight line-clamp-3">{c.fields.作品名}</h4>
                           </div>
                         )}
                         {c.fields.连载状态 && (
-                          <span class={cn("absolute top-2.5 right-2.5 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm", serialClass)}>
+                          <span class={cn("absolute top-2 right-2 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm font-medium", serialClass)}>
                             {c.fields.连载状态}
                           </span>
                         )}
+                        {c.fields.追读状态 && (
+                          <span class={cn("absolute bottom-2 left-2 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm font-medium", trackingClass)}>
+                            {c.fields.追读状态}
+                          </span>
+                        )}
                       </div>
-                      <div class="p-4">
-                        <div class="flex items-baseline justify-between gap-2 mb-1">
-                          <h4 class="text-sm font-semibold text-foreground line-clamp-1">{c.fields.作品名}</h4>
-                          {c.fields.推荐状态 && (
-                            <span class={cn("text-[10px] px-1.5 py-0.5 rounded shrink-0", recommendBadge(c.fields.推荐状态))}>{c.fields.推荐状态}</span>
+                      <div class="min-h-[3.5rem] space-y-1">
+                        <h4 class="font-medium text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-snug">
+                          {c.fields.作品名}
+                        </h4>
+                        <div class="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                          <span class="line-clamp-1 flex-1">{c.fields.作者}</span>
+                          {c.fields.最新话数 && (
+                            <span class="tabular-nums shrink-0">{c.fields.最新话数}话</span>
                           )}
                         </div>
-                        <p class="text-xs text-muted-foreground mb-2 line-clamp-1">{c.fields.作者}</p>
-                        {c.fields.短评 && (
-                          <p class="text-xs text-muted-foreground/90 leading-relaxed line-clamp-3 mb-3">{c.fields.短评}</p>
-                        )}
-                        {c.fields.追读状态 && (
-                          <div class="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                            <span class="w-1 h-1 rounded-full bg-primary/70" />
-                            <span>追读 · {c.fields.追读状态}</span>
-                          </div>
-                        )}
                       </div>
-                    </article>
+                    </Tag>
                   )
                 })}
               </div>
