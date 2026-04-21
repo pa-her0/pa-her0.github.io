@@ -673,19 +673,8 @@ a.card-github:hover .github-logo {
 .thoughts-quiet-body hr {
   border: 0;
   border-top: 1px solid var(--border);
-  margin: 48px -80px;
-  width: calc(100% + 160px);
-  max-width: 90vw;
-  margin-left: auto;
-  margin-right: auto;
-}
-@media (min-width: 768px) {
-  .thoughts-quiet-body hr {
-    width: calc(100% + 160px);
-    max-width: none;
-    margin-left: -80px;
-    margin-right: -80px;
-  }
+  margin: 48px 0;
+  width: 100%;
 }
 
 .thoughts-timeline-body > :first-child { margin-top: 0; }
