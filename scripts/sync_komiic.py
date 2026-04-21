@@ -70,19 +70,33 @@ def login(email: str, password: str) -> str:
     try:
         with urllib.request.urlopen(req, timeout=15) as r:
             status = r.status
+            resp_headers = dict(r.headers)
             raw = r.read()
     except urllib.error.HTTPError as e:
         raw = e.read()
         status = e.code
+        resp_headers = dict(e.headers or {})
         print(f"[komiic] login HTTP {status}: {raw[:500].decode(errors='replace')}")
         raise
+    # 自动解 gzip / brotli（有些 CDN 默认压缩就算请求里没要）
+    enc = (resp_headers.get("Content-Encoding") or "").lower()
+    if enc == "gzip":
+        import gzip
+        raw = gzip.decompress(raw)
+    elif enc == "br":
+        try:
+            import brotli
+            raw = brotli.decompress(raw)
+        except ImportError:
+            pass
     try:
         payload = json.loads(raw)
     except json.JSONDecodeError:
         snippet = raw[:500].decode(errors="replace")
+        key_headers = {k: v for k, v in resp_headers.items()
+                       if k.lower() in ("content-type","content-length","content-encoding","cf-ray","server","x-served-by")}
         raise RuntimeError(
-            f"login response not JSON (status={status}, body starts: {snippet!r}). "
-            f"Likely Cloudflare challenge — GitHub Actions IP may be blocked."
+            f"login response not JSON (status={status}, headers={key_headers}, body={snippet!r})"
         )
     token = payload.get("token")
     if not token:
