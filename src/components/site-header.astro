@@ -46,7 +46,7 @@ const navItems: { name: string; href: string; external?: boolean }[] = [
     </nav>
 
     <div class="hidden md:flex items-center gap-4 justify-self-end">
-      <HeaderSearch client:visible />
+      <HeaderSearch client:idle />
       <ThemeToggle />
     </div>
 
@@ -61,7 +61,7 @@ const navItems: { name: string; href: string; external?: boolean }[] = [
       </summary>
       <div class="absolute right-0 mt-3 w-56 rounded-xl border border-border bg-card p-3 shadow-xl">
         <div class="mb-2">
-          <HeaderSearch client:visible />
+          <HeaderSearch client:idle />
         </div>
         <nav class="flex flex-col gap-1">
           {navItems.map((item) => (

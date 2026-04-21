@@ -89,8 +89,14 @@ const primaryTagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#hom
     </div>
 
     {data.image && (
-      <div class="mb-10 overflow-hidden rounded-2xl border border-border/50 bg-muted/30 max-w-4xl mx-auto">
-        <img src={data.image} alt={data.title} class="w-full h-auto object-cover" loading="lazy" />
+      <div class="mb-10 overflow-hidden rounded-2xl border border-border/50 bg-muted/30 max-w-4xl mx-auto aspect-[16/9]">
+        <img
+          src={data.image}
+          alt={data.title}
+          class="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
     )}
 
