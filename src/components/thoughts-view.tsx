@@ -188,10 +188,10 @@ function QuietMode({
         )}
 
         <div
-          className="font-serif text-foreground/85 thoughts-quiet-body"
+          className="font-serif text-foreground thoughts-quiet-body"
           style={{
-            fontSize: 18,
-            lineHeight: 2.0,
+            fontSize: 20,
+            lineHeight: 1.95,
             textAlign: "left",
           }}
           dangerouslySetInnerHTML={{ __html: t.content }}
@@ -374,7 +374,7 @@ function TimelineMode({
                         </div>
                       )}
                       <div
-                        className="font-serif text-base leading-[1.9] text-foreground/85 thoughts-timeline-body"
+                        className="font-serif text-base leading-[1.9] text-foreground thoughts-timeline-body"
                         dangerouslySetInnerHTML={{ __html: t.content }}
                       />
                     </div>
