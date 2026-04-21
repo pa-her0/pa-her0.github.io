@@ -67,8 +67,23 @@ def login(email: str, password: str) -> str:
             "User-Agent": UA,
         },
     )
-    with urllib.request.urlopen(req, timeout=15) as r:
-        payload = json.loads(r.read())
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            status = r.status
+            raw = r.read()
+    except urllib.error.HTTPError as e:
+        raw = e.read()
+        status = e.code
+        print(f"[komiic] login HTTP {status}: {raw[:500].decode(errors='replace')}")
+        raise
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError:
+        snippet = raw[:500].decode(errors="replace")
+        raise RuntimeError(
+            f"login response not JSON (status={status}, body starts: {snippet!r}). "
+            f"Likely Cloudflare challenge — GitHub Actions IP may be blocked."
+        )
     token = payload.get("token")
     if not token:
         raise RuntimeError(f"login response missing token: {payload}")
