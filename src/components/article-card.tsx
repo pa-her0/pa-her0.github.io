@@ -37,7 +37,7 @@ export function ArticleCard({
   return (
     <article
       className={cn(
-        "group relative bg-card border border-border/50 rounded-xl p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5",
+        "group relative bg-card border border-border/50 rounded-xl p-5",
         className,
       )}
       style={style}
@@ -59,9 +59,9 @@ export function ArticleCard({
       <div className="flex gap-4 sm:gap-5">
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-serif text-lg sm:text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-primary dark:group-hover:text-foreground transition-colors duration-200 flex items-start gap-2">
+          <h3 className="font-serif text-lg sm:text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-primary dark:group-hover:text-foreground transition-colors duration-75 flex items-start gap-2">
             <span className="w-1 h-6 shrink-0 bg-primary rounded-full mt-0.5" />
-            <a href={postHref} className="hover:text-primary transition-colors">
+            <a href={postHref} className="hover:text-primary transition-colors duration-75">
               {article.title}
             </a>
           </h3>
