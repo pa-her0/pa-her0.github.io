@@ -230,20 +230,10 @@ const recommendBadge = (status?: string) => {
             ))}
           </nav>
 
-          <div class="hidden md:block text-[10px] text-muted-foreground/80 uppercase tracking-[0.18em] mb-2 pl-2">快速筛选</div>
-          <div class="hidden md:flex flex-col gap-0.5 pl-2" aria-hidden="true">
-            {["推荐", "近期阅读", "未读"].map((f) => (
-              <span class="text-xs text-muted-foreground/70 py-1 select-none">· {f}</span>
-            ))}
-          </div>
-
-          <div class="hidden md:block mt-14 pl-2 text-[11px] italic text-muted-foreground/60 font-serif leading-relaxed">
-            &ldquo;博学而笃志，<br />切问而近思。&rdquo;
-          </div>
         </aside>
 
         {/* ========================= Main ========================= */}
-        <section class="flex-1 min-w-0">
+        <section class="flex-1 min-w-0" data-bookshelf-main>
 
           {/* ---------- Header (per-type) ---------- */}
           <div data-type-header="books" class="mb-6">
@@ -649,6 +639,28 @@ const recommendBadge = (status?: string) => {
     </div>
   </div>
 
+  {/* ====== Styles: switch animation ====== */}
+  <style is:global>
+    @keyframes bookshelfFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: none; }
+    }
+    [data-view]:not(.hidden),
+    [data-type-header]:not(.hidden),
+    [data-type-stats]:not(.hidden) {
+      animation: bookshelfFadeIn 200ms ease-out both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      [data-view]:not(.hidden),
+      [data-type-header]:not(.hidden),
+      [data-type-stats]:not(.hidden) { animation: none; }
+    }
+    /* Hidden views shouldn't contribute to scroll height / paint work */
+    [data-view].hidden,
+    [data-type-header].hidden,
+    [data-type-stats].hidden { content-visibility: hidden; }
+  </style>
+
   {/* ====== Client script ====== */}
   <script is:inline type="application/json" id="books-data" set:html={JSON.stringify(booksForClient).replace(/</g, "\\u003c")} />
   <script is:inline type="application/json" id="comics-data" set:html={JSON.stringify(comicsForClient).replace(/</g, "\\u003c")} />
@@ -785,6 +797,16 @@ const recommendBadge = (status?: string) => {
           if (ph) searchInput.setAttribute("placeholder", ph);
         }
         applyAll();
+
+        // Bring the main region into view on tab switch — only when user has
+        // scrolled past the fold, to avoid a jarring jump when already at top.
+        const main = document.querySelector("[data-bookshelf-main]");
+        if (main) {
+          const top = main.getBoundingClientRect().top + window.scrollY - 72;
+          if (window.scrollY > top + 40) {
+            window.scrollTo({ top, behavior: "smooth" });
+          }
+        }
       };
 
       typeBtns.forEach((btn) => on(btn, "click", () => switchType(btn.getAttribute("data-type-btn"))));
@@ -805,7 +827,13 @@ const recommendBadge = (status?: string) => {
       wireFilterGroup("[data-filter-papers-field]", (b) => { state.papers.field = b.getAttribute("data-filter-papers-field") || "全部"; });
 
       if (searchInput) {
-        on(searchInput, "input", (e) => { state.query = e.target.value || ""; applyAll(); });
+        let searchTimer = 0;
+        on(searchInput, "input", (e) => {
+          state.query = e.target.value || "";
+          window.clearTimeout(searchTimer);
+          searchTimer = window.setTimeout(applyAll, 80);
+        });
+        cleanups.push(() => window.clearTimeout(searchTimer));
       }
 
       // -------- Book modal --------
