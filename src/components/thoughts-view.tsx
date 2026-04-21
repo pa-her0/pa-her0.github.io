@@ -96,7 +96,34 @@ function QuietMode({
       if (e.key === "ArrowRight") onJumpRef.current((cur + 1) % len)
     }
     window.addEventListener("keydown", onKey)
-    return () => window.removeEventListener("keydown", onKey)
+
+    let startX = 0
+    let startY = 0
+    let tracking = false
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return
+      startX = e.touches[0].clientX
+      startY = e.touches[0].clientY
+      tracking = true
+    }
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!tracking) return
+      tracking = false
+      const t = e.changedTouches[0]
+      const dx = t.clientX - startX
+      const dy = t.clientY - startY
+      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return
+      const cur = idxRef.current
+      if (dx < 0) onJumpRef.current((cur + 1) % len)
+      else onJumpRef.current((cur - 1 + len) % len)
+    }
+    window.addEventListener("touchstart", onTouchStart, { passive: true })
+    window.addEventListener("touchend", onTouchEnd, { passive: true })
+    return () => {
+      window.removeEventListener("keydown", onKey)
+      window.removeEventListener("touchstart", onTouchStart)
+      window.removeEventListener("touchend", onTouchEnd)
+    }
   }, [thoughts.length])
 
   const prevLabel = useMemo(
@@ -347,15 +374,15 @@ function TimelineMode({
                       onClick={() => onPick(globalIdx)}
                       className="relative mb-7 -ml-3 cursor-pointer rounded-md px-3 pb-2 pt-1 transition-colors hover:bg-muted/60 scroll-mt-28"
                     >
-                      <div
-                        className={cn(
-                          "absolute left-[-12px] top-[7px] h-[7px] w-[7px] rounded-full border-[1.5px]",
-                          isLatest
-                            ? "bg-primary border-primary"
-                            : "bg-background border-muted-foreground/60",
-                        )}
-                      />
-                      <div className="mb-1.5 flex items-center gap-3">
+                      <div className="relative mb-1.5 flex items-center gap-3">
+                        <span
+                          className={cn(
+                            "absolute left-[-24px] top-1/2 -translate-y-1/2 h-[7px] w-[7px] rounded-full border-[1.5px]",
+                            isLatest
+                              ? "bg-primary border-primary"
+                              : "bg-background border-muted-foreground/60",
+                          )}
+                        />
                         <span className="font-mono text-[13px] text-muted-foreground">
                           {t.date.slice(5)}
                         </span>
