@@ -37,18 +37,6 @@ jobs:
         run: |
           python scripts/test_feishu_bitable.py
 
-      - name: Sync comics from komiic
-        env:
-          KOMIIC_EMAIL: ${{ secrets.KOMIIC_EMAIL }}
-          KOMIIC_PASSWORD: ${{ secrets.KOMIIC_PASSWORD }}
-          KOMIIC_TOKEN: ${{ secrets.KOMIIC_TOKEN }}
-        run: |
-          if [ -z "$KOMIIC_EMAIL" ] && [ -z "$KOMIIC_TOKEN" ]; then
-            echo "[komiic] no credentials configured, skipping"
-            exit 0
-          fi
-          python scripts/sync_komiic.py
-
       - name: Commit and push if changed
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
