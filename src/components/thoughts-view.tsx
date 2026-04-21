@@ -76,8 +76,8 @@ function QuietMode({
   onSwitchMode: (m: Mode) => void
 }) {
   const t = thoughts[idx]
-  const prev = thoughts[(idx + 1) % thoughts.length]
-  const next = thoughts[(idx - 1 + thoughts.length) % thoughts.length]
+  const prev = thoughts[(idx - 1 + thoughts.length) % thoughts.length]
+  const next = thoughts[(idx + 1) % thoughts.length]
 
   const idxRef = useRef(idx)
   idxRef.current = idx
@@ -92,8 +92,8 @@ function QuietMode({
         if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) return
       }
       const cur = idxRef.current
-      if (e.key === "ArrowLeft") onJumpRef.current((cur + 1) % len)
-      if (e.key === "ArrowRight") onJumpRef.current((cur - 1 + len) % len)
+      if (e.key === "ArrowLeft") onJumpRef.current((cur - 1 + len) % len)
+      if (e.key === "ArrowRight") onJumpRef.current((cur + 1) % len)
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
@@ -119,7 +119,7 @@ function QuietMode({
 
       {/* prev rail (desktop only) */}
       <button
-        onClick={() => onJump((idx + 1) % thoughts.length)}
+        onClick={() => onJump((idx - 1 + thoughts.length) % thoughts.length)}
         aria-label="前一则"
         className="hidden lg:flex fixed left-10 top-1/2 -translate-y-1/2 flex-col items-center gap-3.5 border-0 bg-transparent cursor-pointer font-mono text-[12px] tracking-widest text-muted-foreground opacity-60 hover:opacity-100 transition-opacity"
       >
@@ -131,7 +131,7 @@ function QuietMode({
         </span>
       </button>
       <button
-        onClick={() => onJump((idx - 1 + thoughts.length) % thoughts.length)}
+        onClick={() => onJump((idx + 1) % thoughts.length)}
         aria-label="后一则"
         className="hidden lg:flex fixed right-10 top-1/2 -translate-y-1/2 flex-col items-center gap-3.5 border-0 bg-transparent cursor-pointer font-mono text-[12px] tracking-widest text-muted-foreground opacity-60 hover:opacity-100 transition-opacity"
       >
