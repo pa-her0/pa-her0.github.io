@@ -271,13 +271,11 @@ function TimelineMode({
   thoughts,
   activeTag,
   onTagChange,
-  onPick,
   onSwitchMode,
 }: {
   thoughts: ThoughtMeta[]
   activeTag: string
   onTagChange: (t: string) => void
-  onPick: (i: number) => void
   onSwitchMode: (m: Mode) => void
 }) {
   const allTags = useMemo(
@@ -377,8 +375,7 @@ function TimelineMode({
                     <div
                       key={t.slug}
                       id={`thought-${t.slug}`}
-                      onClick={() => onPick(globalIdx)}
-                      className="relative mb-7 -ml-3 cursor-pointer rounded-md px-3 pb-2 pt-1 transition-colors hover:bg-muted/60 scroll-mt-28"
+                      className="relative mb-7 -ml-3 rounded-md px-3 pb-2 pt-1 scroll-mt-28"
                     >
                       <div className="relative mb-1.5 flex items-center gap-3">
                         <span
@@ -495,6 +492,7 @@ export function ThoughtsView({ thoughts }: { thoughts: ThoughtMeta[] }) {
     (i: number) => {
       setIdx(i)
       syncHash(thoughts[i]?.slug ?? null)
+      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior })
     },
     [syncHash, thoughts],
   )
@@ -506,15 +504,6 @@ export function ThoughtsView({ thoughts }: { thoughts: ThoughtMeta[] }) {
       else syncHash(thoughts[idx]?.slug ?? null)
     },
     [syncHash, thoughts, idx],
-  )
-
-  const handlePickFromTimeline = useCallback(
-    (i: number) => {
-      setIdx(i)
-      setMode("quiet")
-      syncHash(thoughts[i]?.slug ?? null)
-    },
-    [syncHash, thoughts],
   )
 
   const handleTagChange = useCallback(
@@ -545,7 +534,6 @@ export function ThoughtsView({ thoughts }: { thoughts: ThoughtMeta[] }) {
       thoughts={thoughts}
       activeTag={activeTag}
       onTagChange={handleTagChange}
-      onPick={handlePickFromTimeline}
       onSwitchMode={handleSwitchMode}
     />
   )
