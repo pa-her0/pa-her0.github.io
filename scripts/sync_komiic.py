@@ -1,9 +1,13 @@
 """
 从 komiic.com 拉取当前账号的收藏漫画，写入 public/data/comics.json。
 
-权限：需要环境变量
-  KOMIIC_TOKEN        —— komiic-access-token（JWT，浏览器 cookie 里）
-  KOMIIC_CF_CLEARANCE —— cf_clearance（Cloudflare 防爬 cookie，同一浏览器）
+权限（二选一）：
+  推荐 —— 账号密码（可以长期自动，每次登录拿新 token）
+    KOMIIC_EMAIL
+    KOMIIC_PASSWORD
+
+  也可以直接塞已登录的 JWT（24h 有效，到期要手动换）
+    KOMIIC_TOKEN
 
 输出格式与 Feishu 管线一致：
   {"data": {"items": [{"fields": {...}, "id": ..., "record_id": ...}, ...], "total": N}}
@@ -20,9 +24,11 @@ from io import BytesIO
 from PIL import Image
 
 
+LOGIN_ENDPOINT = "https://komiic.com/api/login"
 KOMIIC_ENDPOINT = "https://komiic.com/api/query"
+EMAIL = os.getenv("KOMIIC_EMAIL")
+PASSWORD = os.getenv("KOMIIC_PASSWORD")
 TOKEN = os.getenv("KOMIIC_TOKEN")
-CF = os.getenv("KOMIIC_CF_CLEARANCE")
 
 REPO_ROOT = os.path.dirname(os.path.dirname(__file__))
 OUTPUT_JSON = os.path.join(REPO_ROOT, "public", "data", "comics.json")
@@ -43,29 +49,66 @@ STATUS_MAP = {
 }
 
 
-def _headers():
-    cookie_parts = [f"komiic-access-token={TOKEN}"]
-    if CF:
-        cookie_parts.append(f"cf_clearance={CF}")
+UA = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
+)
+
+
+def login(email: str, password: str) -> str:
+    """用账号密码登录，拿 24h JWT"""
+    body = json.dumps({"email": email, "password": password}).encode()
+    req = urllib.request.Request(
+        LOGIN_ENDPOINT, data=body, method="POST",
+        headers={
+            "Content-Type": "application/json",
+            "Origin": "https://komiic.com",
+            "Referer": "https://komiic.com/login",
+            "User-Agent": UA,
+        },
+    )
+    with urllib.request.urlopen(req, timeout=15) as r:
+        payload = json.loads(r.read())
+    token = payload.get("token")
+    if not token:
+        raise RuntimeError(f"login response missing token: {payload}")
+    return token
+
+
+def resolve_token() -> str:
+    """先试 KOMIIC_TOKEN，否则用账号密码登录"""
+    if TOKEN:
+        print("[komiic] using KOMIIC_TOKEN from env")
+        return TOKEN
+    if EMAIL and PASSWORD:
+        print(f"[komiic] logging in as {EMAIL}")
+        return login(EMAIL, PASSWORD)
+    raise RuntimeError(
+        "no auth: set either KOMIIC_TOKEN, or both KOMIIC_EMAIL and KOMIIC_PASSWORD"
+    )
+
+
+def _headers(token: str):
     return {
         "Content-Type": "application/json",
         "Origin": "https://komiic.com",
         "Referer": "https://komiic.com/favorite",
-        "Cookie": "; ".join(cookie_parts),
-        "User-Agent": (
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"
-        ),
+        "Cookie": f"komiic-access-token={token}",
+        "User-Agent": UA,
     }
 
 
+_TOKEN: str | None = None
+
+
 def graphql(operation: str, query: str, variables: dict) -> dict:
+    assert _TOKEN, "token not initialized"
     body = json.dumps({
         "operationName": operation,
         "variables": variables,
         "query": query,
     }).encode()
-    req = urllib.request.Request(KOMIIC_ENDPOINT, data=body, headers=_headers(), method="POST")
+    req = urllib.request.Request(KOMIIC_ENDPOINT, data=body, headers=_headers(_TOKEN), method="POST")
     with urllib.request.urlopen(req, timeout=30) as r:
         payload = json.loads(r.read())
     if "errors" in payload:
@@ -245,8 +288,11 @@ def to_record(c: dict, progress: dict | None) -> dict:
 
 
 def main():
-    if not TOKEN:
-        print("Error: KOMIIC_TOKEN env var required (komiic-access-token cookie value)")
+    global _TOKEN
+    try:
+        _TOKEN = resolve_token()
+    except Exception as e:
+        print(f"Error: {e}")
         return 1
 
     print("[komiic] fetching favorites...")

@@ -38,10 +38,11 @@ jobs:
           python scripts/test_feishu_bitable.py
 
       - name: Sync comics from komiic
-        if: ${{ secrets.KOMIIC_TOKEN != '' }}
+        if: ${{ secrets.KOMIIC_EMAIL != '' || secrets.KOMIIC_TOKEN != '' }}
         env:
+          KOMIIC_EMAIL: ${{ secrets.KOMIIC_EMAIL }}
+          KOMIIC_PASSWORD: ${{ secrets.KOMIIC_PASSWORD }}
           KOMIIC_TOKEN: ${{ secrets.KOMIIC_TOKEN }}
-          KOMIIC_CF_CLEARANCE: ${{ secrets.KOMIIC_CF_CLEARANCE }}
         run: |
           python scripts/sync_komiic.py
 
