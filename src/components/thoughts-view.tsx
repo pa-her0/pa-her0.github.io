@@ -139,8 +139,8 @@ function QuietMode({
 
   return (
     <div key="quiet" className="thoughts-cross-fade relative w-full font-sans text-foreground">
-      {/* mode switch */}
-      <div className="absolute right-4 sm:right-8 top-4 sm:top-6 z-10">
+      {/* mode switch (desktop: top-right) */}
+      <div className="hidden sm:block absolute right-8 top-6 z-10">
         <ModeSwitch mode="quiet" onChange={onSwitchMode} />
       </div>
 
@@ -176,6 +176,9 @@ function QuietMode({
         className="thoughts-fade-up mx-auto"
         style={{ maxWidth: 640, padding: "56px 24px 80px" }}
       >
+        <div className="flex justify-center mb-10 sm:hidden">
+          <ModeSwitch mode="quiet" onChange={onSwitchMode} />
+        </div>
         <div className="text-center mb-16 sm:mb-20">
           <div
             className="font-serif italic text-[11px] text-muted-foreground uppercase"
@@ -302,24 +305,27 @@ function TimelineMode({
   }, [thoughts])
 
   return (
-    <div key="timeline" className="thoughts-cross-fade w-full font-sans text-foreground">
+    <div key="timeline" className="thoughts-cross-fade relative w-full font-sans text-foreground">
+      <div className="hidden sm:block absolute right-8 top-6 z-10">
+        <ModeSwitch mode="timeline" onChange={onSwitchMode} />
+      </div>
       <div className="mx-auto" style={{ maxWidth: 760, padding: "40px 24px 80px" }}>
-        <div className="mb-3.5 flex flex-wrap items-end justify-between gap-5">
-          <div>
-            <div
-              className="font-mono text-[11px] uppercase text-muted-foreground mb-2.5"
-              style={{ letterSpacing: 3 }}
-            >
-              SERENDIPITY
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-[3px] h-7 rounded-sm bg-primary" />
-              <div className="font-serif text-[36px] font-bold leading-none tracking-tight text-foreground">
-                偶得
-              </div>
+        <div className="mb-8 flex justify-center sm:hidden">
+          <ModeSwitch mode="timeline" onChange={onSwitchMode} />
+        </div>
+        <div className="mb-3.5">
+          <div
+            className="font-mono text-[11px] uppercase text-muted-foreground mb-2.5"
+            style={{ letterSpacing: 3 }}
+          >
+            SERENDIPITY
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-[3px] h-7 rounded-sm bg-primary" />
+            <div className="font-serif text-[36px] font-bold leading-none tracking-tight text-foreground">
+              偶得
             </div>
           </div>
-          <ModeSwitch mode="timeline" onChange={onSwitchMode} />
         </div>
         <div className="mb-8 font-serif text-base leading-relaxed text-muted-foreground">
           那些没有长成一篇文章的碎念。短的一两行，长的几段话。按时间倒序排列，共 {thoughts.length} 则。
