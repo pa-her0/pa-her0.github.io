@@ -1,0 +1,75 @@
+{
+  "data": {
+    "items": [
+      {
+        "fields": {
+          "PDF链接": {
+            "link": "https://arxiv.org/abs/1706.03762",
+            "text": "arxiv/1706.03762"
+          },
+          "作者": "Vaswani et al.",
+          "年份": "2017",
+          "我的笔记": "开创性地证明了「注意力就够了」。多头的设计让模型能并行关注不同子空间的语义关系，训练效率相对 RNN 是质变。",
+          "推荐状态": "推荐",
+          "标题": "Attention Is All You Need",
+          "核心观点": "完全抛弃 RNN/CNN，只用自注意力机制构建 Transformer。位置编码 + 多头注意力 + 残差归一化，奠定了之后十年 NLP 乃至多模态的基础架构。",
+          "领域": "LLM"
+        },
+        "id": "recvho5PSBrM8O",
+        "record_id": "recvho5PSBrM8O"
+      },
+      {
+        "fields": {
+          "PDF链接": {
+            "link": "https://arxiv.org/abs/2005.14165",
+            "text": "arxiv/2005.14165"
+          },
+          "作者": "Brown et al.",
+          "年份": "2020",
+          "我的笔记": "prompt engineering 的起点。最震撼的是它把微调时代翻篇了——你不用改权重，会说话就行。",
+          "推荐状态": "推荐",
+          "标题": "Language Models are Few-Shot Learners",
+          "核心观点": "GPT-3 横空出世，175B 参数 + in-context learning 让「提示工程」成为新范式。规模定律下涌现能力初现。",
+          "领域": "LLM"
+        },
+        "id": "recvho5PSBkYQO",
+        "record_id": "recvho5PSBkYQO"
+      },
+      {
+        "fields": {
+          "PDF链接": {
+            "link": "https://arxiv.org/abs/2006.11239",
+            "text": "arxiv/2006.11239"
+          },
+          "作者": "Ho, Jain, Abbeel",
+          "年份": "2020",
+          "我的笔记": "DDPM 是现代扩散模型的基石。Stable Diffusion、Sora 追根溯源都绕不开它。相较 GAN 稳定太多。",
+          "推荐状态": "推荐",
+          "标题": "Denoising Diffusion Probabilistic Models",
+          "核心观点": "通过前向逐步加噪、反向逐步去噪的马尔可夫链来建模图像分布。简化的 ELBO 目标让训练变成回归噪声。",
+          "领域": "Diffusion"
+        },
+        "id": "recvho5PSBClpK",
+        "record_id": "recvho5PSBClpK"
+      },
+      {
+        "fields": {
+          "PDF链接": {
+            "link": "https://arxiv.org/abs/2212.08073",
+            "text": "arxiv/2212.08073"
+          },
+          "作者": "Bai et al.",
+          "年份": "2022",
+          "我的笔记": "Anthropic 的看家本领。相较 RLHF 更可扩展，但「谁来写宪法」这个元问题其实更难。",
+          "推荐状态": "推荐",
+          "标题": "Constitutional AI: Harmlessness from AI Feedback",
+          "核心观点": "用一组「宪法」原则引导模型自我批评和修正，配合 RLAIF 实现无害对齐，减少对人类标注的依赖。",
+          "领域": "LLM"
+        },
+        "id": "recvho5PSBVRA3",
+        "record_id": "recvho5PSBVRA3"
+      }
+    ],
+    "total": 4
+  }
+}
