@@ -1,0 +1,519 @@
+"use client"
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { cn } from "@/lib/utils"
+
+export type ThoughtMeta = {
+  slug: string
+  title?: string
+  content: string
+  date: string
+  tags: string[]
+}
+
+type Mode = "quiet" | "timeline"
+
+const MODE_KEY = "thoughts.mode"
+const IDX_KEY = "thoughts.idx"
+
+function stripHtmlToPreview(html: string, max = 10) {
+  const text = html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()
+  return text.length > max ? text.slice(0, max) + "…" : text
+}
+
+function ModeSwitch({ mode, onChange }: { mode: Mode; onChange: (m: Mode) => void }) {
+  const btn = (key: Mode, label: string, icon: React.ReactNode) => {
+    const on = mode === key
+    return (
+      <button
+        onClick={() => onChange(key)}
+        className={cn(
+          "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] transition-all",
+          on
+            ? "bg-foreground text-background font-medium"
+            : "text-muted-foreground hover:text-foreground",
+        )}
+        style={{ letterSpacing: 0.3 }}
+      >
+        {icon}
+        {label}
+      </button>
+    )
+  }
+  return (
+    <div className="inline-flex items-center gap-0.5 p-[3px] rounded-full bg-muted border border-border">
+      {btn(
+        "quiet",
+        "专注",
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="8" cy="8" r="3" />
+          <circle cx="8" cy="8" r="6" opacity="0.4" />
+        </svg>,
+      )}
+      {btn(
+        "timeline",
+        "时间线",
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <circle cx="4" cy="4" r="1.5" fill="currentColor" />
+          <circle cx="4" cy="12" r="1.5" />
+          <path d="M4 5.5v5" />
+          <path d="M7 4h6M7 12h5" />
+        </svg>,
+      )}
+    </div>
+  )
+}
+
+function QuietMode({
+  thoughts,
+  idx,
+  onJump,
+  onSwitchMode,
+}: {
+  thoughts: ThoughtMeta[]
+  idx: number
+  onJump: (i: number) => void
+  onSwitchMode: (m: Mode) => void
+}) {
+  const t = thoughts[idx]
+  const prev = thoughts[(idx + 1) % thoughts.length]
+  const next = thoughts[(idx - 1 + thoughts.length) % thoughts.length]
+
+  const idxRef = useRef(idx)
+  idxRef.current = idx
+  const onJumpRef = useRef(onJump)
+  onJumpRef.current = onJump
+
+  useEffect(() => {
+    const len = thoughts.length
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLElement) {
+        const tag = e.target.tagName
+        if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) return
+      }
+      const cur = idxRef.current
+      if (e.key === "ArrowLeft") onJumpRef.current((cur + 1) % len)
+      if (e.key === "ArrowRight") onJumpRef.current((cur - 1 + len) % len)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [thoughts.length])
+
+  const prevLabel = useMemo(
+    () => prev.title || stripHtmlToPreview(prev.content),
+    [prev],
+  )
+  const nextLabel = useMemo(
+    () => next.title || stripHtmlToPreview(next.content),
+    [next],
+  )
+
+  if (!t) return null
+
+  return (
+    <div key="quiet" className="thoughts-cross-fade relative w-full font-sans text-foreground">
+      {/* mode switch */}
+      <div className="absolute right-4 sm:right-8 top-4 sm:top-6 z-10">
+        <ModeSwitch mode="quiet" onChange={onSwitchMode} />
+      </div>
+
+      {/* prev rail (desktop only) */}
+      <button
+        onClick={() => onJump((idx + 1) % thoughts.length)}
+        aria-label="前一则"
+        className="hidden lg:flex fixed left-10 top-1/2 -translate-y-1/2 flex-col items-center gap-3.5 border-0 bg-transparent cursor-pointer font-mono text-[12px] tracking-widest text-muted-foreground opacity-60 hover:opacity-100 transition-opacity"
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+          <path d="M9 2L3 7l6 5" />
+        </svg>
+        <span style={{ writingMode: "vertical-rl", letterSpacing: 2 }}>
+          前一则 · {prevLabel}
+        </span>
+      </button>
+      <button
+        onClick={() => onJump((idx - 1 + thoughts.length) % thoughts.length)}
+        aria-label="后一则"
+        className="hidden lg:flex fixed right-10 top-1/2 -translate-y-1/2 flex-col items-center gap-3.5 border-0 bg-transparent cursor-pointer font-mono text-[12px] tracking-widest text-muted-foreground opacity-60 hover:opacity-100 transition-opacity"
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+          <path d="M5 2l6 5-6 5" />
+        </svg>
+        <span style={{ writingMode: "vertical-rl", letterSpacing: 2 }}>
+          后一则 · {nextLabel}
+        </span>
+      </button>
+
+      {/* content */}
+      <article
+        key={t.slug}
+        className="thoughts-fade-up mx-auto"
+        style={{ maxWidth: 640, padding: "56px 24px 80px" }}
+      >
+        <div className="text-center mb-16 sm:mb-20">
+          <div
+            className="font-serif italic text-[11px] text-muted-foreground uppercase"
+            style={{ letterSpacing: 5 }}
+          >
+            Serendipity · №{" "}
+            {String(thoughts.length - idx).padStart(2, "0")} of {thoughts.length}
+          </div>
+          <div
+            className="mt-3 font-mono text-[12px] text-muted-foreground"
+            style={{ letterSpacing: 2 }}
+          >
+            {t.date.replace(/[.\-]/g, " · ")}
+          </div>
+        </div>
+
+        {t.title ? (
+          <h1
+            className="font-serif text-center text-foreground"
+            style={{
+              fontSize: "clamp(32px, 6vw, 52px)",
+              fontWeight: 500,
+              margin: "0 0 60px",
+              letterSpacing: 4,
+              lineHeight: 1.3,
+            }}
+          >
+            {t.title}
+          </h1>
+        ) : (
+          <div
+            className="text-center font-serif italic text-muted-foreground"
+            style={{ fontSize: 20, marginBottom: 60, letterSpacing: 2 }}
+          >
+            — 无题 —
+          </div>
+        )}
+
+        <div
+          className="font-serif text-foreground/85 thoughts-quiet-body"
+          style={{
+            fontSize: 18,
+            lineHeight: 2.0,
+            textAlign: "left",
+          }}
+          dangerouslySetInnerHTML={{ __html: t.content }}
+        />
+
+        {t.tags.length > 0 && (
+          <div
+            className="flex items-center justify-center gap-6 font-mono text-[12px] text-muted-foreground"
+            style={{ marginTop: 80, letterSpacing: 1 }}
+          >
+            <span className="inline-block h-px w-10 bg-border" />
+            <span>{t.tags.map((tag) => "#" + tag).join("  ·  ")}</span>
+            <span className="inline-block h-px w-10 bg-border" />
+          </div>
+        )}
+
+        <div
+          className="mx-auto mt-7 flex flex-wrap justify-center gap-1.5"
+          style={{ maxWidth: 400 }}
+        >
+          {thoughts.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => onJump(i)}
+              aria-label={`跳到第 ${i + 1} 则`}
+              className={cn(
+                "rounded-sm border-0 p-0 cursor-pointer transition-all",
+                i === idx ? "bg-primary opacity-100" : "bg-muted-foreground opacity-40 hover:opacity-70",
+              )}
+              style={{ width: i === idx ? 18 : 4, height: 4 }}
+            />
+          ))}
+        </div>
+
+        <div
+          className="mt-11 text-center font-mono text-[11px] text-muted-foreground"
+          style={{ letterSpacing: 2 }}
+        >
+          <kbd className="thoughts-kbd">←</kbd> 前一则 &nbsp;·&nbsp; <kbd className="thoughts-kbd">→</kbd> 后一则
+        </div>
+      </article>
+    </div>
+  )
+}
+
+function TimelineMode({
+  thoughts,
+  activeTag,
+  onTagChange,
+  onPick,
+  onSwitchMode,
+}: {
+  thoughts: ThoughtMeta[]
+  activeTag: string
+  onTagChange: (t: string) => void
+  onPick: (i: number) => void
+  onSwitchMode: (m: Mode) => void
+}) {
+  const allTags = useMemo(
+    () => Array.from(new Set(thoughts.flatMap((t) => t.tags))),
+    [thoughts],
+  )
+  const filter = (t: ThoughtMeta) => activeTag === "全部" || t.tags.includes(activeTag)
+
+  const slugIndex = useMemo(() => {
+    const m = new Map<string, number>()
+    thoughts.forEach((t, i) => m.set(t.slug, i))
+    return m
+  }, [thoughts])
+
+  const groups = useMemo(() => {
+    const map = new Map<string, ThoughtMeta[]>()
+    for (const t of thoughts) {
+      const year = t.date.slice(0, 4)
+      if (!map.has(year)) map.set(year, [])
+      map.get(year)!.push(t)
+    }
+    return Array.from(map.entries())
+      .sort((a, b) => (a[0] < b[0] ? 1 : -1))
+      .map(([year, items]) => ({ year, items }))
+  }, [thoughts])
+
+  return (
+    <div key="timeline" className="thoughts-cross-fade w-full font-sans text-foreground">
+      <div className="mx-auto" style={{ maxWidth: 760, padding: "40px 24px 80px" }}>
+        <div className="mb-3.5 flex flex-wrap items-end justify-between gap-5">
+          <div>
+            <div
+              className="font-mono text-[11px] uppercase text-muted-foreground mb-2.5"
+              style={{ letterSpacing: 3 }}
+            >
+              SERENDIPITY
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-[3px] h-7 rounded-sm bg-primary" />
+              <div className="font-serif text-[36px] font-bold leading-none tracking-tight text-foreground">
+                偶得
+              </div>
+            </div>
+          </div>
+          <ModeSwitch mode="timeline" onChange={onSwitchMode} />
+        </div>
+        <div className="mb-8 font-serif text-base leading-relaxed text-muted-foreground">
+          那些没有长成一篇文章的碎念。短的一两行，长的几段话。按时间倒序排列，共 {thoughts.length} 则。
+        </div>
+
+        <div className="mb-10 flex flex-wrap gap-1.5 border-b border-border pb-5">
+          {["全部", ...allTags].map((tag) => {
+            const on = activeTag === tag
+            return (
+              <button
+                key={tag}
+                onClick={() => onTagChange(tag)}
+                className={cn(
+                  "rounded-full px-3.5 py-1.5 text-[13px] transition-all",
+                  on
+                    ? "bg-foreground text-background border border-foreground"
+                    : "border border-border bg-transparent text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {tag === "全部" ? "全部" : "#" + tag}
+              </button>
+            )
+          })}
+        </div>
+
+        {groups.map((group) => {
+          const items = group.items.filter(filter)
+          if (!items.length) return null
+          return (
+            <div key={group.year} className="mb-10">
+              <div className="mb-6 flex items-center gap-4">
+                <div
+                  className="font-mono text-[14px] font-semibold text-muted-foreground"
+                  style={{ letterSpacing: 2 }}
+                >
+                  {group.year}
+                </div>
+                <div className="h-px flex-1 bg-border" />
+                <div className="font-mono text-[12px] text-muted-foreground">
+                  {items.length} 则
+                </div>
+              </div>
+              <div className="relative pl-6">
+                <div className="absolute left-[3px] top-2 bottom-2 w-px bg-border" />
+                {items.map((t) => {
+                  const globalIdx = slugIndex.get(t.slug) ?? 0
+                  const isLatest = globalIdx === 0
+                  return (
+                    <div
+                      key={t.slug}
+                      id={`thought-${t.slug}`}
+                      onClick={() => onPick(globalIdx)}
+                      className="relative mb-7 -ml-3 cursor-pointer rounded-md px-3 pb-2 pt-1 transition-colors hover:bg-muted/60 scroll-mt-28"
+                    >
+                      <div
+                        className={cn(
+                          "absolute left-[-12px] top-[7px] h-[7px] w-[7px] rounded-full border-[1.5px]",
+                          isLatest
+                            ? "bg-primary border-primary"
+                            : "bg-background border-muted-foreground/60",
+                        )}
+                      />
+                      <div className="mb-1.5 flex items-center gap-3">
+                        <span className="font-mono text-[13px] text-muted-foreground">
+                          {t.date.slice(5)}
+                        </span>
+                        {t.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="font-mono text-[12px] text-muted-foreground/80"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                      {t.title && (
+                        <div className="mb-2 font-serif text-xl font-semibold leading-snug text-foreground">
+                          {t.title}
+                        </div>
+                      )}
+                      <div
+                        className="font-serif text-base leading-[1.9] text-foreground/85 thoughts-timeline-body"
+                        dangerouslySetInnerHTML={{ __html: t.content }}
+                      />
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
+
+        {thoughts.length === 0 && (
+          <div className="py-12 text-center text-muted-foreground">暂无偶得</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export function ThoughtsView({ thoughts }: { thoughts: ThoughtMeta[] }) {
+  const total = thoughts.length
+  const [mode, setMode] = useState<Mode>("quiet")
+  const [idx, setIdx] = useState(0)
+  const [activeTag, setActiveTag] = useState("全部")
+  const [hydrated, setHydrated] = useState(false)
+
+  // Resolve initial state from URL hash / query / localStorage
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const hash = window.location.hash
+    const query = new URLSearchParams(window.location.search)
+
+    let initialMode: Mode = (localStorage.getItem(MODE_KEY) as Mode) || "quiet"
+    let initialIdx = Math.min(
+      Math.max(Number(localStorage.getItem(IDX_KEY) || 0) || 0, 0),
+      Math.max(total - 1, 0),
+    )
+
+    const hashMatch = hash.match(/^#thought-(.+)$/)
+    if (hashMatch) {
+      const slug = decodeURIComponent(hashMatch[1])
+      const i = thoughts.findIndex((t) => t.slug === slug)
+      if (i >= 0) {
+        initialIdx = i
+        initialMode = "quiet"
+      }
+    }
+
+    const queryTag = query.get("tag")?.trim()
+    if (queryTag) {
+      if (queryTag === "全部" || thoughts.some((t) => t.tags.includes(queryTag))) {
+        setActiveTag(queryTag)
+        initialMode = "timeline"
+      }
+    }
+
+    setMode(initialMode)
+    setIdx(initialIdx)
+    setHydrated(true)
+  }, [thoughts, total])
+
+  useEffect(() => {
+    if (hydrated) localStorage.setItem(MODE_KEY, mode)
+  }, [hydrated, mode])
+
+  useEffect(() => {
+    if (hydrated) localStorage.setItem(IDX_KEY, String(idx))
+  }, [hydrated, idx])
+
+  const syncHash = useCallback((slug: string | null) => {
+    if (typeof window === "undefined") return
+    const url = new URL(window.location.href)
+    url.hash = slug ? `thought-${slug}` : ""
+    window.history.replaceState({}, "", url.toString())
+  }, [])
+
+  const syncTag = useCallback((tag: string) => {
+    if (typeof window === "undefined") return
+    const url = new URL(window.location.href)
+    if (tag && tag !== "全部") url.searchParams.set("tag", tag)
+    else url.searchParams.delete("tag")
+    window.history.replaceState({}, "", url.toString())
+  }, [])
+
+  const handleJump = useCallback(
+    (i: number) => {
+      setIdx(i)
+      syncHash(thoughts[i]?.slug ?? null)
+    },
+    [syncHash, thoughts],
+  )
+
+  const handleSwitchMode = useCallback(
+    (m: Mode) => {
+      setMode(m)
+      if (m === "timeline") syncHash(null)
+      else syncHash(thoughts[idx]?.slug ?? null)
+    },
+    [syncHash, thoughts, idx],
+  )
+
+  const handlePickFromTimeline = useCallback(
+    (i: number) => {
+      setIdx(i)
+      setMode("quiet")
+      syncHash(thoughts[i]?.slug ?? null)
+    },
+    [syncHash, thoughts],
+  )
+
+  const handleTagChange = useCallback(
+    (tag: string) => {
+      setActiveTag(tag)
+      syncTag(tag)
+    },
+    [syncTag],
+  )
+
+  if (total === 0) {
+    return (
+      <div className="mx-auto max-w-xl px-6 py-32 text-center text-muted-foreground">
+        暂无偶得
+      </div>
+    )
+  }
+
+  return mode === "quiet" ? (
+    <QuietMode
+      thoughts={thoughts}
+      idx={Math.min(idx, total - 1)}
+      onJump={handleJump}
+      onSwitchMode={handleSwitchMode}
+    />
+  ) : (
+    <TimelineMode
+      thoughts={thoughts}
+      activeTag={activeTag}
+      onTagChange={handleTagChange}
+      onPick={handlePickFromTimeline}
+      onSwitchMode={handleSwitchMode}
+    />
+  )
+}

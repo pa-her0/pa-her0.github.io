@@ -640,3 +640,59 @@ a.card-github:hover .github-logo {
 .hero-cursor {
   animation: hero-cursor-blink 0.9s ease-in-out infinite;
 }
+
+/* ——— 偶得 (thoughts) view ——— */
+@keyframes thoughts-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes thoughts-cross-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.thoughts-fade-up { animation: thoughts-fade-up 200ms cubic-bezier(.2,.7,.3,1) both; }
+.thoughts-cross-fade { animation: thoughts-cross-fade 220ms ease both; }
+
+.thoughts-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  padding: 1px 6px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+.thoughts-quiet-body > :first-child { margin-top: 0; }
+.thoughts-quiet-body p { margin: 0; }
+.thoughts-quiet-body p + p { margin-top: 28px; }
+.thoughts-quiet-body hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 48px -80px;
+  width: calc(100% + 160px);
+  max-width: 90vw;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (min-width: 768px) {
+  .thoughts-quiet-body hr {
+    width: calc(100% + 160px);
+    max-width: none;
+    margin-left: -80px;
+    margin-right: -80px;
+  }
+}
+
+.thoughts-timeline-body > :first-child { margin-top: 0; }
+.thoughts-timeline-body p { margin: 0; }
+.thoughts-timeline-body p + p { margin-top: 10px; }
+.thoughts-timeline-body hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
