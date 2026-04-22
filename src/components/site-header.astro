@@ -50,33 +50,174 @@ const navItems: { name: string; href: string; external?: boolean }[] = [
       <ThemeToggle />
     </div>
 
-    <details class="md:hidden col-start-3 justify-self-end relative">
-      <summary class="list-none flex items-center gap-2 cursor-pointer">
-        <ThemeToggle />
-        <span class="p-2" aria-label="Toggle menu">
-          <span class="block w-5 h-px bg-foreground mb-1" />
-          <span class="block w-5 h-px bg-foreground mb-1" />
-          <span class="block w-5 h-px bg-foreground" />
-        </span>
-      </summary>
-      <div class="absolute right-0 mt-3 w-56 rounded-xl border border-border bg-card p-3 shadow-xl">
-        <div class="mb-2">
-          <HeaderSearch client:idle />
-        </div>
-        <nav class="flex flex-col gap-1">
-          {navItems.map((item) => (
-            <a
-              href={item.href}
-              target={item.external ? "_blank" : undefined}
-              rel={item.external ? "noreferrer" : undefined}
-              data-astro-prefetch={item.external ? undefined : ""}
-              class="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 px-2 py-1.5 rounded-md hover:bg-muted"
-            >
-              {item.name}
-            </a>
-          ))}
-        </nav>
-      </div>
-    </details>
+    <div class="flex items-center gap-1 md:hidden col-start-3 justify-self-end">
+      <HeaderSearch client:idle />
+      <ThemeToggle />
+      <button
+        id="mobile-menu-toggle"
+        type="button"
+        class="p-2 -mr-2 text-foreground"
+        aria-label="打开菜单"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <span class="block w-5 h-px bg-current mb-1.5" />
+        <span class="block w-5 h-px bg-current mb-1.5" />
+        <span class="block w-5 h-px bg-current" />
+      </button>
+    </div>
   </div>
 </header>
+
+<div
+  id="mobile-menu"
+  class="mobile-menu md:hidden fixed inset-0 z-[60] opacity-0 pointer-events-none transition-opacity duration-300 ease-out"
+  aria-hidden="true"
+>
+  <div
+    class="absolute inset-0 bg-background/95 backdrop-blur-xl"
+    data-dismiss
+    aria-hidden="true"
+  ></div>
+
+  <div class="relative h-full flex flex-col">
+    <div class="flex items-center justify-end px-6 py-4">
+      <button
+        type="button"
+        class="p-2 -mr-2 text-foreground"
+        aria-label="关闭菜单"
+        data-dismiss
+      >
+        <span class="relative block w-5 h-5">
+          <span class="absolute left-0 top-1/2 w-full h-px -translate-y-1/2 rotate-45 bg-current" />
+          <span class="absolute left-0 top-1/2 w-full h-px -translate-y-1/2 -rotate-45 bg-current" />
+        </span>
+      </button>
+    </div>
+
+    <nav class="flex-1 flex flex-col items-center justify-center gap-7 px-8">
+      {navItems.map((item, i) => (
+        <a
+          href={item.href}
+          target={item.external ? "_blank" : undefined}
+          rel={item.external ? "noreferrer" : undefined}
+          data-astro-prefetch={item.external ? undefined : ""}
+          class="mobile-nav-item group text-3xl font-medium tracking-tight text-foreground"
+          style={`--stagger: ${60 + i * 40}ms`}
+        >
+          <span class="relative inline-block">
+            {item.name}
+            <span class="absolute left-0 -bottom-1 h-px w-full origin-right scale-x-0 bg-primary transition-transform duration-300 group-hover:origin-left group-hover:scale-x-100" />
+          </span>
+        </a>
+      ))}
+    </nav>
+
+  </div>
+</div>
+
+<style>
+  .mobile-menu[data-open="true"] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-menu .mobile-nav-item {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: 0ms;
+  }
+  .mobile-menu[data-open="true"] .mobile-nav-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: var(--stagger, 0ms);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-menu,
+    .mobile-menu .mobile-nav-item {
+      transition-duration: 1ms !important;
+      transform: none !important;
+    }
+  }
+</style>
+
+<script>
+  // Runs on initial page load AND after every Astro View Transition navigation.
+  // DOM nodes are replaced across navigations, so we must rebind listeners each time.
+  const initMobileMenu = () => {
+    const toggle = document.getElementById("mobile-menu-toggle")
+    const menu = document.getElementById("mobile-menu")
+    if (!toggle || !menu) return
+
+    // Prevent double-binding in case this element is preserved across transitions
+    if (toggle.dataset.menuBound === "1") return
+    toggle.dataset.menuBound = "1"
+
+    let prevOverflow = ""
+
+    const setOpen = (open: boolean) => {
+      const isOpen = menu.dataset.open === "true"
+      if (isOpen === open) return
+
+      menu.dataset.open = String(open)
+      menu.setAttribute("aria-hidden", String(!open))
+      toggle.setAttribute("aria-expanded", String(open))
+
+      if (open) {
+        prevOverflow = document.body.style.overflow
+        document.body.style.overflow = "hidden"
+        const firstLink = menu.querySelector<HTMLAnchorElement>("nav a")
+        if (firstLink) {
+          window.setTimeout(() => firstLink.focus({ preventScroll: true }), 100)
+        }
+      } else {
+        document.body.style.overflow = prevOverflow
+        toggle.focus({ preventScroll: true })
+      }
+    }
+
+    toggle.addEventListener("click", () => {
+      setOpen(menu.dataset.open !== "true")
+    })
+
+    menu.addEventListener("click", (event) => {
+      const target = event.target as HTMLElement | null
+      if (!target) return
+      if (target.closest("[data-dismiss]") || target.closest("a")) {
+        setOpen(false)
+      }
+    })
+
+    // Expose close handler for the module-level Escape listener
+    ;(menu as HTMLElement & { __close?: () => void }).__close = () => setOpen(false)
+  }
+
+  // ESC listener is global; bind only once per full page load.
+  if (!(window as unknown as { __menuEscBound?: boolean }).__menuEscBound) {
+    ;(window as unknown as { __menuEscBound?: boolean }).__menuEscBound = true
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return
+      const menu = document.getElementById("mobile-menu") as
+        | (HTMLElement & { __close?: () => void })
+        | null
+      if (menu?.dataset.open === "true") {
+        event.preventDefault()
+        menu.__close?.()
+      }
+    })
+  }
+
+  // Reset body scroll lock on navigation away while menu is open
+  document.addEventListener("astro:before-swap", () => {
+    const menu = document.getElementById("mobile-menu")
+    if (menu?.dataset.open === "true") {
+      document.body.style.overflow = ""
+    }
+  })
+
+  document.addEventListener("astro:page-load", initMobileMenu)
+</script>

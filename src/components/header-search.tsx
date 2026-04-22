@@ -220,7 +220,7 @@ export function HeaderSearch() {
           requestPagefindLoad()
           if (!isOpen) focusSearchInput(100)
         }}
-        className="md:hidden p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors"
+        className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors"
         aria-label="搜索"
       >
         <SearchIcon className="w-5 h-5" />
