@@ -178,7 +178,7 @@ function QuietMode({
         <div className="flex justify-center mb-10 sm:hidden">
           <ModeSwitch mode="quiet" onChange={onSwitchMode} />
         </div>
-        <div className="text-center mb-16 sm:mb-20">
+        <div className="text-center mb-10">
           <div
             className="font-serif italic text-[11px] text-muted-foreground uppercase"
             style={{ letterSpacing: 5 }}
@@ -191,6 +191,23 @@ function QuietMode({
             style={{ letterSpacing: 2 }}
           >
             {t.date.replace(/[.\-]/g, " · ")}
+          </div>
+          <div
+            className="mx-auto mt-5 flex flex-wrap justify-center gap-1.5"
+            style={{ maxWidth: 400 }}
+          >
+            {thoughts.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => onJump(i)}
+                aria-label={`跳到第 ${i + 1} 则`}
+                className={cn(
+                  "rounded-sm border-0 p-0 cursor-pointer transition-all",
+                  i === idx ? "bg-primary opacity-100" : "bg-muted-foreground opacity-40 hover:opacity-70",
+                )}
+                style={{ width: i === idx ? 18 : 4, height: 4 }}
+              />
+            ))}
           </div>
         </div>
 
@@ -236,24 +253,6 @@ function QuietMode({
             <span className="inline-block h-px w-10 bg-border" />
           </div>
         )}
-
-        <div
-          className="mx-auto mt-7 flex flex-wrap justify-center gap-1.5"
-          style={{ maxWidth: 400 }}
-        >
-          {thoughts.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => onJump(i)}
-              aria-label={`跳到第 ${i + 1} 则`}
-              className={cn(
-                "rounded-sm border-0 p-0 cursor-pointer transition-all",
-                i === idx ? "bg-primary opacity-100" : "bg-muted-foreground opacity-40 hover:opacity-70",
-              )}
-              style={{ width: i === idx ? 18 : 4, height: 4 }}
-            />
-          ))}
-        </div>
 
         <div
           className="mt-11 text-center font-mono text-[11px] text-muted-foreground"
