@@ -63,8 +63,8 @@ tags: ["杂感"]             # 可选
 
 ## 触发同步
 
-- **自动**：每 30 分钟跑一次（GitHub Actions 免费版的 cron 实际有漂移和跳过，半小时间隔最稳）
-- **手动**：到 GitHub repo → Actions → "Sync Thoughts from COS" → Run workflow
+- **自动**：每 12 小时跑一次（兜底用，确保最终一致）
+- **手动**（推荐日常用）：到 GitHub repo → Actions → "Sync Thoughts from COS" → Run workflow，秒级生效
 
 ## 本地调试
 
