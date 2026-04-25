@@ -1,4 +1,5 @@
 ---
+slug: 2024/12-28-ai-thinking
 title: "关于 AI 的一点思考"
 published: 2024-12-28
 tags: ["AI", "思考"]

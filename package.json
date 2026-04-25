@@ -7,12 +7,15 @@
     "start": "astro dev",
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "sync-thoughts": "node scripts/sync-thoughts.mjs",
+    "migrate-thoughts": "node scripts/migrate-thoughts.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.5.1",
+    "@aws-sdk/client-s3": "^3.1037.0",
     "@expressive-code/core": "^0.41.5",
     "@expressive-code/plugin-collapsible-sections": "^0.41.5",
     "@expressive-code/plugin-line-numbers": "^0.41.5",
@@ -55,6 +58,7 @@
     "crypto-js": "^4.2.0",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
+    "gray-matter": "^4.0.3",
     "hastscript": "^9.0.1",
     "input-otp": "1.4.1",
     "katex": "^0.16.22",

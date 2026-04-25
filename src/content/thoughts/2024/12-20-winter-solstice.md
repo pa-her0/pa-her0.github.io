@@ -1,4 +1,5 @@
 ---
+slug: 2024/12-20-winter-solstice
 published: 2024-12-20
 tags: ["生活"]
 ---

@@ -1,4 +1,5 @@
 ---
+slug: 2024/12-25-reading
 published: 2024-12-25
 tags: ["读书"]
 ---
