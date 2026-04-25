@@ -61,9 +61,19 @@ export function ArticleCard({
         <div className="flex-1 min-w-0">
           <h3 className="font-serif text-lg sm:text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-primary dark:group-hover:text-foreground transition-colors duration-75 flex items-start gap-2">
             <span className="w-1 h-6 shrink-0 bg-primary rounded-full mt-0.5" />
-            <a href={postHref} className="hover:text-primary transition-colors duration-75">
+            <a href={postHref} className="flex-1 min-w-0 hover:text-primary transition-colors duration-75">
               {article.title}
             </a>
+            {article.image ? (
+              <div className="sm:hidden block w-20 h-14 shrink-0 rounded-lg overflow-hidden">
+                <img
+                  src={article.image}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            ) : null}
           </h3>
 
           {/* Meta info */}
