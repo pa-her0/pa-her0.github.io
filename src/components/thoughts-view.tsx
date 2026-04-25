@@ -14,7 +14,6 @@ export type ThoughtMeta = {
 type Mode = "quiet" | "timeline"
 
 const MODE_KEY = "thoughts.mode"
-const IDX_KEY = "thoughts.idx"
 
 function stripHtmlToPreview(html: string, max = 10) {
   const text = html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()
@@ -284,11 +283,6 @@ function TimelineMode({
   )
   const filter = (t: ThoughtMeta) => activeTag === "全部" || t.tags.includes(activeTag)
 
-  const slugIndex = useMemo(() => {
-    const m = new Map<string, number>()
-    thoughts.forEach((t, i) => m.set(t.slug, i))
-    return m
-  }, [thoughts])
 
   const groups = useMemo(() => {
     const map = new Map<string, ThoughtMeta[]>()
@@ -369,8 +363,6 @@ function TimelineMode({
               <div className="relative pl-6">
                 <div className="absolute left-[3px] top-2 bottom-2 w-px bg-border" />
                 {items.map((t) => {
-                  const globalIdx = slugIndex.get(t.slug) ?? 0
-                  const isLatest = globalIdx === 0
                   return (
                     <div
                       key={t.slug}
@@ -379,12 +371,7 @@ function TimelineMode({
                     >
                       <div className="relative mb-1.5 flex items-center gap-3">
                         <span
-                          className={cn(
-                            "absolute left-[-24px] top-1/2 -translate-y-1/2 h-[7px] w-[7px] rounded-full border-[1.5px]",
-                            isLatest
-                              ? "bg-primary border-primary"
-                              : "bg-background border-muted-foreground/60",
-                          )}
+                          className="absolute left-[-24px] top-1/2 -translate-y-1/2 h-[7px] w-[7px] rounded-full border-[1.5px] bg-primary border-primary"
                         />
                         <span className="font-mono text-[13px] text-muted-foreground">
                           {t.date.slice(5)}
@@ -437,10 +424,8 @@ export function ThoughtsView({ thoughts }: { thoughts: ThoughtMeta[] }) {
     const query = new URLSearchParams(window.location.search)
 
     let initialMode: Mode = (localStorage.getItem(MODE_KEY) as Mode) || "quiet"
-    let initialIdx = Math.min(
-      Math.max(Number(localStorage.getItem(IDX_KEY) || 0) || 0, 0),
-      Math.max(total - 1, 0),
-    )
+    // Always start at the latest thought (idx 0). URL hash can still jump to a specific one.
+    let initialIdx = 0
 
     const hashMatch = hash.match(/^#thought-(.+)$/)
     if (hashMatch) {
@@ -468,10 +453,6 @@ export function ThoughtsView({ thoughts }: { thoughts: ThoughtMeta[] }) {
   useEffect(() => {
     if (hydrated) localStorage.setItem(MODE_KEY, mode)
   }, [hydrated, mode])
-
-  useEffect(() => {
-    if (hydrated) localStorage.setItem(IDX_KEY, String(idx))
-  }, [hydrated, idx])
 
   const syncHash = useCallback((slug: string | null) => {
     if (typeof window === "undefined") return
