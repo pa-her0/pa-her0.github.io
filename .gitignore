@@ -6,7 +6,6 @@ dist
 .wrangler
 
 AGENTS.md
-CLAUDE.md
 TODO.md
 Design/scripts/__pycache__/
 scripts/__pycache__/
