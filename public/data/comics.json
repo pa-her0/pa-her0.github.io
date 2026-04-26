@@ -3,53 +3,247 @@
     "items": [
       {
         "fields": {
-          "作品名": "灌篮高手",
-          "作者": "井上雄彦",
-          "推荐状态": "推荐",
-          "短评": "青春、热血、遗憾。樱木的成长弧线和安西教练那句「现在放弃的话，比赛就结束了」是刻进 DNA 的画面。结尾戛然而止反而成就了它。",
-          "连载状态": "完结",
-          "追读状态": "已读完"
-        },
-        "id": "recvho5KFNThoz",
-        "record_id": "recvho5KFNThoz"
-      },
-      {
-        "fields": {
-          "作品名": "浪客行",
-          "作者": "井上雄彦",
-          "推荐状态": "推荐",
-          "短评": "井上雄彦把剑道画成了哲学。宫本武藏从莽夫到求道者的转变，分镜和水墨感的运用无出其右。希望有生之年能看到完结。",
+          "komiic_id": "2100",
+          "作品名": "午夜心旋律",
+          "作者": "五十嵐正邦",
+          "封面URL": {
+            "link": "https://public.komiic.com/comics/d895b838e9a1ad82983003c3412ec1c0/cover.jpg",
+            "text": "https://public.komiic.com/comics/d895b838e9a1ad82983003c3412ec1c0/cover.jpg"
+          },
           "连载状态": "连载中",
-          "追读状态": "追更中"
+          "追读状态": "追更中",
+          "封面": [
+            {
+              "url": "https://public.komiic.com/comics/d895b838e9a1ad82983003c3412ec1c0/cover.jpg",
+              "local_path": "/images/comics/dfbfced95af84891638c80a39e41e693.webp"
+            }
+          ],
+          "komiic_url": "https://komiic.com/comic/2100"
         },
-        "id": "recvho5KFNpqlR",
-        "record_id": "recvho5KFNpqlR"
+        "id": "recvhS8tCkGy0c",
+        "record_id": "recvhS8tCkGy0c"
       },
       {
         "fields": {
-          "作品名": "进击的巨人",
-          "作者": "諫山創",
-          "推荐状态": "推荐",
-          "短评": "前期悬疑压迫感拉满，中期世界观反转是神作级别的调度。结局两极分化，但谏山创敢这么收已经是作者的胜利。",
-          "连载状态": "完结",
-          "追读状态": "已读完"
+          "komiic_id": "775",
+          "作品名": "憧憬成為魔法少女",
+          "作者": "小野中彰大",
+          "封面URL": {
+            "link": "https://public.komiic.com/comics/1df860357e24a70205f2f32e509e7713/cover.jpg",
+            "text": "https://public.komiic.com/comics/1df860357e24a70205f2f32e509e7713/cover.jpg"
+          },
+          "连载状态": "连载中",
+          "追读状态": "想读",
+          "封面": [
+            {
+              "url": "https://public.komiic.com/comics/1df860357e24a70205f2f32e509e7713/cover.jpg",
+              "local_path": "/images/comics/da8b15308ee949690a1277f882a34285.webp"
+            }
+          ],
+          "komiic_url": "https://komiic.com/comic/775"
         },
-        "id": "recvho5KFNwUKh",
-        "record_id": "recvho5KFNwUKh"
+        "id": "recvhS8tCk7K6E",
+        "record_id": "recvhS8tCk7K6E"
       },
       {
         "fields": {
-          "作品名": "鬼灭之刃",
-          "作者": "吾峠呼世晴",
-          "推荐状态": "中庸",
-          "短评": "剧情工整得像教科书，动画化加分太多。炭治郎的善良和家族羁绊是核心驱动力，但作为漫画本体略显平庸。",
-          "连载状态": "完结",
-          "追读状态": "已读完"
+          "komiic_id": "1696",
+          "作品名": "腦洞學生會",
+          "作者": "むちまろ",
+          "封面URL": {
+            "link": "https://public.komiic.com/comics/35fbab2fc9e60d03fcbaff0bade8d95a/cover.jpg",
+            "text": "https://public.komiic.com/comics/35fbab2fc9e60d03fcbaff0bade8d95a/cover.jpg"
+          },
+          "连载状态": "连载中",
+          "追读状态": "追更中",
+          "封面": [
+            {
+              "url": "https://public.komiic.com/comics/35fbab2fc9e60d03fcbaff0bade8d95a/cover.jpg",
+              "local_path": "/images/comics/bf44b469cf8d1576c7566bf9675f7d2c.webp"
+            }
+          ],
+          "komiic_url": "https://komiic.com/comic/1696"
         },
-        "id": "recvho5KFNdibD",
-        "record_id": "recvho5KFNdibD"
+        "id": "recvhS8tCkn30S",
+        "record_id": "recvhS8tCkn30S"
+      },
+      {
+        "fields": {
+          "komiic_id": "6416",
+          "作品名": "實衣與山田",
+          "作者": "亜月ねね",
+          "封面URL": {
+            "link": "https://public.komiic.com/comics/7fb66bb316c250841ab774b4d2c34721/cover.jpg",
+            "text": "https://public.komiic.com/comics/7fb66bb316c250841ab774b4d2c34721/cover.jpg"
+          },
+          "连载状态": "连载中",
+          "追读状态": "已读完",
+          "封面": [
+            {
+              "url": "https://public.komiic.com/comics/7fb66bb316c250841ab774b4d2c34721/cover.jpg",
+              "local_path": "/images/comics/ebd5add54c22c65a8324beebbb9a1338.webp"
+            }
+          ],
+          "komiic_url": "https://komiic.com/comic/6416"
+        },
+        "id": "recvhS8tCk3DL3",
+        "record_id": "recvhS8tCk3DL3"
+      },
+      {
+        "fields": {
+          "komiic_id": "1874",
+          "作品名": "毀掉一切地獄再愛",
+          "作者": "くわばらたもつ",
+          "封面URL": {
+            "link": "https://public.komiic.com/comics/f6d51b09bd00e19fec08752df39b68d4/cover.jpg",
+            "text": "https://public.komiic.com/comics/f6d51b09bd00e19fec08752df39b68d4/cover.jpg"
+          },
+          "连载状态": "连载中",
+          "追读状态": "想读",
+          "封面": [
+            {
+              "url": "https://public.komiic.com/comics/f6d51b09bd00e19fec08752df39b68d4/cover.jpg",
+              "local_path": "/images/comics/690c1f44b189fe724ea8fe0a24a8b7db.webp"
+            }
+          ],
+          "komiic_url": "https://komiic.com/comic/1874"
+        },
+        "id": "recvhS8tCkslbT",
+        "record_id": "recvhS8tCkslbT"
+      },
+      {
+        "fields": {
+          "komiic_id": "2326",
+          "作品名": "女裝男生想脫下裙子！",
+          "作者": "しなぎれ",
+          "封面URL": {
+            "link": "https://public.komiic.com/comics/02d3857daf8100364cc0c59458df6643/cover.jpg",
+            "text": "https://public.komiic.com/comics/02d3857daf8100364cc0c59458df6643/cover.jpg"
+          },
+          "连载状态": "连载中",
+          "追读状态": "已读完",
+          "封面": [
+            {
+              "url": "https://public.komiic.com/comics/02d3857daf8100364cc0c59458df6643/cover.jpg",
+              "local_path": "/images/comics/c882ebef9569a0a6ce16d72735483d2f.webp"
+            }
+          ],
+          "komiic_url": "https://komiic.com/comic/2326"
+        },
+        "id": "recvhS8tCkGNN5",
+        "record_id": "recvhS8tCkGNN5"
+      },
+      {
+        "fields": {
+          "komiic_id": "1903",
+          "作品名": "別當歐尼醬了！",
+          "作者": "貓豆腐",
+          "封面URL": {
+            "link": "https://public.komiic.com/comics/fafe7e716173fa2c77651e36810761b3/cover.jpg",
+            "text": "https://public.komiic.com/comics/fafe7e716173fa2c77651e36810761b3/cover.jpg"
+          },
+          "连载状态": "连载中",
+          "追读状态": "想读",
+          "封面": [
+            {
+              "url": "https://public.komiic.com/comics/fafe7e716173fa2c77651e36810761b3/cover.jpg",
+              "local_path": "/images/comics/e57076719075414072fda948c73ec09f.webp"
+            }
+          ],
+          "komiic_url": "https://komiic.com/comic/1903"
+        },
+        "id": "recvhS8tCkXaLQ",
+        "record_id": "recvhS8tCkXaLQ"
+      },
+      {
+        "fields": {
+          "komiic_id": "95",
+          "作品名": "安達與島村",
+          "作者": "入間人間, 柚原もけ",
+          "封面URL": {
+            "link": "https://public.komiic.com/comics/08b34e40aac679aaf34dba9d4b597e1b/cover.jpg",
+            "text": "https://public.komiic.com/comics/08b34e40aac679aaf34dba9d4b597e1b/cover.jpg"
+          },
+          "连载状态": "连载中",
+          "追读状态": "想读",
+          "封面": [
+            {
+              "url": "https://public.komiic.com/comics/08b34e40aac679aaf34dba9d4b597e1b/cover.jpg",
+              "local_path": "/images/comics/20d78b2ba5831b0781420c88f211bc91.webp"
+            }
+          ],
+          "komiic_url": "https://komiic.com/comic/95"
+        },
+        "id": "recvhS8tCkIiDz",
+        "record_id": "recvhS8tCkIiDz"
+      },
+      {
+        "fields": {
+          "komiic_id": "398",
+          "作品名": "我怎麼可能成為你的戀人，不行不行！（※不是不可能！？）",
+          "作者": "むっしゅ, みかみてれん",
+          "封面URL": {
+            "link": "https://public.komiic.com/comics/8b8a558d60b2b1a35ea4abc64d43b982/cover.jpg",
+            "text": "https://public.komiic.com/comics/8b8a558d60b2b1a35ea4abc64d43b982/cover.jpg"
+          },
+          "连载状态": "连载中",
+          "追读状态": "想读",
+          "封面": [
+            {
+              "url": "https://public.komiic.com/comics/8b8a558d60b2b1a35ea4abc64d43b982/cover.jpg",
+              "local_path": "/images/comics/d57a7059473ca38d2d830a4ca831b46a.webp"
+            }
+          ],
+          "komiic_url": "https://komiic.com/comic/398"
+        },
+        "id": "recvhS8tCkHaLR",
+        "record_id": "recvhS8tCkHaLR"
+      },
+      {
+        "fields": {
+          "komiic_id": "1023",
+          "作品名": "和班級第二可愛的女孩子成為了朋友",
+          "作者": "尾野凜",
+          "封面URL": {
+            "link": "https://public.komiic.com/comics/608284d5a82b5995ce0b87a8ba1f2fe1/cover.jpg",
+            "text": "https://public.komiic.com/comics/608284d5a82b5995ce0b87a8ba1f2fe1/cover.jpg"
+          },
+          "连载状态": "连载中",
+          "追读状态": "追更中",
+          "封面": [
+            {
+              "url": "https://public.komiic.com/comics/608284d5a82b5995ce0b87a8ba1f2fe1/cover.jpg",
+              "local_path": "/images/comics/4bf156fc8a77e2a0a5885c05f95a91df.webp"
+            }
+          ],
+          "komiic_url": "https://komiic.com/comic/1023"
+        },
+        "id": "recvhS8tCkYExr",
+        "record_id": "recvhS8tCkYExr"
+      },
+      {
+        "fields": {
+          "komiic_id": "126",
+          "作品名": "和歌醬今天依然很腹黑",
+          "作者": "島村",
+          "封面URL": {
+            "link": "https://public.komiic.com/comics/f4ba1e4f97d5e6fdb352b840d2983a9c/cover.jpg",
+            "text": "https://public.komiic.com/comics/f4ba1e4f97d5e6fdb352b840d2983a9c/cover.jpg"
+          },
+          "连载状态": "连载中",
+          "追读状态": "想读",
+          "封面": [
+            {
+              "url": "https://public.komiic.com/comics/f4ba1e4f97d5e6fdb352b840d2983a9c/cover.jpg",
+              "local_path": "/images/comics/229fc44b9b0679a55fff27b0879b6eb1.webp"
+            }
+          ],
+          "komiic_url": "https://komiic.com/comic/126"
+        },
+        "id": "recvhS8tCkRury",
+        "record_id": "recvhS8tCkRury"
       }
     ],
-    "total": 4
+    "total": 11
   }
 }
