@@ -2,173 +2,54 @@
   "data": {
     "items": [
       {
-        "id": "komiic-2678",
-        "record_id": "komiic-2678",
         "fields": {
-          "作品名": "放學後歸宅日常",
-          "作者": "松田舞",
-          "连载状态": "连载中",
-          "追读状态": "想读",
-          "最新话数": "53",
-          "最新卷数": "01",
-          "分类": [
-            "愛情",
-            "校園",
-            "搞笑",
-            "生活"
-          ],
-          "年份": 2023,
-          "更新时间": "2026-04-20T13:12:03Z",
-          "komiic_id": "2678",
-          "komiic_url": "https://komiic.com/comic/2678",
-          "封面": [
-            {
-              "url": "https://public.komiic.com/comics/86a718a82e1f7dc2e282063b0cb4f678/cover.jpg",
-              "local_path": "/images/comics/43b6a1b2526787ba75c44bd995234958.webp"
-            }
-          ]
-        }
+          "作品名": "灌篮高手",
+          "作者": "井上雄彦",
+          "推荐状态": "推荐",
+          "短评": "青春、热血、遗憾。樱木的成长弧线和安西教练那句「现在放弃的话，比赛就结束了」是刻进 DNA 的画面。结尾戛然而止反而成就了它。",
+          "连载状态": "完结",
+          "追读状态": "已读完"
+        },
+        "id": "recvho5KFNThoz",
+        "record_id": "recvho5KFNThoz"
       },
       {
-        "id": "komiic-4055",
-        "record_id": "komiic-4055",
         "fields": {
-          "作品名": "楓前輩對於H的網絡用語過於感興趣了有點頭疼",
-          "作者": "古鳥ろく, 雲居殘月",
+          "作品名": "浪客行",
+          "作者": "井上雄彦",
+          "推荐状态": "推荐",
+          "短评": "井上雄彦把剑道画成了哲学。宫本武藏从莽夫到求道者的转变，分镜和水墨感的运用无出其右。希望有生之年能看到完结。",
           "连载状态": "连载中",
-          "追读状态": "想读",
-          "最新话数": "8.1",
-          "最新卷数": "",
-          "分类": [
-            "愛情",
-            "校園",
-            "搞笑",
-            "青春"
-          ],
-          "年份": 2025,
-          "更新时间": "2026-04-20T01:16:36Z",
-          "komiic_id": "4055",
-          "komiic_url": "https://komiic.com/comic/4055",
-          "封面": [
-            {
-              "url": "https://public.komiic.com/comics/f9c2450bfc8ba58a80535ff13f24ffc8/cover.jpg",
-              "local_path": "/images/comics/99d4a4d6eee9257f7e29e81e23915a8d.webp"
-            }
-          ]
-        }
+          "追读状态": "追更中"
+        },
+        "id": "recvho5KFNpqlR",
+        "record_id": "recvho5KFNpqlR"
       },
       {
-        "id": "komiic-6416",
-        "record_id": "komiic-6416",
         "fields": {
-          "作品名": "實衣與山田",
-          "作者": "亜月ねね",
-          "连载状态": "连载中",
-          "追读状态": "想读",
-          "最新话数": "20",
-          "最新卷数": "01",
-          "分类": [
-            "社會",
-            "心理",
-            "劇情",
-            "女性向"
-          ],
-          "年份": 2025,
-          "更新时间": "2026-04-17T16:08:09Z",
-          "komiic_id": "6416",
-          "komiic_url": "https://komiic.com/comic/6416",
-          "封面": [
-            {
-              "url": "https://public.komiic.com/comics/7fb66bb316c250841ab774b4d2c34721/cover.jpg",
-              "local_path": "/images/comics/ebd5add54c22c65a8324beebbb9a1338.webp"
-            }
-          ]
-        }
+          "作品名": "进击的巨人",
+          "作者": "諫山創",
+          "推荐状态": "推荐",
+          "短评": "前期悬疑压迫感拉满，中期世界观反转是神作级别的调度。结局两极分化，但谏山创敢这么收已经是作者的胜利。",
+          "连载状态": "完结",
+          "追读状态": "已读完"
+        },
+        "id": "recvho5KFNwUKh",
+        "record_id": "recvho5KFNwUKh"
       },
       {
-        "id": "komiic-2326",
-        "record_id": "komiic-2326",
         "fields": {
-          "作品名": "女裝男生想脫下裙子！",
-          "作者": "しなぎれ",
-          "连载状态": "连载中",
-          "追读状态": "追更中",
-          "最新话数": "32",
-          "最新卷数": "01",
-          "分类": [
-            "愛情",
-            "校園",
-            "搞笑",
-            "生活"
-          ],
-          "年份": 2023,
-          "更新时间": "2026-04-08T01:58:04Z",
-          "komiic_id": "2326",
-          "komiic_url": "https://komiic.com/comic/2326",
-          "封面": [
-            {
-              "url": "https://public.komiic.com/comics/02d3857daf8100364cc0c59458df6643/cover.jpg",
-              "local_path": "/images/comics/c882ebef9569a0a6ce16d72735483d2f.webp"
-            }
-          ]
-        }
-      },
-      {
-        "id": "komiic-1903",
-        "record_id": "komiic-1903",
-        "fields": {
-          "作品名": "別當歐尼醬了！",
-          "作者": "貓豆腐",
-          "连载状态": "连载中",
-          "追读状态": "想读",
-          "最新话数": "110",
-          "最新卷数": "28",
-          "分类": [
-            "搞笑",
-            "性轉換",
-            "日常"
-          ],
-          "年份": 2017,
-          "更新时间": "2026-04-06T16:16:51Z",
-          "komiic_id": "1903",
-          "komiic_url": "https://komiic.com/comic/1903",
-          "封面": [
-            {
-              "url": "https://public.komiic.com/comics/fafe7e716173fa2c77651e36810761b3/cover.jpg",
-              "local_path": "/images/comics/e57076719075414072fda948c73ec09f.webp"
-            }
-          ]
-        }
-      },
-      {
-        "id": "komiic-1023",
-        "record_id": "komiic-1023",
-        "fields": {
-          "作品名": "和班級第二可愛的女孩子成為了朋友",
-          "作者": "尾野凜",
-          "连载状态": "连载中",
-          "追读状态": "追更中",
-          "最新话数": "37",
-          "最新卷数": "03",
-          "分类": [
-            "愛情",
-            "校園",
-            "搞笑",
-            "生活"
-          ],
-          "年份": 2022,
-          "更新时间": "2026-03-07T04:03:04Z",
-          "komiic_id": "1023",
-          "komiic_url": "https://komiic.com/comic/1023",
-          "封面": [
-            {
-              "url": "https://public.komiic.com/comics/608284d5a82b5995ce0b87a8ba1f2fe1/cover.jpg",
-              "local_path": "/images/comics/4bf156fc8a77e2a0a5885c05f95a91df.webp"
-            }
-          ]
-        }
+          "作品名": "鬼灭之刃",
+          "作者": "吾峠呼世晴",
+          "推荐状态": "中庸",
+          "短评": "剧情工整得像教科书，动画化加分太多。炭治郎的善良和家族羁绊是核心驱动力，但作为漫画本体略显平庸。",
+          "连载状态": "完结",
+          "追读状态": "已读完"
+        },
+        "id": "recvho5KFNdibD",
+        "record_id": "recvho5KFNdibD"
       }
     ],
-    "total": 6
+    "total": 4
   }
 }
