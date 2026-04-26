@@ -154,8 +154,16 @@ def process_covers(records, token, image_subdir):
     url_prefix = f"/images/{image_subdir}"
 
     for item in records['data']['items']:
-        covers = item.get('fields', {}).get('封面')
+        fields = item.get('fields', {})
+        covers = fields.get('封面')
+        # 兜底：漫画表用 `封面URL`（URL 字段，komiic 直链），无附件 token，需走匿名下载
         if not covers:
+            url_field = fields.get('封面URL')
+            url = (url_field or {}).get('link') if isinstance(url_field, dict) else None
+            if url:
+                local_path = download_image_anonymous(url, save_dir, url_prefix)
+                if local_path:
+                    fields['封面'] = [{'url': url, 'local_path': local_path}]
             continue
         new_covers = []
         for cover in covers:
@@ -169,6 +177,28 @@ def process_covers(records, token, image_subdir):
             item['fields']['封面'] = new_covers
 
     return records
+
+
+def download_image_anonymous(url, save_dir, url_prefix):
+    """无需飞书 token 的匿名下载，用于 komiic 等公开 URL"""
+    try:
+        url_hash = hashlib.md5(url.encode()).hexdigest()
+        filename = f"{url_hash}.webp"
+        local_path = os.path.join(save_dir, filename)
+        if os.path.exists(local_path):
+            return f"{url_prefix}/{filename}"
+        response = requests.get(url, headers={
+            'User-Agent': 'Mozilla/5.0', 'Referer': 'https://komiic.com/'
+        }, timeout=30)
+        response.raise_for_status()
+        compressed = compress_image(response.content)
+        with open(local_path, 'wb') as f:
+            f.write(compressed)
+        print(f"    downloaded: {filename} ({len(response.content)//1024}KB → {len(compressed)//1024}KB)")
+        return f"{url_prefix}/{filename}"
+    except Exception as e:
+        print(f"    error downloading {url}: {e}")
+        return None
 
 
 def save_json(data, relative_path):
@@ -198,6 +228,12 @@ def process_source(source, token):
     print(f"[{name}] got {total} records")
 
     records = process_covers(records, token, source["image_subdir"])
+    # 漫画：根据 komiic_id 合成 komiic_url，前端跳转用
+    if name == "comics":
+        for item in records["data"]["items"]:
+            kid = item.get("fields", {}).get("komiic_id")
+            if isinstance(kid, str) and kid:
+                item["fields"]["komiic_url"] = f"https://komiic.com/comic/{kid}"
     save_json(records, source["output_json"])
 
 
