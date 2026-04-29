@@ -2,12 +2,11 @@
 // Sync 专题 from Tencent COS (S3-compatible) into src/content/studies/.
 //
 // Source of truth: COS bucket prefix (default `1.专题/`).
-// 同步规则：只拉「与父文件夹同名的 .md」——
-//   COS 里 `1.专题/<folder>/<folder>.md`  →  repo 里 `src/content/studies/<slug>.md`
-// 其他 md / pdf / 图片等散料一律忽略，留作 vault 内部研究空间。
+// 同步规则：扫 `1.专题/<folder>/<file>.md`（最多 2 层深），凡 frontmatter 里
+//   **同时**包含 `slug` 和 `title` 两个字段的视为正式专题，其他 .md 当作研究
+//   散料忽略。文件夹名 / 文件名怎么起都行，唯一硬约束是 frontmatter 双信号。
 //
-// 文件名不直接复用文件夹名（中文文件夹会变成 %-encoded URL），而是读取
-// frontmatter 里的 `slug` 字段作为最终落盘文件名。
+// 落盘路径：`src/content/studies/<slug>.md`（slug 由 frontmatter 决定，与文件名解耦）。
 
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3"
 import matter from "gray-matter"
@@ -63,17 +62,19 @@ async function listAllMarkdown() {
   return out
 }
 
-// 只保留「与父文件夹同名」的 md。这是约定：每个专题文件夹里的同名 md 是元数据入口，
-// 文件夹里其他 md / pdf / 图片都是用户的研究散料，不参与同步。
-function isStudyEntryFile(key) {
-  // 期望 key 形如 "1.专题/对齐问题/对齐问题.md"
+// 第一道筛：只看 `1.专题/<folder>/<file>.md` 这种 2 层深的 .md。
+// 更深的（笔记套笔记）或扁平 .md 一律不当专题候选。
+function isCandidateMarkdown(key) {
   const rel = key.startsWith(COS_PREFIX) ? key.slice(COS_PREFIX.length) : key
   const parts = rel.split("/").filter(Boolean)
-  if (parts.length !== 2) return false
-  const [folder, file] = parts
-  if (!file.toLowerCase().endsWith(".md")) return false
-  const stem = file.replace(/\.md$/i, "")
-  return stem === folder
+  return parts.length === 2 && parts[1].toLowerCase().endsWith(".md")
+}
+
+// 第二道筛：frontmatter 必须同时有 `slug` 和 `title`。
+// 这是"正式专题"的双信号——既防止草稿被误同步，又给用户文件命名自由。
+function isStudyEntry(fm) {
+  return fm && typeof fm.slug === "string" && fm.slug.trim() !== ""
+    && typeof fm.title === "string" && fm.title.trim() !== ""
 }
 
 async function downloadText(key) {
@@ -128,30 +129,42 @@ async function writeIfChanged(filePath, content) {
 async function main() {
   console.log(`[sync-studies] listing cos://${COS_BUCKET}/${COS_PREFIX}`)
   const allKeys = await listAllMarkdown()
-  const keys = allKeys.filter(isStudyEntryFile)
+  const candidates = allKeys.filter(isCandidateMarkdown)
   console.log(
-    `[sync-studies] found ${allKeys.length} markdown file(s) on COS, ${keys.length} match study-entry pattern`,
+    `[sync-studies] found ${allKeys.length} markdown file(s) on COS, ${candidates.length} candidates (2-level depth)`,
   )
 
-  if (keys.length === 0) {
+  if (candidates.length === 0) {
     console.error(
-      "[sync-studies] aborting: no study entry .md files found (expected `1.专题/<folder>/<folder>.md`).",
+      "[sync-studies] aborting: no candidate .md files found (expected `1.专题/<folder>/<file>.md`).",
     )
     process.exit(2)
   }
 
-  const remoteSlugs = new Set()
+  const remoteSlugs = new Map() // slug -> 第一次见到它的 cos key（用于 duplicate 报错）
   let written = 0
   let unchanged = 0
+  let skipped = 0
   const errors = []
 
-  for (const key of keys) {
+  for (const key of candidates) {
     try {
       const raw = await downloadText(key)
       const parsed = matter(raw)
+      // 没 slug 或 title 的 = 草稿散料，静默跳过
+      if (!isStudyEntry(parsed.data)) {
+        skipped++
+        continue
+      }
       validateFrontmatter(parsed.data, key)
       const slug = parsed.data.slug
-      remoteSlugs.add(slug)
+
+      if (remoteSlugs.has(slug)) {
+        throw new Error(
+          `duplicate slug "${slug}" in ${key} (first seen in ${remoteSlugs.get(slug)})`,
+        )
+      }
+      remoteSlugs.set(slug, key)
 
       // 原样写入字节，保留 yaml 日期类型（unquoted）和 Templater 的格式选择
       const dest = path.join(STUDIES_DIR, `${slug}.md`)
@@ -166,6 +179,9 @@ async function main() {
       errors.push(err.message || String(err))
     }
   }
+  console.log(
+    `[sync-studies] ${remoteSlugs.size} valid stud${remoteSlugs.size === 1 ? "y" : "ies"}, ${skipped} skipped (no slug/title — treated as research scraps)`,
+  )
 
   // 删除本地 slug 已不在远端的文件
   const local = await listLocalStudies()

@@ -251,6 +251,7 @@ export function StudyDetailView({ study }: { study: StudyData }) {
   const [view, setView] = useState<View>("trail")
 
   const hasResources = study.resources.length > 0
+  const hasContent = study.trail.length > 0
 
   return (
     <div className="font-sans text-foreground">
@@ -314,7 +315,7 @@ export function StudyDetailView({ study }: { study: StudyData }) {
           </div>
         </header>
 
-        {hasResources ? (
+        {hasContent ? (
           <>
             {/* 视图切换 */}
             <div
@@ -327,36 +328,38 @@ export function StudyDetailView({ study }: { study: StudyData }) {
               >
                 The Trail · 行进路线
               </div>
-              <div
-                className="flex border border-border rounded-full"
-                style={{ padding: 2 }}
-                role="group"
-                aria-label="资源视图"
-              >
-                {(
-                  [
-                    ["trail", "按线索"],
-                    ["medium", "按媒介"],
-                  ] as [View, string][]
-                ).map(([v, label]) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setView(v)}
-                    aria-pressed={view === v}
-                    className={cn(
-                      "border-0 cursor-pointer rounded-full transition-all font-sans",
-                      view === v ? "bg-foreground text-background" : "bg-transparent text-muted-foreground",
-                    )}
-                    style={{ padding: "5px 14px", fontSize: 11, letterSpacing: 0.5 }}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
+              {hasResources && (
+                <div
+                  className="flex border border-border rounded-full"
+                  style={{ padding: 2 }}
+                  role="group"
+                  aria-label="资源视图"
+                >
+                  {(
+                    [
+                      ["trail", "按线索"],
+                      ["medium", "按媒介"],
+                    ] as [View, string][]
+                  ).map(([v, label]) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setView(v)}
+                      aria-pressed={view === v}
+                      className={cn(
+                        "border-0 cursor-pointer rounded-full transition-all font-sans",
+                        view === v ? "bg-foreground text-background" : "bg-transparent text-muted-foreground",
+                      )}
+                      style={{ padding: "5px 14px", fontSize: 11, letterSpacing: 0.5 }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {view === "trail" ? (
+            {view === "trail" || !hasResources ? (
               <TrailView trail={study.trail} />
             ) : (
               <ByMediumView resources={study.resources} />
