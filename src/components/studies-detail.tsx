@@ -15,10 +15,7 @@ import { StatusMark } from "@/components/studies-shared"
 function Meta({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <div
-        className="text-[10px] text-muted-foreground/80 uppercase mb-1.5"
-        style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: "0.16em" }}
-      >
+      <div className="text-[11px] text-muted-foreground/70 mb-1.5 font-serif-cn">
         {label}
       </div>
       <div className="text-[13px] font-serif-cn text-foreground/90">{value}</div>
@@ -65,11 +62,6 @@ function ResourceRow({ r }: { r: StudyResource }) {
           >
             {typeFull}
           </span>
-          {r.tags.map((t) => (
-            <span key={t} className="text-[11px] text-muted-foreground font-serif-cn">
-              · {t}
-            </span>
-          ))}
         </div>
         <h3
           className="font-serif-cn font-semibold text-foreground"
@@ -262,6 +254,29 @@ export function StudyDetailView({
 
   const hasResources = resources.length > 0
 
+  // 自动从 resources + notes 取最大日期作为「近期」
+  const latestDate = useMemo(() => {
+    let best: { y: number; m: number; d: number; raw: string } | null = null
+    const all = [...resources.map((r) => r.date), ...notes.map((n) => n.date)]
+    for (const s of all) {
+      const parts = s.replace(/\s/g, "").split("·").map((x) => parseInt(x, 10))
+      if (!parts.length || isNaN(parts[0])) continue
+      const p = { y: parts[0], m: parts[1] || 0, d: parts[2] || 0, raw: s }
+      if (
+        !best ||
+        p.y > best.y ||
+        (p.y === best.y && (p.m > best.m || (p.m === best.m && p.d > best.d)))
+      ) {
+        best = p
+      }
+    }
+    if (!best) return study.updated
+    const segs: string[] = [String(best.y)]
+    if (best.m) segs.push(String(best.m).padStart(2, "0"))
+    if (best.d) segs.push(String(best.d).padStart(2, "0"))
+    return segs.join(" · ")
+  }, [resources, notes, study.updated])
+
   return (
     <div className="font-sans text-foreground">
       <main className="mx-auto" style={{ maxWidth: 1080, padding: "56px 64px 0" }}>
@@ -279,82 +294,46 @@ export function StudyDetailView({
 
         {/* 标题区 */}
         <header
-          className="grid gap-[60px] border-b border-border study-detail-header"
-          style={{ gridTemplateColumns: "1fr 280px", paddingBottom: 36 }}
+          className="border-b border-border study-detail-header"
+          style={{ paddingBottom: 36 }}
         >
-          <div>
-            <div className="flex items-center gap-3.5 mb-4">
-              <span
-                className="text-[11px] text-muted-foreground italic uppercase"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: "0.18em" }}
-              >
-                Study № {study.no} · {study.subtitle}
-              </span>
-            </div>
-
-            <h1
-              className="font-serif-cn font-bold text-foreground"
-              style={{ fontSize: 46, margin: "0 0 22px", letterSpacing: "-0.015em", lineHeight: 1.15 }}
+          <div className="flex items-center gap-3.5 mb-4">
+            <span
+              className="text-[11px] text-muted-foreground italic uppercase"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: "0.18em" }}
             >
-              {study.title}
-            </h1>
-
-            <blockquote
-              className="font-serif-cn italic text-foreground/85 m-0"
-              style={{
-                fontSize: 17,
-                lineHeight: 1.6,
-                marginBottom: 18,
-                paddingLeft: 16,
-                borderLeft: "2px solid var(--primary)",
-              }}
-            >
-              {study.epigraph}
-            </blockquote>
-
-            <p
-              className="font-serif-cn text-foreground/80 m-0"
-              style={{ fontSize: 15, lineHeight: 1.85, maxWidth: 580 }}
-            >
-              {study.intro}
-            </p>
+              Study № {study.no} · {study.subtitle}
+            </span>
           </div>
 
-          <aside
-            className="flex flex-col gap-[22px]"
-            style={{ paddingTop: 6, fontFamily: "var(--font-serif-cn)" }}
+          <h1
+            className="font-serif-cn font-bold text-foreground"
+            style={{ fontSize: 46, margin: "0 0 22px", letterSpacing: "-0.015em", lineHeight: 1.15 }}
+          >
+            {study.title}
+          </h1>
+
+          <blockquote
+            className="font-serif-cn italic text-foreground/85 m-0"
+            style={{
+              fontSize: 17,
+              lineHeight: 1.6,
+              paddingLeft: 16,
+              borderLeft: "2px solid var(--primary)",
+            }}
+          >
+            {study.epigraph}
+          </blockquote>
+
+          <div
+            className="flex flex-wrap gap-x-14 gap-y-6 mt-8"
+            style={{ fontFamily: "var(--font-serif-cn)" }}
           >
             <Meta label="状态" value={<StatusMark status={study.status} />} />
             <Meta label="开题" value={study.started} />
-            <Meta label="近期" value={study.updated} />
+            <Meta label="近期" value={latestDate} />
             <Meta label="领域" value={study.field} />
-            <div style={{ marginTop: 6, paddingTop: 18, borderTop: "1px solid var(--border)" }}>
-              <div
-                className="text-[10px] text-muted-foreground/80 uppercase mb-2.5"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: "0.16em" }}
-              >
-                Resources
-              </div>
-              <div className="flex flex-col gap-1.5">
-                {RESOURCE_TYPE_ORDER
-                  .filter((t) => (study.counts[t] ?? 0) > 0)
-                  .map((t) => (
-                    <div
-                      key={t}
-                      className="flex justify-between text-[12px] text-foreground/85"
-                    >
-                      <span>{RESOURCE_TYPES[t]?.full || t}</span>
-                      <span
-                        className="text-muted-foreground"
-                        style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-                      >
-                        {study.counts[t]}
-                      </span>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          </aside>
+          </div>
         </header>
 
         {hasResources ? (
@@ -426,7 +405,7 @@ export function StudyDetailView({
           className="text-center font-serif-cn text-muted-foreground"
           style={{ marginTop: 16, fontSize: 12 }}
         >
-          这个专题还在进行中。最近一次更新于 {study.updated}。
+          这个专题还在进行中。最近一次更新于 {latestDate}。
         </div>
       </main>
     </div>

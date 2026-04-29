@@ -389,3 +389,40 @@ export const STUDY_NOTES: Record<string, StudyNote[]> = {
 export function getStudyById(id: string): Study | undefined {
   return STUDIES.find((s) => s.id === id)
 }
+
+// Parse a date string like "2026 · 04 · 25" or "2026·04·25" into { y, m, d }.
+// Returns null for unparseable input. Missing month/day default to 0.
+function parseStudyDate(s: string): { y: number; m: number; d: number } | null {
+  const parts = s.replace(/\s/g, "").split("·").map((x) => parseInt(x, 10))
+  if (!parts.length || isNaN(parts[0])) return null
+  return { y: parts[0], m: parts[1] || 0, d: parts[2] || 0 }
+}
+
+function formatStudyDate(p: { y: number; m: number; d: number }): string {
+  const segs: string[] = [String(p.y)]
+  if (p.m) segs.push(String(p.m).padStart(2, "0"))
+  if (p.d) segs.push(String(p.d).padStart(2, "0"))
+  return segs.join(" · ")
+}
+
+// Derive the most recent activity date for a study from its resources + notes.
+// Falls back to undefined if the study has no dated content yet.
+export function getLatestDate(studyId: string): string | undefined {
+  const dates: string[] = [
+    ...(STUDY_RESOURCES[studyId] ?? []).map((r) => r.date),
+    ...(STUDY_NOTES[studyId] ?? []).map((n) => n.date),
+  ]
+  let best: { y: number; m: number; d: number } | null = null
+  for (const s of dates) {
+    const p = parseStudyDate(s)
+    if (!p) continue
+    if (
+      !best ||
+      p.y > best.y ||
+      (p.y === best.y && (p.m > best.m || (p.m === best.m && p.d > best.d)))
+    ) {
+      best = p
+    }
+  }
+  return best ? formatStudyDate(best) : undefined
+}

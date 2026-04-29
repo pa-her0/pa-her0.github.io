@@ -62,11 +62,8 @@ function ModeSwitch({ mode, onChange }: { mode: Mode; onChange: (m: Mode) => voi
   )
 }
 
-function summarizeCounts(counts: Study["counts"]): string {
-  return Object.entries(counts)
-    .filter(([, n]) => (n ?? 0) > 0)
-    .map(([t, n]) => `${n}${t}`)
-    .join(" / ")
+function totalCount(counts: Study["counts"]): number {
+  return Object.values(counts).reduce((a, b) => a + (b ?? 0), 0)
 }
 
 function detailHref(study: Study): string {
@@ -74,7 +71,7 @@ function detailHref(study: Study): string {
 }
 
 function IndexItem({ study }: { study: Study }) {
-  const summary = summarizeCounts(study.counts)
+  const total = totalCount(study.counts)
   return (
     <li className="border-b border-border/50 last:border-b-0">
       <a
@@ -93,8 +90,11 @@ function IndexItem({ study }: { study: Study }) {
             <span className="studies-link-title font-serif-cn text-[16px] font-semibold text-foreground">
               {study.title}
             </span>
-            {summary && (
-              <span className="font-serif-cn text-[12px] italic text-muted-foreground">（{summary}）</span>
+            {total > 0 && (
+              <span className="font-serif-cn text-[12.5px] text-muted-foreground/70">
+                <span className="mr-1.5">·</span>
+                {total} 件
+              </span>
             )}
           </div>
           <div className="font-serif-cn text-[12.5px] text-muted-foreground leading-[1.6] mt-1 max-w-[480px]">
