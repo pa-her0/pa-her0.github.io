@@ -9,7 +9,7 @@
 :root {
   /* Red & White Apple-inspired theme */
   --content-delay: 150ms;
-  --background: oklch(0.995 0 0);
+  --background: oklch(0.994 0.002 85); /* 极淡暖白纸感 */
   --foreground: oklch(0.15 0 0);
   --paper-warm: #fbf8f3; /* 专题笔记背景：暖米色，致敬纸感 */
   --card: oklch(1 0 0);
@@ -107,8 +107,8 @@
 
 @theme inline {
   --font-sans: "Inter", "Inter Fallback", system-ui, sans-serif;
-  --font-serif: "Playfair Display", "Noto Serif SC", "Source Han Serif SC", "Songti SC", "Georgia", serif;
-  --font-serif-cn: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "Georgia", serif;
+  --font-serif: "Playfair Display", "Noto Serif SC", "Source Han Serif SC", "Georgia", serif;
+  --font-serif-cn: "Noto Serif SC", "Source Han Serif SC", "Georgia", serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback";
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -155,9 +155,24 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
+  /* 衬线字体在 macOS 上需要 subpixel 抗锯齿才显厚实，
+     Tailwind 默认的 antialiased（灰度）会让 Noto Serif SC 之类的衬线笔画发虚 */
+  .font-serif,
+  .font-serif-cn,
+  [class*="font-serif"] {
+    -webkit-font-smoothing: subpixel-antialiased;
+    -moz-osx-font-smoothing: auto;
+  }
   /* 深色模式下增加字重，补偿光晕效应 */
   .dark body {
     font-weight: 450;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  /* 暗色模式下衬线也要保留 antialiased（暗背景上 subpixel 的彩边会很明显） */
+  .dark .font-serif,
+  .dark .font-serif-cn,
+  .dark [class*="font-serif"] {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

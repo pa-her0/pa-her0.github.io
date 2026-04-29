@@ -25,7 +25,11 @@ export type StudyStatus = "在读" | "沉淀中" | "暂搁" | "已结"
 export type ParsedResource = {
   id: string
   type: string
-  title: string
+  typeFull?: string // 中文全名 eyebrow（"论文" / "书籍" / "影片"），由 type 映射得出；与 type 重复时为 undefined
+  title: string // 完整标题（保持原样，向后兼容）
+  titleMain: string // 标题主体（去掉 by xxx (年份) 部分）
+  byline?: string // 作者（"by xxx" 抽出来的部分）
+  year?: string // 年份（标题尾部 (YYYY) 抽出来）
   date: string // ISO "YYYY-MM-DD"
   status?: string
   description?: string // 资源下方的内嵌读后感（多行 Markdown 列表续行）
@@ -57,6 +61,48 @@ export type StudyData = {
   notes: ParsedNote[]
   trail: ParsedTrailItem[] // 资源 + 笔记按 body 顺序混排
   counts: Record<string, number> // 按 type 分组计数
+}
+
+// ────────────────────────── type label mapping ──────────────────────────
+// 类型短形 → 中文全名（用作 eyebrow 副标签）。
+// 用户在 markdown 里写短形（"文" / "影"），渲染时 stamp 仍是短形，eyebrow 显示全名。
+// 用户若直接写了全名（"论文" / "播客"），stamp 显示全名、eyebrow 跳过避免重复。
+// 想新增类型，按表补一条即可。
+const TYPE_FULL: Record<string, string> = {
+  书: "书籍",
+  册: "书籍",
+  文: "论文",
+  影: "影片",
+  课: "课程",
+  谈: "访谈",
+  播: "播客",
+  视: "视频",
+  网: "文章",
+  漫: "漫画",
+  展: "展览",
+  讲: "讲座",
+}
+
+// 标题里抠出 "by 作者 (年份)" 形式的元数据
+// 例：
+//   "Constitutional AI by Bai et al. (2022)"   → main: "Constitutional AI", byline: "Bai et al.", year: "2022"
+//   "正义论 by 约翰·罗尔斯 (1971)"               → main: "正义论", byline: "约翰·罗尔斯", year: "1971"
+//   "AlphaGo by Greg Kohs (2017)"              → main: "AlphaGo", byline: "Greg Kohs", year: "2017"
+//   "正义论"                                    → main: "正义论"
+const TITLE_RE = /^(.+?)\s+by\s+(.+?)(?:\s+\((\d{4})\))?$/i
+const TITLE_YEAR_ONLY_RE = /^(.+?)\s+\((\d{4})\)$/
+
+function splitTitle(raw: string): { main: string; byline?: string; year?: string } {
+  const m = raw.match(TITLE_RE)
+  if (m) {
+    return { main: m[1].trim(), byline: m[2].trim(), year: m[3] }
+  }
+  // 没有 "by" 但有年份：例 "正义论 (1971)"
+  const m2 = raw.match(TITLE_YEAR_ONLY_RE)
+  if (m2) {
+    return { main: m2[1].trim(), year: m2[2] }
+  }
+  return { main: raw }
 }
 
 // ────────────────────────── parser ──────────────────────────
@@ -113,11 +159,19 @@ export function parseStudyBody(body: string): ParsedTrailItem[] {
         descLines.push(next.trim().replace(/^>\s*/, ""))
         j++
       }
+      const rawType = resMatch[1]
+      const rawTitle = resMatch[2].trim()
+      const titleParts = splitTitle(rawTitle)
+      const typeFull = TYPE_FULL[rawType]
       out.push({
         kind: "resource",
         id: `r-${rIdx++}`,
-        type: resMatch[1],
-        title: resMatch[2].trim(),
+        type: rawType,
+        typeFull: typeFull && typeFull !== rawType ? typeFull : undefined,
+        title: rawTitle,
+        titleMain: titleParts.main,
+        byline: titleParts.byline,
+        year: titleParts.year,
         date: normalizeDate(resMatch[3]),
         status: resMatch[4],
         description: descLines.length ? descLines.join(" ").trim() : undefined,

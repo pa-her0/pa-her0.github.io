@@ -25,22 +25,30 @@ function formatCompactDate(iso: string): string {
   return [m[1], m[2], m[3]].filter(Boolean).join("·")
 }
 
-function TypeChip({ type }: { type: string }) {
+// 左侧"印章"：单字（或两字）+ 一道细横线 + 日期
+function TypeStamp({ type, date }: { type: string; date: string }) {
   return (
-    <span
-      className="inline-flex items-center justify-center font-serif-cn text-foreground"
-      style={{
-        fontSize: 13,
-        fontWeight: 500,
-        padding: "3px 10px",
-        border: "1px solid var(--border)",
-        borderRadius: 4,
-        lineHeight: 1.4,
-        whiteSpace: "nowrap",
-      }}
-    >
-      {type}
-    </span>
+    <div className="text-center" style={{ paddingTop: 14 }}>
+      <div
+        className="font-serif-cn text-foreground"
+        style={{
+          fontSize: 22,
+          fontWeight: 500,
+          lineHeight: 1,
+          paddingBottom: 8,
+          marginBottom: 8,
+          borderBottom: "1px solid var(--border)",
+        }}
+      >
+        {type}
+      </div>
+      <div
+        className="text-[10px] text-muted-foreground font-mono"
+        style={{ letterSpacing: 0.3 }}
+      >
+        {formatCompactDate(date)}
+      </div>
+    </div>
   )
 }
 
@@ -51,29 +59,43 @@ function ResourceRow({ r, noBorder }: { r: ParsedResource; noBorder?: boolean })
         "grid items-start gap-6 study-resource-row",
         !noBorder && "border-b border-border/50",
       )}
-      style={{ gridTemplateColumns: "120px 1fr auto", padding: "22px 0" }}
+      style={{ gridTemplateColumns: "72px 1fr auto", padding: "26px 0" }}
     >
-      <div className="flex flex-col items-start gap-2" style={{ paddingTop: 4 }}>
-        <TypeChip type={r.type} />
-        <div
-          className="text-[10px] text-muted-foreground font-mono"
-          style={{ letterSpacing: 0.3 }}
-        >
-          {formatCompactDate(r.date)}
-        </div>
-      </div>
+      <TypeStamp type={r.type} date={r.date} />
 
       <div>
+        {r.typeFull && (
+          <div
+            className="font-serif-cn text-muted-foreground italic"
+            style={{
+              fontSize: 12,
+              letterSpacing: "0.05em",
+              marginBottom: 4,
+            }}
+          >
+            {r.typeFull}
+          </div>
+        )}
         <h3
-          className="font-serif-cn font-semibold text-foreground"
-          style={{ fontSize: 17, margin: "0 0 2px", letterSpacing: "-0.005em", lineHeight: 1.4 }}
+          className="font-serif-cn font-bold text-foreground"
+          style={{ fontSize: 19, margin: "0 0 4px", letterSpacing: "-0.005em", lineHeight: 1.35 }}
         >
-          {r.title}
+          {r.titleMain}
         </h3>
+        {(r.byline || r.year) && (
+          <div
+            className="font-serif-cn text-muted-foreground"
+            style={{ fontSize: 12.5, marginBottom: r.description ? 12 : 0 }}
+          >
+            {r.byline}
+            {r.byline && r.year ? " · " : ""}
+            {r.year}
+          </div>
+        )}
         {r.description && (
           <p
-            className="font-serif-cn text-foreground/80 m-0"
-            style={{ fontSize: 14, lineHeight: 1.85, marginTop: 8, maxWidth: 600 }}
+            className="font-serif-cn text-foreground/85 m-0"
+            style={{ fontSize: 14, lineHeight: 1.8, fontWeight: 400 }}
           >
             {r.description}
           </p>
@@ -82,7 +104,7 @@ function ResourceRow({ r, noBorder }: { r: ParsedResource; noBorder?: boolean })
 
       <div
         className="text-right text-[11px] text-muted-foreground font-serif-cn leading-relaxed study-resource-status"
-        style={{ paddingTop: 8, minWidth: 80 }}
+        style={{ paddingTop: 8 }}
       >
         {r.status ?? ""}
       </div>
@@ -95,7 +117,7 @@ function MarginNote({ date, body }: { date: string; body: string }) {
     <aside
       className="grid items-start gap-6"
       style={{
-        gridTemplateColumns: "120px 1fr",
+        gridTemplateColumns: "72px 1fr",
         padding: "20px 24px",
         marginInline: -24,
         background: "var(--paper-warm)",
@@ -103,7 +125,7 @@ function MarginNote({ date, body }: { date: string; body: string }) {
         marginBlock: 4,
       }}
     >
-      <div className="flex flex-col items-start gap-2" style={{ paddingTop: 4 }}>
+      <div className="flex flex-col items-center gap-2" style={{ paddingTop: 4 }}>
         <span
           className="text-[10px] italic uppercase text-primary"
           style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: "0.16em" }}
@@ -186,15 +208,25 @@ function ByMediumView({ resources }: { resources: ParsedResource[] }) {
             >
               <div>
                 <h3
-                  className="font-serif-cn font-semibold text-foreground"
-                  style={{ fontSize: 16, margin: 0 }}
+                  className="font-serif-cn font-bold text-foreground"
+                  style={{ fontSize: 17, margin: 0, lineHeight: 1.35 }}
                 >
-                  {r.title}
+                  {r.titleMain}
                 </h3>
+                {(r.byline || r.year) && (
+                  <div
+                    className="font-serif-cn text-muted-foreground"
+                    style={{ fontSize: 12, marginTop: 4 }}
+                  >
+                    {r.byline}
+                    {r.byline && r.year ? " · " : ""}
+                    {r.year}
+                  </div>
+                )}
                 {r.description && (
                   <p
                     className="font-serif-cn text-foreground/80 m-0"
-                    style={{ fontSize: 13.5, lineHeight: 1.75, marginTop: 6, maxWidth: 600 }}
+                    style={{ fontSize: 13.5, lineHeight: 1.75, marginTop: 8 }}
                   >
                     {r.description}
                   </p>
