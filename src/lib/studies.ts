@@ -110,6 +110,18 @@ function splitTitle(raw: string): { main: string; byline?: string; year?: string
 const RESOURCE_RE =
   /^([^\s:：]+)\s*[:：]\s*(.+?)\s+(\d{4}-?\d{2}-?\d{2})(?:\s*【([^】]+)】)?\s*$/
 const NOTE_RE = /^(\d{4}-?\d{2}-?\d{2})\s*[:：]\s*([\s\S]+)$/
+// Obsidian callout：`> [!note] 2026-04-05`（标题行只有日期，body 在后续 `> ` 行里）
+const CALLOUT_NOTE_RE = /^>\s*\[!note\]\s*(\d{4}-?\d{2}-?\d{2})\s*$/i
+
+// 剥掉 markdown bold/italic 包裹（**xxx**, __xxx__, *xxx*, _xxx_, `xxx`）
+// 用于资源标题：用户在 Obsidian 里写 `**title**` 增强可读性，前端不渲染样式
+function stripInlineEmphasis(s: string): string {
+  return s.replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/__([^_]+)__/g, "$1")
+    .replace(/(?<!\*)\*([^*\s][^*]*?)\*(?!\*)/g, "$1")
+    .replace(/(?<!_)_([^_\s][^_]*?)_(?!_)/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+}
 
 function normalizeDate(s: string): string {
   if (s.includes("-")) return s
@@ -144,6 +156,30 @@ export function parseStudyBody(body: string): ParsedTrailItem[] {
       continue
     }
 
+    // Obsidian callout：`> [!note] 2026-04-05` + 后续 `> body` 续行
+    const calloutMatch = trimmed.match(CALLOUT_NOTE_RE)
+    if (calloutMatch) {
+      const bodyLines: string[] = []
+      let j = i + 1
+      while (j < lines.length) {
+        const nextRaw = lines[j]
+        const nextTrim = nextRaw.trim()
+        if (!nextTrim) break
+        // callout body 必须以 `>` 开头，否则视为 callout 结束
+        if (!nextTrim.startsWith(">")) break
+        bodyLines.push(nextTrim.replace(/^>\s?/, ""))
+        j++
+      }
+      out.push({
+        kind: "note",
+        id: `n-${nIdx++}`,
+        date: normalizeDate(calloutMatch[1]),
+        body: bodyLines.join("\n").trim(),
+      })
+      i = j
+      continue
+    }
+
     const stripped = stripMarkdownPrefix(trimmed)
 
     // resource：bullet 行 + 可选的缩进续行（Markdown 列表续行 = 资源描述）
@@ -160,7 +196,7 @@ export function parseStudyBody(body: string): ParsedTrailItem[] {
         j++
       }
       const rawType = resMatch[1]
-      const rawTitle = resMatch[2].trim()
+      const rawTitle = stripInlineEmphasis(resMatch[2].trim())
       const titleParts = splitTitle(rawTitle)
       const typeFull = TYPE_FULL[rawType]
       out.push({

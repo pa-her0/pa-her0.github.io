@@ -8,4 +8,5 @@ epigraph: 当我们说「理解」一个神经网络，是在说什么？
 field: AI · 认知科学
 ---
 
-> 2026-04-18: 这一题的资料零散在各处，等下次整理 Anthropic interpretability 系列时一并录入。
+> [!note] 2026-04-18
+> 这一题的资料零散在各处，等下次整理 Anthropic interpretability 系列时一并录入。
