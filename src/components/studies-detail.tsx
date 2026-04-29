@@ -21,7 +21,7 @@ function Meta({ label, value }: { label: string; value: React.ReactNode }) {
       >
         {label}
       </div>
-      <div className="text-[13px] font-serif text-foreground/90">{value}</div>
+      <div className="text-[13px] font-serif-cn text-foreground/90">{value}</div>
     </div>
   )
 }
@@ -37,7 +37,7 @@ function ResourceRow({ r }: { r: StudyResource }) {
     >
       <div className="text-center" style={{ paddingTop: 4 }}>
         <div
-          className="font-serif text-foreground"
+          className="font-serif-cn text-foreground"
           style={{
             fontSize: 22,
             fontWeight: 500,
@@ -66,24 +66,24 @@ function ResourceRow({ r }: { r: StudyResource }) {
             {typeFull}
           </span>
           {r.tags.map((t) => (
-            <span key={t} className="text-[11px] text-muted-foreground font-serif">
+            <span key={t} className="text-[11px] text-muted-foreground font-serif-cn">
               · {t}
             </span>
           ))}
         </div>
         <h3
-          className="font-serif font-semibold text-foreground"
+          className="font-serif-cn font-semibold text-foreground"
           style={{ fontSize: 18, margin: "0 0 4px", letterSpacing: "-0.005em", lineHeight: 1.35 }}
         >
           {r.title}
         </h3>
-        <div className="text-[12px] text-muted-foreground font-serif mb-3">
+        <div className="text-[12px] text-muted-foreground font-serif-cn mb-3">
           {r.author}
           {r.year && <span> · {r.year}</span>}
         </div>
         {r.note && (
           <p
-            className="font-serif text-foreground/80 m-0"
+            className="font-serif-cn text-foreground/80 m-0"
             style={{ fontSize: 14, lineHeight: 1.8, maxWidth: 600 }}
           >
             {r.note}
@@ -92,7 +92,7 @@ function ResourceRow({ r }: { r: StudyResource }) {
       </div>
 
       <div
-        className="text-right text-[11px] text-muted-foreground font-serif leading-relaxed study-resource-status"
+        className="text-right text-[11px] text-muted-foreground font-serif-cn leading-relaxed study-resource-status"
         style={{ paddingTop: 6 }}
       >
         {r.status}
@@ -129,12 +129,12 @@ function MarginNote({ n }: { n: StudyNote }) {
       </div>
       <div style={{ gridColumn: "2 / 4" }}>
         <p
-          className="font-serif italic text-foreground m-0"
+          className="font-serif-cn italic text-foreground m-0"
           style={{ fontSize: 14.5, lineHeight: 1.85, maxWidth: 700 }}
         >
           「 {n.body} 」
         </p>
-        <div className="mt-2 text-[11px] text-muted-foreground font-serif">—— 我的笔记</div>
+        <div className="mt-2 text-[11px] text-muted-foreground font-serif-cn">—— 我的笔记</div>
       </div>
     </aside>
   )
@@ -182,7 +182,7 @@ function ByMediumView({ grouped }: { grouped: Partial<Record<ResourceTypeKey, St
               className="flex items-baseline gap-3.5 border-b border-border"
               style={{ paddingBottom: 14, marginBottom: 8 }}
             >
-              <span className="font-serif font-semibold text-foreground" style={{ fontSize: 22 }}>
+              <span className="font-serif-cn font-semibold text-foreground" style={{ fontSize: 22 }}>
                 {RESOURCE_TYPES[t]?.full}
               </span>
               <span
@@ -206,18 +206,18 @@ function ByMediumView({ grouped }: { grouped: Partial<Record<ResourceTypeKey, St
               >
                 <div>
                   <h3
-                    className="font-serif font-semibold text-foreground"
+                    className="font-serif-cn font-semibold text-foreground"
                     style={{ fontSize: 17, margin: "0 0 4px" }}
                   >
                     {r.title}
                   </h3>
-                  <div className="text-[12px] text-muted-foreground font-serif mb-2">
+                  <div className="text-[12px] text-muted-foreground font-serif-cn mb-2">
                     {r.author}
                     {r.year ? ` · ${r.year}` : ""}
                   </div>
                   {r.note && (
                     <p
-                      className="font-serif text-foreground/80 m-0"
+                      className="font-serif-cn text-foreground/80 m-0"
                       style={{ fontSize: 13.5, lineHeight: 1.75, maxWidth: 600 }}
                     >
                       {r.note}
@@ -225,7 +225,7 @@ function ByMediumView({ grouped }: { grouped: Partial<Record<ResourceTypeKey, St
                   )}
                 </div>
                 <div
-                  className="text-right text-[11px] text-muted-foreground font-serif"
+                  className="text-right text-[11px] text-muted-foreground font-serif-cn"
                   style={{ paddingTop: 4 }}
                 >
                   <div>{r.status}</div>
@@ -267,7 +267,7 @@ export function StudyDetailView({
       <main className="mx-auto" style={{ maxWidth: 1080, padding: "56px 64px 0" }}>
         {/* 面包屑 */}
         <div
-          className="text-[12px] text-muted-foreground font-serif"
+          className="text-[12px] text-muted-foreground font-serif-cn"
           style={{ marginBottom: 36 }}
         >
           <a href="/studies/" className="text-muted-foreground no-underline hover:text-foreground transition-colors">
@@ -293,14 +293,14 @@ export function StudyDetailView({
             </div>
 
             <h1
-              className="font-serif font-bold text-foreground"
+              className="font-serif-cn font-bold text-foreground"
               style={{ fontSize: 46, margin: "0 0 22px", letterSpacing: "-0.015em", lineHeight: 1.15 }}
             >
               {study.title}
             </h1>
 
             <blockquote
-              className="font-serif italic text-foreground/85 m-0"
+              className="font-serif-cn italic text-foreground/85 m-0"
               style={{
                 fontSize: 17,
                 lineHeight: 1.6,
@@ -313,7 +313,7 @@ export function StudyDetailView({
             </blockquote>
 
             <p
-              className="font-serif text-foreground/80 m-0"
+              className="font-serif-cn text-foreground/80 m-0"
               style={{ fontSize: 15, lineHeight: 1.85, maxWidth: 580 }}
             >
               {study.intro}
@@ -322,7 +322,7 @@ export function StudyDetailView({
 
           <aside
             className="flex flex-col gap-[22px]"
-            style={{ paddingTop: 6, fontFamily: "'Noto Serif SC', Georgia, serif" }}
+            style={{ paddingTop: 6, fontFamily: "var(--font-serif-cn)" }}
           >
             <Meta label="状态" value={<StatusMark status={study.status} />} />
             <Meta label="开题" value={study.started} />
@@ -407,7 +407,7 @@ export function StudyDetailView({
           </>
         ) : (
           <div
-            className="text-center font-serif text-muted-foreground"
+            className="text-center font-serif-cn text-muted-foreground"
             style={{ padding: "80px 0", fontSize: 14, lineHeight: 1.85 }}
           >
             这个专题的资源还在整理中。<br />
@@ -423,7 +423,7 @@ export function StudyDetailView({
           · · ·
         </div>
         <div
-          className="text-center font-serif text-muted-foreground"
+          className="text-center font-serif-cn text-muted-foreground"
           style={{ marginTop: 16, fontSize: 12 }}
         >
           这个专题还在进行中。最近一次更新于 {study.updated}。

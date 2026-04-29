@@ -15,7 +15,7 @@ function Stat({ n, label }: { n: number; label: string }) {
       <span className="text-primary text-[18px] font-medium font-serif tabular-nums" style={{ letterSpacing: 0.5 }}>
         {n}
       </span>
-      <span className="text-muted-foreground text-[12px] font-serif">{label}</span>
+      <span className="text-muted-foreground text-[12px] font-serif-cn">{label}</span>
     </div>
   )
 }
@@ -76,28 +76,28 @@ function detailHref(study: Study): string {
 function IndexItem({ study }: { study: Study }) {
   const summary = summarizeCounts(study.counts)
   return (
-    <li>
+    <li className="border-b border-border/50 last:border-b-0">
       <a
         href={detailHref(study)}
-        className="studies-link grid items-baseline gap-4 py-3.5 border-b border-border/50 cursor-pointer no-underline text-inherit focus-visible:outline-none focus-visible:bg-muted/40 rounded-sm"
+        className="studies-link grid items-baseline gap-4 py-3.5 cursor-pointer no-underline text-inherit focus-visible:outline-none focus-visible:bg-muted/40 rounded-sm"
         style={{ gridTemplateColumns: "44px 1fr auto" }}
       >
         <span
-          className="font-serif text-[14px] italic text-right text-muted-foreground/70"
+          className="font-serif-cn text-[14px] italic text-right text-muted-foreground/70"
           style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
         >
           {study.no}.
         </span>
         <div>
           <div className="flex items-baseline gap-2.5 flex-wrap">
-            <span className="studies-link-title font-serif text-[16px] font-semibold text-foreground">
+            <span className="studies-link-title font-serif-cn text-[16px] font-semibold text-foreground">
               {study.title}
             </span>
             {summary && (
-              <span className="font-serif text-[12px] italic text-muted-foreground">（{summary}）</span>
+              <span className="font-serif-cn text-[12px] italic text-muted-foreground">（{summary}）</span>
             )}
           </div>
-          <div className="font-serif text-[12.5px] text-muted-foreground leading-[1.6] mt-1 max-w-[480px]">
+          <div className="font-serif-cn text-[12.5px] text-muted-foreground leading-[1.6] mt-1 max-w-[480px]">
             {study.epigraph}
           </div>
         </div>
@@ -114,23 +114,11 @@ function IndexView({ studies }: { studies: Study[] }) {
   const sorted = useMemo(() => [...studies].sort((a, b) => a.no.localeCompare(b.no)), [studies])
   return (
     <div className="studies-cross-fade mx-auto" style={{ maxWidth: 720 }}>
-      <p className="font-serif text-[14.5px] text-muted-foreground leading-[1.85] mb-10 max-w-[580px]">
-        下面是当前正在做的几个课题，按编号排列。括号里是各类型资源数量；右侧为状态与最近更新。点击进入详情。
-      </p>
       <ol className="list-none p-0 m-0">
         {sorted.map((s) => (
           <IndexItem key={s.id} study={s} />
         ))}
       </ol>
-      <div
-        className="mt-14 pt-[22px] font-serif text-[12px] text-muted-foreground leading-[1.8]"
-        style={{ borderTop: "1px solid var(--border)" }}
-      >
-        <span className="italic" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
-          注：
-        </span>
-        专题不追求结论；一个课题搁置了，并不意味着它失败。
-      </div>
     </div>
   )
 }
@@ -235,9 +223,6 @@ function TimelineView({ studies }: { studies: Study[] }) {
 
   return (
     <div className="studies-cross-fade mx-auto" style={{ maxWidth: 1100 }}>
-      <p className="font-serif text-[14.5px] text-muted-foreground leading-[1.85] mb-6 max-w-[580px]">
-        按开题时间排列。一个课题的"开始"，往往比它的"结束"更值得记。
-      </p>
       <div
         ref={containerRef}
         className="relative"
@@ -349,10 +334,10 @@ function TimelineNode({
             № {study.no} · {study.field}
           </span>
         </div>
-        <h3 className="font-serif text-[15px] font-semibold text-foreground m-0 mb-1.5 leading-[1.35]">
+        <h3 className="font-serif-cn text-[15px] font-semibold text-foreground m-0 mb-1.5 leading-[1.35]">
           {study.title}
         </h3>
-        <div className="text-[11px] text-muted-foreground font-serif italic leading-[1.5] mb-2">
+        <div className="text-[11px] text-muted-foreground font-serif-cn italic leading-[1.5] mb-2">
           {study.epigraph}
         </div>
         <div className="flex justify-between items-center text-[10.5px] text-muted-foreground font-mono">
@@ -402,7 +387,7 @@ export function StudiesList({ studies }: { studies: Study[] }) {
                   Studies
                 </div>
                 <div
-                  className="font-serif font-bold text-foreground"
+                  className="font-serif-cn font-bold text-foreground"
                   style={{ fontSize: 40, letterSpacing: "-0.01em", lineHeight: 1 }}
                 >
                   专题
@@ -412,12 +397,12 @@ export function StudiesList({ studies }: { studies: Study[] }) {
           </div>
           <ModeSwitch mode={mode} onChange={setMode} />
         </div>
-        <div
-          className="font-serif text-[15px] text-muted-foreground leading-[1.7] mb-8"
-          style={{ marginLeft: 17, maxWidth: 600 }}
+        <p
+          className="font-serif-cn text-[15px] text-muted-foreground leading-[1.7] mb-3"
+          style={{ marginLeft: 17 }}
         >
-          正在做的功课。每个专题聚合一组围绕同一问题的阅读、观看与笔记。
-        </div>
+          一个问题最有趣的形态，是它还没有被完全回答的时候。
+        </p>
 
         {/* 元数据条 */}
         <div className="flex items-baseline gap-8 pb-[22px] mb-9 border-b border-border">
@@ -436,8 +421,8 @@ export function StudiesList({ studies }: { studies: Study[] }) {
 
         {/* 末尾 */}
         <div
-          className="font-serif text-[13px] text-muted-foreground leading-[1.8] text-center"
-          style={{ marginTop: 72, paddingTop: 22, borderTop: "1px solid var(--border)" }}
+          className="mx-auto font-serif-cn text-[13px] text-muted-foreground leading-[1.8] text-center"
+          style={{ maxWidth: 720, marginTop: 72, paddingTop: 28, paddingBottom: 28, borderTop: "1px solid var(--border)" }}
         >
           <div
             className="text-[11px] text-muted-foreground/80 mb-2.5 uppercase"
@@ -445,9 +430,7 @@ export function StudiesList({ studies }: { studies: Study[] }) {
           >
             Colophon
           </div>
-          专题不追求结论。一个课题搁置了，并不意味着它失败——
-          <br />
-          也许只是时机未到。
+          专题不追求结论。一个课题搁置了，并不意味着它失败——也许只是时机未到。
         </div>
       </main>
     </div>
