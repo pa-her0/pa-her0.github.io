@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import type { StudyStatus } from "@/data/studies"
+import type { StudyStatus } from "@/lib/studies"
 
 type StatusStyle = {
   dotClass?: string

@@ -11,6 +11,7 @@
   --content-delay: 150ms;
   --background: oklch(0.995 0 0);
   --foreground: oklch(0.15 0 0);
+  --paper-warm: #fbf8f3; /* 专题笔记背景：暖米色，致敬纸感 */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.15 0 0);
   --popover: oklch(1 0 0);
@@ -60,6 +61,7 @@
 .dark {
   --background: oklch(0.16 0.014 250);
   --foreground: oklch(0.90 0 0);
+  --paper-warm: oklch(0.22 0.012 80); /* 暗色下的暖底色 */
   --card: oklch(0.23 0.015 250);
   --card-foreground: oklch(0.90 0 0);
   --popover: oklch(0.19 0.015 250);

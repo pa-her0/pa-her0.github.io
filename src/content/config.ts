@@ -50,4 +50,18 @@ const thoughts = defineCollection({
   }),
 })
 
-export const collections = { articles, posts, thoughts }
+const studies = defineCollection({
+  type: "content",
+  // 注意：frontmatter 里的 `slug` 字段被 Astro 当 reserved key 处理（用作 URL slug），
+  // 不会出现在 schema 校验的 data 里。所以这里不声明 slug，直接读 entry.slug。
+  schema: z.object({
+    title: z.string(),
+    status: z.enum(["在读", "沉淀中", "暂搁", "已结"]),
+    started: z.string(), // "YYYY-MM" 或 "YYYY-MM-DD"
+    subtitle: z.string().optional(),
+    epigraph: z.string().optional(),
+    field: z.string().optional(),
+  }),
+})
+
+export const collections = { articles, posts, thoughts, studies }

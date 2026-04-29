@@ -3,23 +3,19 @@ import BaseLayout from "@/layouts/BaseLayout.astro"
 import SiteHeader from "@/components/site-header.astro"
 import { Footer } from "@/components/footer"
 import { StudiesList } from "@/components/studies-list"
-import { STUDIES, getLatestDate } from "@/data/studies"
+import { getAllStudies } from "@/lib/studies"
 
 const title = "专题 | 时歌的博客"
 const description = "正在做的功课。每个专题聚合一组围绕同一问题的阅读、观看与笔记。"
 
-// 自动从资源+笔记里取最大日期作为「近期」，没有则保留手填的 study.updated
-const enrichedStudies = STUDIES.map((s) => ({
-  ...s,
-  updated: getLatestDate(s.id) ?? s.updated,
-}))
+const studies = await getAllStudies()
 ---
 
 <BaseLayout {title} {description}>
-  <div class="min-h-screen bg-background">
+  <div class="min-h-screen bg-background" data-pagefind-ignore>
     <SiteHeader />
     <main class="pt-20">
-      <StudiesList client:idle studies={enrichedStudies} />
+      <StudiesList client:idle studies={studies} />
     </main>
     <Footer />
   </div>

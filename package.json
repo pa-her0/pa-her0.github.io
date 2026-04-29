@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "sync-thoughts": "node scripts/sync-thoughts.mjs",
-    "migrate-thoughts": "node scripts/migrate-thoughts.mjs"
+    "migrate-thoughts": "node scripts/migrate-thoughts.mjs",
+    "sync-studies": "node scripts/sync-studies.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",

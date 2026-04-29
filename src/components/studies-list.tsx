@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
-import type { Study } from "@/data/studies"
+import type { StudyData as Study } from "@/lib/studies"
 import { StatusMark } from "@/components/studies-shared"
 
 type Mode = "index" | "timeline"
