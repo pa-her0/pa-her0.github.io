@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { cn } from "@/lib/utils"
 import type { StudyData as Study } from "@/lib/studies"
 import { StatusMark } from "@/components/studies-shared"
@@ -128,12 +128,44 @@ function parseMonth(s: string): number {
   return y * 12 + m
 }
 
-type Placed = { study: Study; xPx: number; xRatio: number; side: "above" | "below"; lane: number }
+function toYearMonth(s: string): string {
+  const parts = s.replace(/\s/g, "").split("·")
+  return parts.slice(0, 2).join("·")
+}
 
-const CARD_W = 250 // 220 visual + 28 padding + 2 buffer
-const CARD_H = 132
+function todayMonth(): number {
+  const d = new Date()
+  return d.getFullYear() * 12 + (d.getMonth() + 1)
+}
+
+function endMonth(study: Study): number {
+  const startP = parseMonth(study.started)
+  if (study.status === "在读") return Math.max(startP, todayMonth())
+  if (study.updated) return Math.max(startP, parseMonth(toYearMonth(study.updated)))
+  return startP
+}
+
+function formatSpan(study: Study): string {
+  const start = toYearMonth(study.started)
+  const end = study.updated ? toYearMonth(study.updated) : start
+  if (study.status === "在读") return `${start} → 至今`
+  if (start === end) return start
+  return `${start} → ${end}`
+}
+
+type Placed = {
+  study: Study
+  xStartPct: number
+  xEndPct: number
+  side: "above" | "below"
+  lane: number
+}
+
+const CARD_H = 108
+const LEFT_INSET = 56 // 卡片左边超出 dot 的宽度
 const LANE_GAP = 14
-const SAFE_INSET = 130 // half-card + gutter, keeps edge cards from overflowing
+const AXIS_PAD = 32
+const MIN_GAP_PCT = 1.2 // 同一 lane/side 上两张卡之间至少留 1.2% 间隙
 
 function TimelineView({ studies }: { studies: Study[] }) {
   const sorted = useMemo(
@@ -141,10 +173,13 @@ function TimelineView({ studies }: { studies: Study[] }) {
     [studies],
   )
 
-  const positions = useMemo(() => sorted.map((s) => parseMonth(s.started)), [sorted])
-  const minP = Math.min(...positions) - 1
-  const maxP = Math.max(...positions) + 1
+  const startPositions = sorted.map((s) => parseMonth(s.started))
+  const endPositions = sorted.map((s) => endMonth(s))
+  const minP = Math.min(...startPositions) - 1
+  const maxP = Math.max(...endPositions) + 1
   const range = Math.max(1, maxP - minP)
+
+  const positionFor = (p: number): number => ((p - minP) / range) * 100
 
   const yearMarks: { p: number; y: number; m: number }[] = []
   for (let p = minP; p <= maxP; p++) {
@@ -153,105 +188,73 @@ function TimelineView({ studies }: { studies: Study[] }) {
     if (m === 1 || m === 7) yearMarks.push({ p, y, m })
   }
 
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const [width, setWidth] = useState(1100)
-  useEffect(() => {
-    const el = containerRef.current
-    if (!el) return
-    let raf = 0
-    let lastW = -1
-    const ro = new ResizeObserver((entries) => {
-      const w = Math.round(entries[0]?.contentRect.width ?? 0)
-      if (w === lastW) return
-      lastW = w
-      if (raf) return
-      raf = requestAnimationFrame(() => {
-        raf = 0
-        setWidth(lastW)
-      })
-    })
-    ro.observe(el)
-    return () => {
-      ro.disconnect()
-      if (raf) cancelAnimationFrame(raf)
-    }
-  }, [])
-
-  // Usable x range (inset on both ends so edge cards don't overflow)
-  const usable = Math.max(1, width - SAFE_INSET * 2)
-
-  const positionFor = (p: number): { px: number; pct: number } => {
-    const ratio = (p - minP) / range
-    const px = SAFE_INSET + ratio * usable
-    return { px, pct: (px / Math.max(1, width)) * 100 }
-  }
-
   const placed: Placed[] = useMemo(() => {
     const items = sorted.map((s) => {
-      const ratio = (parseMonth(s.started) - minP) / range
-      const xPx = SAFE_INSET + ratio * usable
-      return { study: s, xPx, xRatio: ratio }
+      const xStartPct = positionFor(parseMonth(s.started))
+      const endP = s.status === "在读" ? maxP : endMonth(s)
+      const xEndPct = positionFor(endP)
+      return { study: s, xStartPct, xEndPct }
     })
-    const lanes: { above: number[]; below: number[] } = { above: [], below: [] }
+    // 同 side 同 lane 内不允许时间区间重叠（按 [xStart, xEnd] 检测）
+    const lanes: { above: number[][]; below: number[][] } = { above: [], below: [] }
     return items.map((it, i) => {
       const tryPlace = (side: "above" | "below"): number => {
         const sideLanes = lanes[side]
         for (let l = 0; l < sideLanes.length; l++) {
-          if (it.xPx - sideLanes[l] >= CARD_W) {
-            sideLanes[l] = it.xPx
+          const lastEnd = sideLanes[l][sideLanes[l].length - 1]
+          if (it.xStartPct - lastEnd >= MIN_GAP_PCT) {
+            sideLanes[l].push(it.xEndPct)
             return l
           }
         }
-        sideLanes.push(it.xPx)
+        sideLanes.push([it.xEndPct])
         return sideLanes.length - 1
       }
       const preferred: "above" | "below" = i % 2 === 0 ? "above" : "below"
       const other: "above" | "below" = preferred === "above" ? "below" : "above"
-      const preferLastX = lanes[preferred].length ? Math.max(...lanes[preferred]) : -Infinity
-      const otherLastX = lanes[other].length ? Math.max(...lanes[other]) : -Infinity
+      const fits = (side: "above" | "below") =>
+        lanes[side].some((ln) => it.xStartPct - ln[ln.length - 1] >= MIN_GAP_PCT) ||
+        lanes[side].length === 0
       const side: "above" | "below" =
-        it.xPx - preferLastX < CARD_W && it.xPx - otherLastX >= CARD_W ? other : preferred
+        fits(preferred) ? preferred : fits(other) ? other : preferred
       const lane = tryPlace(side)
       return { ...it, side, lane }
     })
-  }, [sorted, usable, minP, range])
+  }, [sorted, minP, range])
 
   const lanesAbove = Math.max(1, ...placed.map((p) => (p.side === "above" ? p.lane + 1 : 0)))
   const lanesBelow = Math.max(1, ...placed.map((p) => (p.side === "below" ? p.lane + 1 : 0)))
-  const padTop = 32 + lanesAbove * (CARD_H + LANE_GAP)
-  const padBottom = 32 + lanesBelow * (CARD_H + LANE_GAP)
+  const padTop = AXIS_PAD + lanesAbove * (CARD_H + LANE_GAP)
+  const padBottom = AXIS_PAD + lanesBelow * (CARD_H + LANE_GAP)
 
   return (
-    <div className="studies-cross-fade mx-auto" style={{ maxWidth: 1100 }}>
+    <div className="studies-cross-fade mx-auto" style={{ maxWidth: 1100, width: "100%" }}>
       <div
-        ref={containerRef}
         className="relative"
-        style={{ paddingTop: padTop, paddingBottom: padBottom, marginInline: 12 }}
+        style={{ paddingTop: padTop, paddingBottom: padBottom, marginInline: 12, width: "calc(100% - 24px)" }}
       >
         <div
           className="absolute h-px bg-border"
-          style={{ top: padTop, left: SAFE_INSET, right: SAFE_INSET }}
+          style={{ top: padTop, left: 0, right: 0 }}
         />
-        {yearMarks.map((mk) => {
-          const { pct } = positionFor(mk.p)
-          return (
-            <div
-              key={mk.p}
-              className="absolute flex flex-col items-center"
-              style={{ left: `${pct}%`, top: padTop, transform: "translate(-50%, 0)" }}
-            >
-              <div className="bg-border" style={{ width: 1, height: 6, marginTop: -3 }} />
-              <div className="mt-1.5 font-mono text-[10px] text-muted-foreground/80" style={{ letterSpacing: 0.5 }}>
-                {mk.y}·{String(mk.m).padStart(2, "0")}
-              </div>
+        {yearMarks.map((mk) => (
+          <div
+            key={mk.p}
+            className="absolute flex flex-col items-center"
+            style={{ left: `${positionFor(mk.p)}%`, top: padTop, transform: "translate(-50%, 0)" }}
+          >
+            <div className="bg-border" style={{ width: 1, height: 6, marginTop: -3 }} />
+            <div className="mt-1.5 font-mono text-[10px] text-muted-foreground/80" style={{ letterSpacing: 0.5 }}>
+              {mk.y}·{String(mk.m).padStart(2, "0")}
             </div>
-          )
-        })}
+          </div>
+        ))}
         {placed.map((p) => (
           <TimelineNode
             key={p.study.id}
             study={p.study}
-            xPct={(p.xPx / Math.max(1, width)) * 100}
+            xStartPct={p.xStartPct}
+            xEndPct={p.xEndPct}
             side={p.side}
             lane={p.lane}
             axisTop={padTop}
@@ -265,14 +268,16 @@ function TimelineView({ studies }: { studies: Study[] }) {
 
 function TimelineNode({
   study,
-  xPct,
+  xStartPct,
+  xEndPct,
   side,
   lane,
   axisTop,
   laneStep,
 }: {
   study: Study
-  xPct: number
+  xStartPct: number
+  xEndPct: number
   side: "above" | "below"
   lane: number
   axisTop: number
@@ -281,71 +286,91 @@ function TimelineNode({
   const [hover, setHover] = useState(false)
   const above = side === "above"
   const stemLen = 24 + lane * laneStep
-  const cardTop = above ? -(stemLen + 108) : stemLen
+  const cardTop = above ? -(stemLen + CARD_H) : stemLen
   const isActive = study.status === "在读"
+  const widthPct = Math.max(0, xEndPct - xStartPct)
   return (
-    <a
-      href={detailHref(study)}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      onFocus={() => setHover(true)}
-      onBlur={() => setHover(false)}
-      className="absolute cursor-pointer no-underline text-inherit focus-visible:outline-none"
-      style={{ left: `${xPct}%`, top: axisTop, transform: "translateX(-50%)" }}
-    >
-      {/* dot on axis */}
+    <>
+      {/* start dot on axis — positioned in timeline container coordinates */}
       <div
-        className="absolute rounded-full transition-all"
+        className="absolute rounded-full pointer-events-none"
         style={{
-          left: "50%",
-          top: 0,
+          left: `${xStartPct}%`,
+          top: axisTop,
           transform: "translate(-50%, -50%)",
           width: isActive ? 10 : 7,
           height: isActive ? 10 : 7,
           background: isActive ? "var(--primary)" : "var(--background)",
           border: `1.5px solid ${isActive ? "var(--primary)" : "var(--muted-foreground)"}`,
-          zIndex: 2,
+          zIndex: 3,
           boxShadow: hover ? "0 0 0 4px color-mix(in oklab, var(--foreground), transparent 95%)" : "none",
+          transition: "box-shadow 0.2s",
         }}
       />
-      {/* stem */}
+      {/* stem from axis dot to card's left edge */}
       <div
-        className="absolute bg-border"
-        style={{ left: "50%", top: above ? -stemLen : 0, width: 1, height: stemLen }}
-      />
-      {/* card */}
-      <div
-        className="absolute transition-colors"
+        className="absolute bg-border pointer-events-none"
         style={{
-          left: "50%",
-          top: cardTop,
-          transform: "translateX(-50%)",
-          width: 220,
-          padding: "12px 14px",
-          background: hover ? "color-mix(in oklab, var(--muted), transparent 30%)" : "transparent",
+          left: `${xStartPct}%`,
+          top: above ? axisTop - stemLen : axisTop,
+          width: 1,
+          height: stemLen,
+        }}
+      />
+      {/* card — left edge sits 28px LEFT of xStart so the start dot lives inside the card */}
+      <a
+        href={detailHref(study)}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onFocus={() => setHover(true)}
+        onBlur={() => setHover(false)}
+        className="absolute block no-underline text-inherit cursor-pointer focus-visible:outline-none"
+        style={{
+          left: `calc(${xStartPct}% - ${LEFT_INSET}px)`,
+          width: `calc(${widthPct}% + ${LEFT_INSET}px)`,
+          top: axisTop + cardTop,
+          height: CARD_H,
+          padding: "12px 18px 12px 16px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          background: hover
+            ? "color-mix(in oklab, var(--muted), transparent 30%)"
+            : "color-mix(in oklab, var(--card), transparent 40%)",
+          border: "1px solid var(--border)",
           borderLeft: `2px solid ${isActive ? "var(--primary)" : "var(--border)"}`,
+          borderRadius: 2,
+          boxSizing: "border-box",
+          overflow: "hidden",
+          transition: "background 0.2s",
         }}
       >
         <div className="flex items-center gap-2 mb-1.5">
           <span
-            className="text-[10px] italic text-muted-foreground/80"
+            className="text-[10px] italic text-muted-foreground/80 whitespace-nowrap"
             style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: "0.16em" }}
           >
             № {study.no} · {study.field}
           </span>
         </div>
-        <h3 className="font-serif-cn text-[15px] font-semibold text-foreground m-0 mb-1.5 leading-[1.35]">
+        <h3
+          className="font-serif-cn text-[15px] font-semibold text-foreground m-0 mb-1.5 leading-[1.35]"
+          style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+        >
           {study.title}
         </h3>
-        <div className="text-[11px] text-muted-foreground font-serif-cn italic leading-[1.5] mb-2">
+        <div
+          className="text-[11px] text-muted-foreground font-serif-cn italic leading-[1.5] mb-2"
+          style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+        >
           {study.epigraph}
         </div>
         <div className="flex justify-between items-center text-[10.5px] text-muted-foreground font-mono">
-          <span>{study.started.replace(/\s/g, "")}</span>
+          <span>{formatSpan(study)}</span>
           <StatusMark status={study.status} />
         </div>
-      </div>
-    </a>
+      </a>
+    </>
   )
 }
 
