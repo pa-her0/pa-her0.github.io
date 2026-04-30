@@ -12,3 +12,4 @@ scripts/__pycache__/
 .claude/
 CLAUDE.md
 Design/
+.DS_Store

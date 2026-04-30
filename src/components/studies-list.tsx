@@ -15,7 +15,7 @@ function Stat({ n, label }: { n: number; label: string }) {
       <span className="text-primary text-[18px] font-medium font-serif tabular-nums" style={{ letterSpacing: 0.5 }}>
         {n}
       </span>
-      <span className="text-muted-foreground text-[12px] font-serif-cn">{label}</span>
+      <span className="text-muted-foreground text-[12px] font-serif-cn whitespace-nowrap">{label}</span>
     </div>
   )
 }
@@ -76,7 +76,7 @@ function IndexItem({ study }: { study: Study }) {
     <li className="border-b border-border/50 last:border-b-0">
       <a
         href={detailHref(study)}
-        className="studies-link grid items-baseline gap-4 py-3.5 cursor-pointer no-underline text-inherit focus-visible:outline-none focus-visible:bg-muted/40 rounded-sm"
+        className="studies-link studies-index-item grid items-baseline gap-4 py-3.5 cursor-pointer no-underline text-inherit focus-visible:outline-none focus-visible:bg-muted/40 rounded-sm"
         style={{ gridTemplateColumns: "44px 1fr auto" }}
       >
         <span
@@ -227,11 +227,19 @@ function TimelineView({ studies }: { studies: Study[] }) {
   const padTop = AXIS_PAD + lanesAbove * (CARD_H + LANE_GAP)
   const padBottom = AXIS_PAD + lanesBelow * (CARD_H + LANE_GAP)
 
+  // Force a comfortable timeline width so it horizontally scrolls instead of getting squished.
+  // ~88px per month, with a sensible floor.
+  const innerMinWidth = Math.max(720, range * 88)
+
   return (
     <div className="studies-cross-fade mx-auto" style={{ maxWidth: 1100, width: "100%" }}>
       <div
+        className="studies-timeline-scroll"
+        style={{ overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch" }}
+      >
+      <div
         className="relative"
-        style={{ paddingTop: padTop, paddingBottom: padBottom, marginInline: 12, width: "calc(100% - 24px)" }}
+        style={{ paddingTop: padTop, paddingBottom: padBottom, marginInline: 12, minWidth: innerMinWidth, width: "calc(100% - 24px)" }}
       >
         <div
           className="absolute h-px bg-border"
@@ -261,6 +269,7 @@ function TimelineView({ studies }: { studies: Study[] }) {
             laneStep={CARD_H + LANE_GAP}
           />
         ))}
+      </div>
       </div>
     </div>
   )
@@ -430,12 +439,12 @@ export function StudiesList({ studies }: { studies: Study[] }) {
         </p>
 
         {/* 元数据条 */}
-        <div className="flex items-baseline gap-8 pb-[22px] mb-9 border-b border-border">
+        <div className="flex items-baseline gap-x-6 gap-y-2 sm:gap-8 flex-wrap pb-[22px] mb-9 border-b border-border">
           <Stat n={total} label="个专题" />
           <Stat n={inProgress} label="在读" />
           <Stat n={totalResources} label="件资源" />
           <span
-            className="ml-auto text-[11px] text-muted-foreground/80 italic uppercase"
+            className="hidden sm:inline-block ml-auto text-[11px] text-muted-foreground/80 italic uppercase"
             style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: "0.16em" }}
           >
             {mode === "index" ? "By Index" : "By Chronology"}

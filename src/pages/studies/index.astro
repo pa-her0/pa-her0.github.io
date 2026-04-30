@@ -22,19 +22,49 @@ const studies = await getAllStudies()
 </BaseLayout>
 
 <style>
+  /* Timeline always scrolls horizontally rather than being squashed by viewport */
+  :global(.studies-timeline-scroll) {
+    scrollbar-width: thin;
+  }
+  :global(.studies-timeline-scroll)::-webkit-scrollbar {
+    height: 6px;
+  }
+  :global(.studies-timeline-scroll)::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--muted-foreground), transparent 70%);
+    border-radius: 3px;
+  }
+
   @media (max-width: 760px) {
     :global(main > .font-sans > main) {
-      padding: 32px 20px 0 !important;
+      padding: 32px 18px 0 !important;
     }
     :global(.studies-header-row) {
       flex-direction: column !important;
       align-items: flex-start !important;
       gap: 18px !important;
     }
-    :global(.study-meta-right) {
+    /* Index list: 2-col grid (number + content), meta drops into a horizontal
+       row below the epigraph in column 2.
+       Note: `:global()` must wrap the full selector — the inner element is rendered
+       by a React component and has no Astro scope attribute. */
+    :global(.studies-index-item) {
+      grid-template-columns: 28px 1fr !important;
+      column-gap: 10px !important;
+      row-gap: 6px !important;
+      padding-top: 14px !important;
+      padding-bottom: 14px !important;
+    }
+    :global(.studies-index-item .study-meta-right) {
+      grid-column: 2 !important;
+      grid-row: 2 !important;
       flex-direction: row !important;
       align-items: center !important;
+      justify-content: flex-start !important;
       gap: 10px !important;
+      margin: 0 !important;
+    }
+    :global(.studies-index-item .study-meta-right > *) {
+      white-space: nowrap;
     }
   }
 </style>

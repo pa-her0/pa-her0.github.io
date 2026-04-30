@@ -27,23 +27,68 @@ const description = study.epigraph ?? ""
 </BaseLayout>
 
 <style>
+  /* Date stays inside the left stamp on desktop; these inline copies only show on mobile. */
+  :global(.study-resource-meta-date),
+  :global(.study-resource-meta-date-only) {
+    display: none;
+  }
+
   @media (max-width: 880px) {
+    :global(.study-resource-meta-date) {
+      display: inline;
+    }
+    :global(.study-resource-meta-date-only) {
+      display: block;
+    }
     :global(main > .font-sans > main) {
       padding: 32px 20px 0 !important;
     }
     :global(.study-detail-header) {
       padding-bottom: 28px !important;
     }
-    :global(.study-resource-row),
+    /* ResourceRow: drop the left stamp entirely on mobile. The date moves
+       inline into the typeFull overline (`论文 · 2026·04·15`), so a multi-line
+       title doesn't leave dead space on the left. */
+    :global(.study-resource-row) {
+      grid-template-columns: 1fr !important;
+      column-gap: 0 !important;
+    }
+    :global(.study-resource-row > .study-resource-stamp) {
+      display: none !important;
+    }
+    :global(.study-resource-row > .study-resource-head) {
+      grid-column: 1 !important;
+      grid-row: 1 !important;
+    }
+    :global(.study-resource-row > .study-resource-desc) {
+      grid-column: 1 !important;
+      grid-row: 2 !important;
+    }
+    :global(.study-resource-row > .study-resource-status) {
+      grid-column: 1 !important;
+      grid-row: auto !important;
+      text-align: left !important;
+      padding: 0 !important;
+    }
+
+    /* MarginNote: keep the NOTE/date label on the left, body wraps full width. */
+    :global(.study-note-row) {
+      grid-template-columns: 56px 1fr !important;
+      column-gap: 16px !important;
+    }
+    :global(.study-note-row > .study-note-label) {
+      grid-column: 1 !important;
+      grid-row: 1 !important;
+    }
+    :global(.study-note-row > .study-note-body) {
+      grid-column: 1 / -1 !important;
+      grid-row: 2 !important;
+    }
+
+    /* ByMediumView: keep existing 2-row collapse */
     :global(.study-medium-row) {
       grid-template-columns: auto 1fr !important;
       gap: 18px !important;
-    }
-    :global(.study-resource-row > .study-resource-status) {
-      grid-column: 1 / 3 !important;
-      text-align: left !important;
-      padding-left: 0 !important;
-      padding-top: 4px !important;
     }
     :global(.study-medium-row > div:last-child) {
       grid-column: 1 / 3 !important;

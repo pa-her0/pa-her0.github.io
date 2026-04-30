@@ -56,17 +56,24 @@ function ResourceRow({ r, noBorder }: { r: ParsedResource; noBorder?: boolean })
   return (
     <article
       className={cn(
-        "grid items-start gap-6 study-resource-row",
+        "grid items-start study-resource-row",
         !noBorder && "border-b border-border/50",
       )}
-      style={{ gridTemplateColumns: "72px 1fr auto", padding: "26px 0" }}
+      style={{
+        gridTemplateColumns: "72px 1fr auto",
+        columnGap: 24,
+        rowGap: 12,
+        padding: "26px 0",
+      }}
     >
-      <TypeStamp type={r.type} date={r.date} />
+      <div className="study-resource-stamp" style={{ gridColumn: 1, gridRow: "1 / -1" }}>
+        <TypeStamp type={r.type} date={r.date} />
+      </div>
 
-      <div>
+      <div className="study-resource-head" style={{ gridColumn: 2, gridRow: 1 }}>
         {r.typeFull && (
           <div
-            className="font-serif-cn text-muted-foreground italic"
+            className="study-resource-meta font-serif-cn text-muted-foreground italic"
             style={{
               fontSize: 12,
               letterSpacing: "0.05em",
@@ -74,6 +81,18 @@ function ResourceRow({ r, noBorder }: { r: ParsedResource; noBorder?: boolean })
             }}
           >
             {r.typeFull}
+            <span className="study-resource-meta-date font-mono not-italic">
+              {" · "}
+              {formatCompactDate(r.date)}
+            </span>
+          </div>
+        )}
+        {!r.typeFull && (
+          <div
+            className="study-resource-meta-date-only font-mono text-muted-foreground"
+            style={{ fontSize: 11, marginBottom: 4 }}
+          >
+            {formatCompactDate(r.date)}
           </div>
         )}
         <h3
@@ -85,26 +104,33 @@ function ResourceRow({ r, noBorder }: { r: ParsedResource; noBorder?: boolean })
         {(r.byline || r.year) && (
           <div
             className="font-serif-cn text-muted-foreground"
-            style={{ fontSize: 12.5, marginBottom: r.description ? 12 : 0 }}
+            style={{ fontSize: 12.5 }}
           >
             {r.byline}
             {r.byline && r.year ? " · " : ""}
             {r.year}
           </div>
         )}
-        {r.description && (
-          <p
-            className="font-serif-cn text-foreground/85 m-0"
-            style={{ fontSize: 14, lineHeight: 1.8, fontWeight: 400 }}
-          >
-            {r.description}
-          </p>
-        )}
       </div>
+
+      {r.description && (
+        <p
+          className="font-serif-cn text-foreground/85 m-0 study-resource-desc"
+          style={{
+            fontSize: 14,
+            lineHeight: 1.8,
+            fontWeight: 400,
+            gridColumn: "2 / -1",
+            gridRow: 2,
+          }}
+        >
+          {r.description}
+        </p>
+      )}
 
       <div
         className="text-right text-[11px] text-muted-foreground font-serif-cn leading-relaxed study-resource-status"
-        style={{ paddingTop: 8 }}
+        style={{ paddingTop: 8, gridColumn: 3, gridRow: 1 }}
       >
         {r.status ?? ""}
       </div>
@@ -115,9 +141,11 @@ function ResourceRow({ r, noBorder }: { r: ParsedResource; noBorder?: boolean })
 function MarginNote({ date, body }: { date: string; body: string }) {
   return (
     <aside
-      className="grid items-start gap-6"
+      className="grid items-start study-note-row"
       style={{
         gridTemplateColumns: "72px 1fr",
+        columnGap: 24,
+        rowGap: 10,
         padding: "20px 24px",
         marginInline: -24,
         background: "var(--paper-warm)",
@@ -125,7 +153,10 @@ function MarginNote({ date, body }: { date: string; body: string }) {
         marginBlock: 4,
       }}
     >
-      <div className="flex flex-col items-center gap-2" style={{ paddingTop: 4 }}>
+      <div
+        className="study-note-label flex flex-col items-center gap-2"
+        style={{ paddingTop: 4, gridColumn: 1, gridRow: 1 }}
+      >
         <span
           className="text-[10px] italic uppercase text-primary"
           style={{ fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: "0.16em" }}
@@ -139,7 +170,7 @@ function MarginNote({ date, body }: { date: string; body: string }) {
           {formatCompactDate(date)}
         </div>
       </div>
-      <div>
+      <div className="study-note-body" style={{ gridColumn: 2, gridRow: 1 }}>
         <p
           className="font-serif-cn italic text-foreground m-0 whitespace-pre-line"
           style={{ fontSize: 14.5, lineHeight: 1.85, maxWidth: 700 }}
