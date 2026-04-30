@@ -285,19 +285,23 @@ export function StudyDetailView({ study }: { study: StudyData }) {
   const hasContent = study.trail.length > 0
 
   return (
-    <div className="font-sans text-foreground">
-      <main className="mx-auto" style={{ maxWidth: 1080, padding: "56px 64px 64px" }}>
-        {/* 面包屑 */}
-        <div
-          className="text-[12px] text-muted-foreground font-serif-cn"
-          style={{ marginBottom: 36 }}
+    <div className="font-sans text-foreground mx-auto w-full max-w-[1080px] px-5 pt-8 pb-16 md:px-16 md:pt-14 md:pb-16">
+      <div>
+        {/* 返回专题 */}
+        <a
+          href="/studies/"
+          className="group inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-4"
         >
-          <a href="/studies/" className="text-muted-foreground no-underline hover:text-foreground transition-colors">
-            专题
-          </a>
-          <span className="mx-2 text-muted-foreground/70">›</span>
-          <span className="text-foreground/85">{study.title}</span>
-        </div>
+          <svg
+            className="w-4 h-4 transition-transform group-hover:-translate-x-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          返回专题
+        </a>
 
         {/* 标题区 */}
         <header
@@ -421,7 +425,7 @@ export function StudyDetailView({ study }: { study: StudyData }) {
             这个专题还在进行中。最近一次更新于 {study.updated}。
           </div>
         )}
-      </main>
+      </div>
     </div>
   )
 }

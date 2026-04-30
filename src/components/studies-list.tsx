@@ -76,8 +76,7 @@ function IndexItem({ study }: { study: Study }) {
     <li className="border-b border-border/50 last:border-b-0">
       <a
         href={detailHref(study)}
-        className="studies-link studies-index-item grid items-baseline gap-4 py-3.5 cursor-pointer no-underline text-inherit focus-visible:outline-none focus-visible:bg-muted/40 rounded-sm"
-        style={{ gridTemplateColumns: "44px 1fr auto" }}
+        className="studies-link studies-index-item grid items-baseline grid-cols-[28px_1fr] gap-x-2.5 gap-y-1.5 md:grid-cols-[44px_1fr_auto] md:gap-x-4 md:gap-y-0 py-3.5 cursor-pointer no-underline text-inherit focus-visible:outline-none focus-visible:bg-muted/40 rounded-sm"
       >
         <span
           className="font-serif-cn text-[14px] italic text-right text-muted-foreground/70"
@@ -101,7 +100,7 @@ function IndexItem({ study }: { study: Study }) {
             {study.epigraph}
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1 study-meta-right">
+        <div className="flex flex-row items-center gap-2.5 col-start-2 row-start-2 md:flex-col md:items-end md:gap-1 md:col-start-3 md:row-start-1 study-meta-right">
           <StatusMark status={study.status} />
           <span className="font-mono text-[10.5px] text-muted-foreground/70">{study.updated}</span>
         </div>
@@ -406,10 +405,10 @@ export function StudiesList({ studies }: { studies: Study[] }) {
   )
 
   return (
-    <div className="font-sans text-foreground">
-      <main className="mx-auto" style={{ maxWidth: 1180, padding: "56px 64px 0" }}>
+    <div className="font-sans text-foreground mx-auto w-full max-w-[1180px] px-5 pt-8 md:px-16 md:pt-14">
+      <div>
         {/* 标题 + 模式切换 */}
-        <div className="flex items-end justify-between gap-6 flex-wrap mb-3.5 studies-header-row">
+        <div className="flex flex-col items-start gap-[18px] mb-3.5 md:flex-row md:items-end md:justify-between md:gap-6 md:flex-wrap">
           <div>
             <div className="flex items-stretch gap-3.5">
               <div className="rounded-sm bg-primary" style={{ width: 3 }} />
@@ -466,7 +465,7 @@ export function StudiesList({ studies }: { studies: Study[] }) {
           </div>
           专题不追求结论。一个课题搁置了，并不意味着它失败——也许只是时机未到。
         </div>
-      </main>
+      </div>
     </div>
   )
 }
