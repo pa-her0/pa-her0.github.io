@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 
 const phrases = [
   { prefix: "探求 AI 的", highlight: "边界" },
@@ -14,9 +14,43 @@ export function Hero() {
   const [phraseIndex, setPhraseIndex] = useState(0)
   const [displayText, setDisplayText] = useState("")
   const [isDeleting, setIsDeleting] = useState(false)
+  // Pause the typewriter loop when the hero is offscreen or the tab is hidden;
+  // otherwise the setTimeout chain keeps re-rendering React state while the
+  // user reads other parts of the home page.
+  const [isActive, setIsActive] = useState(true)
+  const sectionRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.hidden) setIsActive(false)
+      else if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect()
+        setIsActive(rect.bottom > 0 && rect.top < window.innerHeight)
+      }
+    }
+    document.addEventListener("visibilitychange", onVisibility)
+
+    let observer: IntersectionObserver | null = null
+    if (sectionRef.current && typeof IntersectionObserver !== "undefined") {
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            setIsActive(entry.isIntersecting && !document.hidden)
+          }
+        },
+        { threshold: 0 },
+      )
+      observer.observe(sectionRef.current)
+    }
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility)
+      observer?.disconnect()
+    }
   }, [])
 
   const getTypeSpeed = useCallback(() => {
@@ -29,21 +63,28 @@ export function Hero() {
     return 25 + Math.random() * 15
   }, [])
 
+  const innerTimerRef = useRef<number | null>(null)
+
   const typeWriter = useCallback(() => {
     const currentPhrase = phrases[phraseIndex]
     const fullText = currentPhrase.prefix + currentPhrase.highlight
 
+    if (innerTimerRef.current !== null) {
+      window.clearTimeout(innerTimerRef.current)
+      innerTimerRef.current = null
+    }
+
     if (!isDeleting) {
       if (displayText.length < fullText.length) {
-        setTimeout(() => {
+        innerTimerRef.current = window.setTimeout(() => {
           setDisplayText(fullText.slice(0, displayText.length + 1))
         }, getTypeSpeed())
       } else {
-        setTimeout(() => setIsDeleting(true), 1500)
+        innerTimerRef.current = window.setTimeout(() => setIsDeleting(true), 1500)
       }
     } else {
       if (displayText.length > 0) {
-        setTimeout(() => {
+        innerTimerRef.current = window.setTimeout(() => {
           setDisplayText(displayText.slice(0, -1))
         }, getDeleteSpeed())
       } else {
@@ -54,11 +95,16 @@ export function Hero() {
   }, [displayText, isDeleting, phraseIndex, getTypeSpeed, getDeleteSpeed])
 
   useEffect(() => {
-    if (mounted) {
-      const timer = setTimeout(typeWriter, 50)
-      return () => clearTimeout(timer)
+    if (!mounted || !isActive) return
+    const timer = window.setTimeout(typeWriter, 50)
+    return () => {
+      window.clearTimeout(timer)
+      if (innerTimerRef.current !== null) {
+        window.clearTimeout(innerTimerRef.current)
+        innerTimerRef.current = null
+      }
     }
-  }, [mounted, typeWriter])
+  }, [mounted, isActive, typeWriter])
 
   const renderText = () => {
     const currentPhrase = phrases[phraseIndex]
@@ -87,7 +133,7 @@ export function Hero() {
   }, [])
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center px-6 bg-muted/30">
+    <section ref={sectionRef} className="relative min-h-[90vh] flex items-center justify-center px-6 bg-muted/30">
       <div className="max-w-4xl mx-auto text-center">
         <div
           className={`transition-all duration-1000 ease-out ${

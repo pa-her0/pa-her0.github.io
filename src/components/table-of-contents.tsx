@@ -19,6 +19,10 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
   const navRef = useRef<HTMLElement | null>(null)
   const observerRef = useRef<IntersectionObserver | null>(null)
   const headingElementsRef = useRef<Map<string, IntersectionObserverEntry>>(new Map())
+  // Pre-measured document-coord top of every heading. Refreshed on resize / page
+  // load — never read inside the IO callback to avoid forced sync layout while
+  // the user scrolls.
+  const headingOffsetsRef = useRef<Array<{ id: string; top: number }>>([])
   const tocAutoScrollTimerRef = useRef<number | null>(null)
   const programmaticTargetRef = useRef<string>("")
   const programmaticLockRef = useRef(false)
@@ -60,6 +64,18 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
     return items
   }, [])
 
+  const measureOffsets = useCallback((items: TocItem[]) => {
+    const scrollY = window.scrollY
+    const offsets: Array<{ id: string; top: number }> = []
+    items.forEach((item) => {
+      const el = document.getElementById(item.id)
+      if (!el) return
+      offsets.push({ id: item.id, top: el.getBoundingClientRect().top + scrollY })
+    })
+    offsets.sort((a, b) => a.top - b.top)
+    headingOffsetsRef.current = offsets
+  }, [])
+
   const setupObserver = useCallback(
     (items: TocItem[]) => {
       if (observerRef.current) {
@@ -75,25 +91,16 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
 
           if (programmaticLockRef.current) {
             const targetId = programmaticTargetRef.current
-            if (!targetId) {
-              unlockProgrammaticLock()
-            } else {
-              const targetEl = document.getElementById(targetId)
-              if (!targetEl) {
-                unlockProgrammaticLock()
-              } else {
-                const targetTop = targetEl.getBoundingClientRect().top
-                const expectedTop = 80
-                const unlockTolerance = 18
-
-                if (Math.abs(targetTop - expectedTop) > unlockTolerance) {
-                  setActiveId(targetId)
-                  return
-                }
-
-                unlockProgrammaticLock()
-              }
+            if (targetId) {
+              // While a click-driven smooth scroll is in flight, keep activeId
+              // pinned to the target. Unlock is driven by `scrollend` / 2500ms
+              // hard timer / user gesture — never by IO geometry, which would
+              // either flicker (entry-based) or cost a sync layout read
+              // (rect-based, the original implementation).
+              setActiveId(targetId)
+              return
             }
+            unlockProgrammaticLock()
           }
 
           const visibleHeadings: IntersectionObserverEntry[] = []
@@ -107,18 +114,17 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
             )
             setActiveId(sorted[0].target.id)
           } else {
+            // Fallback: use pre-measured offsets instead of reading layout for
+            // every heading on every callback (the original code triggered a
+            // forced reflow per heading per scroll tick — the main mobile-jank
+            // culprit reported by Codex).
             const scrollY = window.scrollY
+            const offsets = headingOffsetsRef.current
             let closestId = ""
-            let closestTop = -Infinity
-            items.forEach((item) => {
-              const el = document.getElementById(item.id)
-              if (!el) return
-              const top = el.getBoundingClientRect().top + scrollY
-              if (top <= scrollY + 100 && top > closestTop) {
-                closestId = item.id
-                closestTop = top
-              }
-            })
+            for (const o of offsets) {
+              if (o.top <= scrollY + 100) closestId = o.id
+              else break
+            }
             if (closestId) setActiveId(closestId)
           }
         },
@@ -137,15 +143,51 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
   )
 
   useEffect(() => {
+    let resizeRaf = 0
+    let remeasureRaf = 0
+    let currentItems: TocItem[] = []
+    let articleObserver: ResizeObserver | null = null
+
+    const remeasure = () => {
+      if (currentItems.length > 0) measureOffsets(currentItems)
+    }
+
+    const scheduleRemeasure = () => {
+      if (remeasureRaf) cancelAnimationFrame(remeasureRaf)
+      remeasureRaf = requestAnimationFrame(remeasure)
+    }
+
+    const observeArticleResize = () => {
+      articleObserver?.disconnect()
+      const article = document.querySelector("article")
+      if (!article || typeof ResizeObserver === "undefined") return
+      // Markdown images load lazily and rarely declare width/height, so the
+      // article reflows during scrolling. Re-measure heading offsets whenever
+      // article geometry changes — keeps the fallback branch accurate without
+      // forcing a layout read inside the IO callback itself.
+      articleObserver = new ResizeObserver(scheduleRemeasure)
+      articleObserver.observe(article)
+    }
+
     const init = () => {
       const items = collectHeadings()
       if (items && items.length > 0) {
+        currentItems = items
+        measureOffsets(items)
         setupObserver(items)
+        observeArticleResize()
       }
     }
 
     init()
+    window.addEventListener("load", remeasure)
     document.addEventListener("astro:page-load", init)
+
+    const onResize = () => {
+      if (resizeRaf) cancelAnimationFrame(resizeRaf)
+      resizeRaf = requestAnimationFrame(remeasure)
+    }
+    window.addEventListener("resize", onResize, { passive: true })
 
     const handleUserIntent = () => {
       if (programmaticLockRef.current) {
@@ -153,23 +195,45 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
       }
     }
 
+    // `scrollend` (Chrome 114+, Safari 18+, Firefox 109+) is the cleanest
+    // signal that a programmatic smooth scroll has finished. Older browsers
+    // fall back to the existing 2500ms hard timer + user-gesture unlock.
+    const onScrollEnd = () => {
+      if (programmaticLockRef.current) unlockProgrammaticLock()
+    }
+
     window.addEventListener("wheel", handleUserIntent, { passive: true })
     window.addEventListener("touchstart", handleUserIntent, { passive: true })
     window.addEventListener("keydown", handleUserIntent)
+    window.addEventListener("scrollend", onScrollEnd, { passive: true })
 
     return () => {
       observerRef.current?.disconnect()
+      articleObserver?.disconnect()
+      window.removeEventListener("load", remeasure)
       document.removeEventListener("astro:page-load", init)
+      window.removeEventListener("resize", onResize)
       window.removeEventListener("wheel", handleUserIntent)
       window.removeEventListener("touchstart", handleUserIntent)
       window.removeEventListener("keydown", handleUserIntent)
+      window.removeEventListener("scrollend", onScrollEnd)
+      if (resizeRaf) cancelAnimationFrame(resizeRaf)
+      if (remeasureRaf) cancelAnimationFrame(remeasureRaf)
       clearTocAutoScrollTimer()
       unlockProgrammaticLock()
     }
-  }, [clearTocAutoScrollTimer, collectHeadings, setupObserver, unlockProgrammaticLock])
+  }, [clearTocAutoScrollTimer, collectHeadings, measureOffsets, setupObserver, unlockProgrammaticLock])
 
   useEffect(() => {
     if (!activeId || !navRef.current) return
+
+    // Mobile renders the TOC inside a drawer that's usually closed; auto-scroll
+    // there forces extra layout reads on every heading change while the user
+    // scrolls the article. Desktop (sidebar) is the only place where keeping
+    // the active link visible matters.
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 1279px)").matches) {
+      return
+    }
 
     clearTocAutoScrollTimer()
     tocAutoScrollTimerRef.current = window.setTimeout(() => {
