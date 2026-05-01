@@ -1,6 +1,6 @@
 ---
 slug: alignment-question
-title: "对齐问题：从规范到价值"
+title: 对齐问题：从规范到价值（这只是一个mock的专题）
 status: 在读
 started: 2026-01
 subtitle: On Alignment
