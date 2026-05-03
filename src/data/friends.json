@@ -40,10 +40,11 @@
         "siteurl": "https://www.xiwuqaq.me"
       },
       {
-        "title": "𝙕𝙚𝙡𝙡𝙤𝙣的博客",
-        "imgurl": "https://www.zellon.top/_astro/InoryAvater.PMGgR1yb_Z28yWCD.webp",
-        "desc": "信过眼，浮华几何时，剩培植根心，等闲千岁。",
-        "siteurl": "https://www.zellon.top"
+        "title": "Zellon的博客",
+        "imgurl": "https://www.zellon.top/avatar.jpg",
+        "desc": "告别过去，是为了走向未来",
+        "siteurl": "https://www.zellon.top/",
+        "rss": "https://zellon.top/rss.xml"
       },
       {
         "title": "白咲のblog",
