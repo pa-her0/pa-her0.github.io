@@ -1,0 +1,21 @@
+---
+title: Sketch 组件演示
+published: 2026-05-26
+description: 测试文章包（folder/index.mdx）+ 同目录 sketch.html + sandboxed iframe 的渲染流程。
+category: TechnicalTutorials
+tags: [sketch, demo, mdx]
+draft: false
+---
+
+import sketch from "./sketch.html?raw"
+import Sketch from "@/components/Sketch.astro"
+
+这是一篇用来验证 **文章包 + 算法可视化** 工作流的试点文章。
+
+文章本体是 `index.mdx`，旁边同目录放了 `sketch.html`，通过 Vite 的 `?raw` 后缀把它读成字符串，再丢给 `<Sketch>` 组件渲染成一个 sandboxed iframe。
+
+下面就是它的效果：
+
+<Sketch html={sketch} title="正弦波演示" />
+
+iframe 是 `sandbox="allow-scripts"` 但不开 `allow-same-origin`，所以里面的脚本碰不到本站的任何东西。

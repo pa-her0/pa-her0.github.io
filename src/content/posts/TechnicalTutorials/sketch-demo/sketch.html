@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; padding: 0; background: #0d1117; color: #e6edf3; font-family: system-ui, sans-serif; }
+  .wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px; }
+  canvas { background: #161b22; border-radius: 8px; display: block; width: 100%; max-width: 640px; height: auto; }
+  button { background: #238636; color: white; border: 0; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  button:hover { background: #2ea043; }
+  .label { font-size: 13px; opacity: 0.7; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <canvas id="c" width="480" height="240"></canvas>
+  <div>
+    <button id="play">播放 / 暂停</button>
+    <button id="reset">重置</button>
+  </div>
+  <div class="label">演示：正弦波 + 移动小球</div>
+</div>
+<script>
+  const cvs = document.getElementById('c');
+  const ctx = cvs.getContext('2d');
+  let t = 0;
+  let running = true;
+
+  function draw() {
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    ctx.strokeStyle = '#58a6ff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let x = 0; x < cvs.width; x++) {
+      const y = cvs.height / 2 + Math.sin((x + t) * 0.03) * 60;
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    const bx = (t * 2) % cvs.width;
+    const by = cvs.height / 2 + Math.sin((bx + t) * 0.03) * 60;
+    ctx.fillStyle = '#f78166';
+    ctx.beginPath();
+    ctx.arc(bx, by, 8, 0, Math.PI * 2);
+    ctx.fill();
+    if (running) t += 2;
+    requestAnimationFrame(draw);
+  }
+  document.getElementById('play').onclick = () => running = !running;
+  document.getElementById('reset').onclick = () => t = 0;
+  draw();
+</script>
+</body>
+</html>

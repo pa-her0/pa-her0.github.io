@@ -1,0 +1,83 @@
+---
+interface Props {
+  html: string
+  title?: string
+  height?: string
+  aspect?: string
+  autoSize?: boolean
+}
+
+const {
+  html,
+  title = "交互演示",
+  height,
+  aspect,
+  autoSize = true,
+} = Astro.props
+
+const sketchId = `sketch-${Math.random().toString(36).slice(2, 10)}`
+
+const resizeScript = autoSize
+  ? `<script>(function(){function post(){var h=Math.max(document.documentElement.scrollHeight,document.body?document.body.scrollHeight:0);parent.postMessage({__sketch:true,id:${JSON.stringify(sketchId)},height:h},'*');}var ro=new ResizeObserver(post);ro.observe(document.documentElement);if(document.body)ro.observe(document.body);window.addEventListener('load',post);setTimeout(post,50);setTimeout(post,300);})();<\/script>`
+  : ""
+
+const hasDoctype = html.trim().toLowerCase().startsWith("<!doctype")
+const baseStyle = `html,body{margin:0;padding:0;font-family:system-ui,sans-serif;background:transparent;color:inherit;overflow:hidden}`
+
+let wrapped: string
+if (hasDoctype) {
+  wrapped = html.replace(/<\/body>/i, `${resizeScript}</body>`)
+  if (!wrapped.includes(resizeScript)) wrapped = html + resizeScript
+} else {
+  wrapped = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${baseStyle}</style></head><body>${html}${resizeScript}</body></html>`
+}
+
+let frameStyle = "width:100%;border:0;display:block"
+if (height) {
+  frameStyle += `;height:${height}`
+} else if (aspect) {
+  frameStyle += `;aspect-ratio:${aspect}`
+} else if (autoSize) {
+  frameStyle += `;height:0` // 由 JS 撑开
+} else {
+  frameStyle += `;aspect-ratio:16 / 10`
+}
+---
+
+<div class="sketch" data-pagefind-ignore data-sketch-id={sketchId}>
+  <iframe
+    srcdoc={wrapped}
+    sandbox="allow-scripts"
+    title={title}
+    loading="lazy"
+    style={frameStyle}
+  ></iframe>
+</div>
+
+{autoSize && !height && (
+  <script is:inline define:vars={{ sketchId }}>
+    (function () {
+      const wrap = document.querySelector(`[data-sketch-id="${sketchId}"]`)
+      if (!wrap) return
+      const frame = wrap.querySelector("iframe")
+      if (!frame) return
+      window.addEventListener("message", (e) => {
+        const d = e.data
+        if (!d || d.__sketch !== true || d.id !== sketchId) return
+        if (typeof d.height === "number" && d.height > 0) {
+          frame.style.height = d.height + "px"
+        }
+      })
+    })()
+  </script>
+)}
+
+<style>
+  .sketch {
+    margin: 1.5rem 0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--codeblock-bg, #0d1117);
+    border: 1px solid var(--border, rgba(127, 127, 127, 0.2));
+  }
+</style>

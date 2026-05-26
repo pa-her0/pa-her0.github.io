@@ -1,6 +1,7 @@
 import { defineConfig } from "astro/config"
 import react from "@astrojs/react"
 import sitemap from "@astrojs/sitemap"
+import mdx from "@astrojs/mdx"
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections"
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers"
 import expressiveCode from "astro-expressive-code"
@@ -81,6 +82,7 @@ export default defineConfig({
     }),
     react(),
     sitemap(),
+    mdx(),
   ],
   markdown: {
     remarkPlugins: [
