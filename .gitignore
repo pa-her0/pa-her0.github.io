@@ -13,3 +13,4 @@ scripts/__pycache__/
 CLAUDE.md
 Design/
 .DS_Store
+.agents/
