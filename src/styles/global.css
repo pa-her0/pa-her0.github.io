@@ -204,6 +204,11 @@ html[data-prefilter="1"] .article-list-root {
 }
 
 /* Markdown extensions */
+.prose blockquote p:first-of-type::before,
+.prose blockquote p:last-of-type::after {
+  content: none;
+}
+
 .admonition {
   border-left: 3px solid var(--admonitions-color-note);
   background: transparent;

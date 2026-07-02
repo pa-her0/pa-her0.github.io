@@ -1,7 +1,7 @@
 ---
 title: 浅谈当下 Agent Memory 设计取舍
 published: 2026-07-02
-description: "从 system prompt 区块、渐进式披露到多层记忆方案，讨论 Agent Memory 在真实工程中的复杂度、可控性与取舍。"
+description: "大巧不工，大道至简"
 image: ""
 tags: ["模型考古学"]
 category: 深度学习
