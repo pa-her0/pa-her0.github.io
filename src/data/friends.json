@@ -166,6 +166,13 @@
         "imgurl": "https://dataer-1257252871.cos.ap-shanghai.myqcloud.com/virtualUserIcon/logo.png",
         "desc": "共享博客&深度思考。",
         "siteurl": "https://juzhiart.com"
+      },
+      {
+        "title": "三瓶可乐不过岗",
+        "imgurl": "https://blog.thricecola.com/favicon.ico",
+        "desc": "看看~ 看看~",
+        "siteurl": "https://blog.thricecola.com/",
+        "rss": "https://blog.thricecola.com/rss.xml"
       }
     ]
   },
