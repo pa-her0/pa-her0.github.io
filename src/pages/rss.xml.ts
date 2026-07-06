@@ -5,6 +5,7 @@ import sanitizeHtml from "sanitize-html"
 import { getSortedPosts } from "@/lib/posts"
 
 const parser = new MarkdownIt()
+const FULL_CONTENT_LIMIT = 10
 
 function stripInvalidXmlChars(str: string): string {
   return str.replace(
@@ -21,14 +22,20 @@ export async function GET(context: APIContext) {
     title: "时歌的博客 | Boundary of Thought",
     description: "探索金融、社会与人工智能的交汇点",
     site: context.site ?? "https://example.com",
-    items: publicPosts.map((post) => {
+    items: publicPosts.map((post, index) => {
       const content = typeof post.body === "string" ? post.body : String(post.body || "")
       const cleanedContent = stripInvalidXmlChars(content)
-      return {
+      const item = {
         title: post.data.title,
         pubDate: post.data.published,
         description: post.data.description || "",
         link: `/posts/${post.slug}/`,
+      }
+
+      if (index >= FULL_CONTENT_LIMIT) return item
+
+      return {
+        ...item,
         content: sanitizeHtml(parser.render(cleanedContent), {
           allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
         }),
