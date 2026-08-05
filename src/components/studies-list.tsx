@@ -96,7 +96,7 @@ function IndexItem({ study }: { study: Study }) {
               </span>
             )}
           </div>
-          <div className="font-serif-cn text-[12.5px] text-muted-foreground leading-[1.6] mt-1 max-w-[480px]">
+          <div className="font-serif-cn text-[12.5px] text-content-secondary leading-[1.6] mt-1 max-w-[480px]">
             {study.epigraph}
           </div>
         </div>
@@ -431,7 +431,7 @@ export function StudiesList({ studies }: { studies: Study[] }) {
           <ModeSwitch mode={mode} onChange={setMode} />
         </div>
         <p
-          className="font-serif-cn text-[15px] text-muted-foreground leading-[1.7] mb-3"
+          className="font-serif-cn text-[15px] text-content-secondary leading-[1.7] mb-3"
           style={{ marginLeft: 17 }}
         >
           一个问题最有趣的形态，是它还没有被完全回答的时候。

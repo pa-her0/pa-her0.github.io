@@ -168,18 +168,18 @@ const papersForClient = allPapers.map((p) => ({
 const recommendBadge = (status?: string) => {
   switch (status) {
     case "推荐":
-      return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+      return "bg-status-positive-bg text-status-positive-fg"
     case "中庸":
-      return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+      return "bg-status-neutral-bg text-status-neutral-fg"
     case "不行":
-      return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+      return "bg-status-negative-bg text-status-negative-fg"
     default:
       return "bg-muted text-muted-foreground"
   }
 }
 ---
 
-<div class="min-h-screen bg-background dark:bg-muted/30">
+<div class="min-h-screen bg-background dark:bg-surface-subtle">
   <SiteHeader />
 
   <main class="pt-24 pb-24">
@@ -415,7 +415,7 @@ const recommendBadge = (status?: string) => {
                         data-authors={authors.toLowerCase()}
                         class="group w-full cursor-pointer text-left focus:outline-none"
                       >
-                        <div class="relative aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-muted/30 shadow-sm group-hover:shadow-xl transition-shadow duration-300">
+                        <div class="relative aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-surface-subtle shadow-sm group-hover:shadow-xl transition-shadow duration-300">
                           {coverUrl ? (
                             <img
                               src={coverUrl}
@@ -496,7 +496,7 @@ const recommendBadge = (status?: string) => {
                       data-author={(c.fields.作者 || "").toLowerCase()}
                       class="group block cursor-pointer focus:outline-none"
                     >
-                      <div class="relative aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-muted/30 shadow-sm group-hover:shadow-xl transition-shadow duration-300">
+                      <div class="relative aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-surface-subtle shadow-sm group-hover:shadow-xl transition-shadow duration-300">
                         {cover ? (
                           <img src={cover} alt={c.fields.作品名} loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         ) : (
@@ -621,7 +621,7 @@ const recommendBadge = (status?: string) => {
         <svg viewBox="0 0 24 24" class="h-5 w-5"><path fill="currentColor" d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7 4.3 4.3l6.3 6.3 6.3-6.3z" /></svg>
       </button>
       <div class="flex gap-5 p-6">
-        <div class="shrink-0 w-32 aspect-[3/4] rounded-lg overflow-hidden bg-muted/30" data-modal-cover-wrap>
+        <div class="shrink-0 w-32 aspect-[3/4] rounded-lg overflow-hidden bg-surface-subtle" data-modal-cover-wrap>
           <img data-modal-cover alt="" decoding="async" class="w-full h-full object-cover hidden" />
           <div class="flex h-full w-full items-center justify-center p-3 bg-gradient-to-br from-primary/30 via-primary/20 to-primary/5" data-modal-cover-fallback>
             <p class="font-semibold text-xs text-foreground text-center" data-modal-cover-title></p>
@@ -872,9 +872,9 @@ const recommendBadge = (status?: string) => {
       const modalDesc = document.querySelector("[data-modal-desc]");
 
       const STATUS_CLS = [
-        "bg-green-100","text-green-700","dark:bg-green-900/30","dark:text-green-400",
-        "bg-yellow-100","text-yellow-700","dark:bg-yellow-900/30","dark:text-yellow-400",
-        "bg-red-100","text-red-700","dark:bg-red-900/30","dark:text-red-400",
+        "bg-status-positive-bg", "text-status-positive-fg",
+        "bg-status-neutral-bg", "text-status-neutral-fg",
+        "bg-status-negative-bg", "text-status-negative-fg",
       ];
 
       const openBookModal = (book) => {
@@ -894,9 +894,9 @@ const recommendBadge = (status?: string) => {
           modalStatus.textContent = book.status || "";
           modalStatus.classList.toggle("hidden", !book.status);
           STATUS_CLS.forEach((c) => modalStatus.classList.remove(c));
-          if (book.status === "推荐") modalStatus.classList.add("bg-green-100","text-green-700","dark:bg-green-900/30","dark:text-green-400");
-          else if (book.status === "中庸") modalStatus.classList.add("bg-yellow-100","text-yellow-700","dark:bg-yellow-900/30","dark:text-yellow-400");
-          else if (book.status === "不行") modalStatus.classList.add("bg-red-100","text-red-700","dark:bg-red-900/30","dark:text-red-400");
+          if (book.status === "推荐") modalStatus.classList.add("bg-status-positive-bg","text-status-positive-fg");
+          else if (book.status === "中庸") modalStatus.classList.add("bg-status-neutral-bg","text-status-neutral-fg");
+          else if (book.status === "不行") modalStatus.classList.add("bg-status-negative-bg","text-status-negative-fg");
         }
         if (modalFinished && modalFinishedText) {
           modalFinishedText.textContent = book.finished || "";

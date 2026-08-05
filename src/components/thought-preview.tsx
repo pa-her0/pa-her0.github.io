@@ -55,7 +55,7 @@ export function ThoughtPreview({
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-muted-foreground leading-relaxed line-clamp-3 whitespace-pre-line">
+                <div className="text-xs text-content-secondary leading-relaxed line-clamp-3 whitespace-pre-line">
                   {thought.excerpt}
                 </div>
               </div>

@@ -12,7 +12,7 @@ const studies = await getAllStudies()
 ---
 
 <BaseLayout {title} {description} fontProfile="interface">
-  <div class="min-h-screen bg-background" data-pagefind-ignore>
+  <div class="min-h-screen bg-background dark:bg-surface-subtle" data-pagefind-ignore>
     <SiteHeader />
     <main class="pt-20">
       <StudiesList client:idle studies={studies} />

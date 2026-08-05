@@ -4,7 +4,7 @@ import { ProfileContactLink } from "@/components/profile-contact-link"
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-background dark:bg-muted/30">
+    <div className="min-h-screen bg-background dark:bg-surface-subtle">
       <main className="pt-32 pb-8">
         <div className="max-w-4xl mx-auto px-6">
           {/* Hero Section */}
@@ -61,7 +61,7 @@ export default function AboutPage() {
             <div className="prose prose-neutral dark:prose-invert max-w-none
               prose-p:text-base prose-p:leading-8 prose-p:my-5 prose-p:text-foreground/90
               prose-a:text-primary prose-a:no-underline prose-a:hover:underline
-              prose-blockquote:border-l-primary prose-blockquote:border-l-2 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-foreground/70 prose-blockquote:font-normal prose-blockquote:bg-muted/20 prose-blockquote:py-2 prose-blockquote:rounded-r-lg
+              prose-blockquote:border-l-primary prose-blockquote:border-l-2 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-content-secondary prose-blockquote:font-normal prose-blockquote:bg-surface-subtle prose-blockquote:py-2 prose-blockquote:rounded-r-lg
               prose-strong:text-foreground prose-strong:font-semibold
               prose-ul:text-foreground/90 prose-ul:my-5
               prose-li:marker:text-primary prose-li:my-1.5"

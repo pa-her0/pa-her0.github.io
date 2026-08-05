@@ -11,25 +11,32 @@
   --content-delay: 150ms;
   --background: oklch(0.994 0.002 85); /* 极淡暖白纸感 */
   --foreground: oklch(0.15 0 0);
-  --paper-warm: #fbf8f3; /* 专题笔记背景：暖米色，致敬纸感 */
-  --card: oklch(1 0 0);
+  --surface-subtle: oklch(0.982 0.003 85); /* 区块浅底，替代 scattered muted/30 */
+  --paper-warm: oklch(0.98 0.008 85); /* 专题笔记背景：暖米色，致敬纸感 */
+  --card: oklch(0.998 0.002 85);
   --card-foreground: oklch(0.15 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0 0);
   --primary: oklch(0.55 0.22 25);
   --primary-foreground: oklch(0.995 0 0);
-  --secondary: oklch(0.97 0.005 25);
+  --secondary: oklch(0.97 0.005 25); /* 次要按钮/可交互面，略暖 */
   --secondary-foreground: oklch(0.15 0 0);
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.45 0 0);
-  --content-secondary: oklch(0.36 0 0);
+  --muted: oklch(0.96 0.003 85); /* 静态背景：placeholder、禁用区 */
+  --muted-foreground: oklch(0.45 0 0); /* 元信息：日期、标签、placeholder */
+  --content-secondary: oklch(0.36 0 0); /* 仍要读的内容：摘要、引用、预览正文 */
   --accent: oklch(0.55 0.22 25);
   --accent-foreground: oklch(0.995 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0 0);
-  --input: oklch(0.92 0 0);
+  --border: oklch(0.92 0.003 85);
+  --input: oklch(0.92 0.003 85);
   --ring: oklch(0.55 0.22 25);
+  --status-positive-bg: oklch(0.93 0.04 155);
+  --status-positive-fg: oklch(0.42 0.12 155);
+  --status-neutral-bg: oklch(0.93 0.04 90);
+  --status-neutral-fg: oklch(0.45 0.10 75);
+  --status-negative-bg: oklch(0.93 0.04 25);
+  --status-negative-fg: oklch(0.48 0.14 25);
   --chart-1: oklch(0.55 0.22 25);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -50,8 +57,8 @@
   --admonitions-color-warning: oklch(0.7 0.18 70);
   --admonitions-color-caution: oklch(0.62 0.2 25);
   /* Code block colors - light mode */
-  --codeblock-bg: oklch(0.97 0 0);
-  --codeblock-topbar-bg: oklch(0.94 0 0);
+  --codeblock-bg: oklch(0.97 0.003 85);
+  --codeblock-topbar-bg: oklch(0.94 0.003 85);
   --math-color: oklch(0.24 0.01 25);
   --math-display-color: oklch(0.28 0.01 25);
   --math-display-shadow: 0 1px 0 oklch(1 0 0 / 0.6);
@@ -60,40 +67,47 @@
 }
 
 .dark {
-  /* Cursor-inspired warm charcoal, adapted to the vermilion palette */
-  --background: #14120b;
-  --foreground: #e8e6e3;
-  --paper-warm: #211d14;
-  --card: #1b1913;
-  --card-foreground: #e8e6e3;
-  --popover: #201e18;
-  --popover-foreground: #e8e6e3;
+  /* Cool slate dark: subtle blue tint (hue ~250), low chroma — GitHub / Tailwind slate pattern */
+  --background: oklch(0.16 0.014 250);
+  --foreground: oklch(0.93 0 0);
+  --surface-subtle: oklch(0.19 0.014 250);
+  --paper-warm: oklch(0.22 0.012 80); /* 专题笔记仍用暖底，与正文冷色背景形成对比 */
+  --card: oklch(0.23 0.015 250);
+  --card-foreground: oklch(0.93 0 0);
+  --popover: oklch(0.24 0.015 250);
+  --popover-foreground: oklch(0.93 0 0);
   --primary: oklch(0.65 0.22 25);
   --primary-foreground: oklch(0.12 0 0);
-  --secondary: #26241e;
-  --secondary-foreground: #e8e6e3;
-  --muted: #26241e;
-  --muted-foreground: #989590;
-  --content-secondary: #b8b4ae;
-  --accent: oklch(0.65 0.22 25);
+  --secondary: oklch(0.28 0.015 250);
+  --secondary-foreground: oklch(0.93 0 0);
+  --muted: oklch(0.26 0.015 250);
+  --muted-foreground: oklch(0.67 0.012 250);
+  --content-secondary: oklch(0.72 0.012 250);
+  --accent: oklch(0.62 0.20 25);
   --accent-foreground: oklch(0.12 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: #35322b;
-  --input: #35322b;
+  --border: oklch(0.30 0.015 250);
+  --input: oklch(0.30 0.015 250);
   --ring: oklch(0.65 0.22 25);
+  --status-positive-bg: oklch(0.32 0.06 155 / 0.35);
+  --status-positive-fg: oklch(0.72 0.14 155);
+  --status-neutral-bg: oklch(0.32 0.05 90 / 0.35);
+  --status-neutral-fg: oklch(0.78 0.12 85);
+  --status-negative-bg: oklch(0.32 0.06 25 / 0.35);
+  --status-negative-fg: oklch(0.72 0.16 25);
   --chart-1: oklch(0.65 0.22 25);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: #1b1913;
-  --sidebar-foreground: #e8e6e3;
+  --sidebar: oklch(0.19 0.015 250);
+  --sidebar-foreground: oklch(0.93 0 0);
   --sidebar-primary: oklch(0.65 0.22 25);
   --sidebar-primary-foreground: oklch(0.90 0 0);
-  --sidebar-accent: #26241e;
-  --sidebar-accent-foreground: #e8e6e3;
-  --sidebar-border: #35322b;
+  --sidebar-accent: oklch(0.26 0.015 250);
+  --sidebar-accent-foreground: oklch(0.93 0 0);
+  --sidebar-border: oklch(0.30 0.015 250);
   --sidebar-ring: oklch(0.65 0.22 25);
   --admonitions-color-tip: oklch(0.7 0.18 180);
   --admonitions-color-note: oklch(0.7 0.18 250);
@@ -101,10 +115,10 @@
   --admonitions-color-warning: oklch(0.75 0.2 70);
   --admonitions-color-caution: oklch(0.7 0.22 25);
   /* Code block colors - dark mode */
-  --codeblock-bg: #1b1913;
-  --codeblock-topbar-bg: #26241e;
-  --math-color: #e8e6e3;
-  --math-display-color: #f0eeeb;
+  --codeblock-bg: oklch(0.20 0.015 250);
+  --codeblock-topbar-bg: oklch(0.24 0.015 250);
+  --math-color: oklch(0.90 0.008 250);
+  --math-display-color: oklch(0.94 0.008 250);
   --math-display-shadow: 0 1px 0 oklch(0.08 0 0 / 0.18);
 }
 
@@ -117,6 +131,7 @@
   --font-mono: "Geist Mono", "Geist Mono Fallback";
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface-subtle: var(--surface-subtle);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -135,6 +150,12 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-status-positive-bg: var(--status-positive-bg);
+  --color-status-positive-fg: var(--status-positive-fg);
+  --color-status-neutral-bg: var(--status-neutral-bg);
+  --color-status-neutral-fg: var(--status-neutral-fg);
+  --color-status-negative-bg: var(--status-negative-bg);
+  --color-status-negative-fg: var(--status-negative-fg);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);

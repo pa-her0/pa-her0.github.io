@@ -115,7 +115,7 @@ function ResourceRow({ r, noBorder }: { r: ParsedResource; noBorder?: boolean })
 
       {r.description && (
         <p
-          className="font-serif-cn text-foreground/85 m-0 study-resource-desc"
+          className="font-serif-cn text-content-secondary m-0 study-resource-desc"
           style={{
             fontSize: 14,
             lineHeight: 1.8,
@@ -256,7 +256,7 @@ function ByMediumView({ resources }: { resources: ParsedResource[] }) {
                 )}
                 {r.description && (
                   <p
-                    className="font-serif-cn text-foreground/80 m-0"
+                    className="font-serif-cn text-content-secondary m-0"
                     style={{ fontSize: 13.5, lineHeight: 1.75, marginTop: 8 }}
                   >
                     {r.description}
@@ -327,7 +327,7 @@ export function StudyDetailView({ study }: { study: StudyData }) {
 
           {study.epigraph && (
             <blockquote
-              className="font-serif-cn italic text-foreground/85 m-0"
+              className="font-serif-cn italic text-content-secondary m-0"
               style={{
                 fontSize: 17,
                 lineHeight: 1.6,

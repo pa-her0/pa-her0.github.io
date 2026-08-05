@@ -133,7 +133,7 @@ export function Hero() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative min-h-[90vh] flex items-center justify-center px-6 bg-muted/30">
+    <section ref={sectionRef} className="relative min-h-[90vh] flex items-center justify-center px-6 bg-surface-subtle">
       <div className="max-w-4xl mx-auto text-center">
         <div
           className={`transition-all duration-1000 ease-out ${

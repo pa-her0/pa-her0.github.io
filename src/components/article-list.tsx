@@ -302,7 +302,7 @@ export function ArticleList({
     }
 
   return (
-    <section ref={sectionRef} className="article-list-root px-6 py-16 bg-muted/30">
+    <section ref={sectionRef} className="article-list-root px-6 py-16 bg-surface-subtle">
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
         <div className="mb-10 onload-animation" style={{ animationDelay: "50ms" }}>
