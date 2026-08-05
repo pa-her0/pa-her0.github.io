@@ -49,7 +49,7 @@ export function ArticleCard({
     >
       {/* Pinned indicator */}
       {article.pinned && (
-        <span className="absolute top-4 right-4 text-[11px] font-medium tracking-wide text-muted-foreground/80 transition-colors group-hover:text-primary">
+        <span className="absolute top-4 right-4 text-[11px] font-medium tracking-wide text-muted-foreground/80">
           置顶
         </span>
       )}
