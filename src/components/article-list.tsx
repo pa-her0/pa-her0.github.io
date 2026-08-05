@@ -204,7 +204,6 @@ export function ArticleList({
   const headerMeta = useMemo(() => {
     if (activeTag) {
       return {
-        label: "当前筛选",
         eyebrow: "标签",
         heading: activeTag,
       }
@@ -213,15 +212,12 @@ export function ArticleList({
     if (activeCategory !== "all") {
       const currentCategory = categories.find((category) => category.id === activeCategory)
       return {
-        label: "当前筛选",
         eyebrow: "分类",
         heading: currentCategory?.name ?? activeCategory,
       }
     }
 
     return {
-      label: "文章归档",
-      eyebrow: "归档",
       heading: title,
     }
   }, [activeTag, activeCategory, categories, title])
@@ -315,9 +311,6 @@ export function ArticleList({
             className="max-w-xl lg:max-w-sm"
             style={{ animation: "fade-in-up 220ms ease-out" }}
           >
-            <span className="mb-2 block text-xs font-medium tracking-[0.2em] text-primary uppercase">
-              {headerMeta.label}
-            </span>
             {activeCategory === "all" && !activeTag ? (
               <h2 className="font-serif text-2xl font-bold leading-tight tracking-tight text-foreground sm:text-3xl lg:text-[2.625rem]">
                 {headerMeta.heading}

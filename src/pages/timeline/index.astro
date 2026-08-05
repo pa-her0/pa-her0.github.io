@@ -14,7 +14,6 @@ const timelineItems = posts.map((post) => ({
   slug: post.slug,
   title: post.data.title,
   date: post.data.published.toISOString().slice(0, 10),
-  pinned: post.data.pinned ?? false,
 }))
 ---
 
