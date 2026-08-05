@@ -60,7 +60,7 @@ const formatDate = (dateStr: string) => {
           >
             {/* 年份标题 */}
             <div class="year-header flex items-baseline gap-4 mb-6">
-              <span class="text-2xl font-serif font-semibold text-foreground leading-none">
+              <span class="text-2xl font-display-sans font-semibold text-foreground leading-none">
                 {year}
               </span>
               <span class="text-sm text-muted-foreground">
@@ -86,7 +86,7 @@ const formatDate = (dateStr: string) => {
                     </time>
 
                     {/* 标题 */}
-                    <span class="title font-serif text-foreground group-hover:text-primary transition-colors duration-200 leading-relaxed">
+                    <span class="title font-display-sans font-semibold text-foreground group-hover:text-primary transition-colors duration-200 leading-relaxed">
                       {item.pinned && (
                         <span class="inline-flex items-center mr-2 text-primary">
                           <svg

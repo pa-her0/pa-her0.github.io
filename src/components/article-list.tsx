@@ -319,11 +319,11 @@ export function ArticleList({
               {headerMeta.label}
             </span>
             {activeCategory === "all" && !activeTag ? (
-              <h2 className="font-serif text-2xl font-semibold leading-tight tracking-tight text-foreground sm:text-3xl lg:text-[2.4rem]">
+              <h2 className="font-serif text-2xl font-bold leading-tight tracking-tight text-foreground sm:text-3xl lg:text-[2.625rem]">
                 {headerMeta.heading}
               </h2>
             ) : (
-              <h2 className="flex flex-wrap items-end gap-x-2 gap-y-1 font-serif text-2xl font-semibold leading-tight tracking-tight sm:text-3xl lg:text-[2.4rem]">
+              <h2 className="flex flex-wrap items-end gap-x-2 gap-y-1 font-serif text-2xl font-bold leading-tight tracking-tight sm:text-3xl lg:text-[2.625rem]">
                 <span className="text-foreground/68">{headerMeta.eyebrow}</span>
                 <span className="text-foreground/35">/</span>
                 <span className="text-primary">{headerMeta.heading}</span>

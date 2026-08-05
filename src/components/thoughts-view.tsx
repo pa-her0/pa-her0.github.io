@@ -213,7 +213,7 @@ function QuietMode({
 
         {t.title ? (
           <h1
-            className="font-serif text-center text-foreground"
+            className="font-serif font-bold text-center text-foreground"
             style={{
               fontSize: "clamp(32px, 6vw, 52px)",
               fontWeight: 500,
@@ -385,7 +385,7 @@ function TimelineMode({
                         ))}
                       </div>
                       {t.title && (
-                        <div className="mb-2 font-serif text-xl font-semibold leading-snug text-foreground">
+                        <div className="mb-2 font-display-sans text-xl font-semibold leading-snug text-foreground">
                           {t.title}
                         </div>
                       )}

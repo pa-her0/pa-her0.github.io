@@ -86,7 +86,7 @@ function IndexItem({ study }: { study: Study }) {
         </span>
         <div>
           <div className="flex items-baseline gap-2.5 flex-wrap">
-            <span className="studies-link-title font-serif-cn text-[16px] font-semibold text-foreground">
+            <span className="studies-link-title font-display-sans text-[16px] font-semibold text-foreground">
               {study.title}
             </span>
             {total > 0 && (
@@ -362,7 +362,7 @@ function TimelineNode({
           </span>
         </div>
         <h3
-          className="font-serif-cn text-[15px] font-semibold text-foreground m-0 mb-1.5 leading-[1.35]"
+          className="font-display-sans text-[15px] font-semibold text-foreground m-0 mb-1.5 leading-[1.35]"
           style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
         >
           {study.title}

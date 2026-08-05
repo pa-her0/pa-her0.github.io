@@ -152,7 +152,7 @@ export function Hero() {
           </h1>
 
           <blockquote className="max-w-xl mx-auto mb-10">
-            <p className="text-muted-foreground text-base sm:text-lg leading-relaxed italic">
+            <p className="text-content-secondary text-base sm:text-lg leading-relaxed italic">
               「我不知道我在想什么，直到我读到我写的东西。」
             </p>
             <footer className="mt-2 text-sm text-muted-foreground/70">

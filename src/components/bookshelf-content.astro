@@ -501,7 +501,7 @@ const recommendBadge = (status?: string) => {
                           <img src={cover} alt={c.fields.作品名} loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         ) : (
                           <div class="w-full h-full flex items-end p-3 bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5">
-                            <h4 class="text-sm font-bold text-foreground font-serif leading-tight line-clamp-3">{c.fields.作品名}</h4>
+                            <h4 class="text-sm font-semibold text-foreground font-display-sans leading-tight line-clamp-3">{c.fields.作品名}</h4>
                           </div>
                         )}
                         {c.fields.连载状态 && (
@@ -567,7 +567,7 @@ const recommendBadge = (status?: string) => {
                           <span class="font-mono text-[10px] text-muted-foreground/70 min-w-[32px] tabular-nums">[{String(i + 1).padStart(2, "0")}]</span>
                           <div class="min-w-0">
                             <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1 mb-1">
-                              <h4 class="font-medium text-sm font-serif text-foreground group-hover:text-primary transition-colors">{p.fields.标题}</h4>
+                              <h4 class="font-semibold text-sm font-display-sans text-foreground group-hover:text-primary transition-colors">{p.fields.标题}</h4>
                               {p.fields.领域 && (
                                 <span class="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">{p.fields.领域}</span>
                               )}
