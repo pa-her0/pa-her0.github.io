@@ -14,6 +14,7 @@ interface Props {
   twitterTitle?: string
   twitterDescription?: string
   robots?: string
+  fontProfile?: "reading" | "interface"
 }
 
 const defaultTitle = "时歌的博客 | Boundary of Thought"
@@ -31,8 +32,10 @@ const {
   twitterTitle,
   twitterDescription,
   robots,
+  fontProfile = "reading",
 } = Astro.props as Props
 
+const useHarmonySans = fontProfile === "interface"
 const canonicalUrl = canonical || Astro.url.toString()
 const resolvedOgTitle = ogTitle || title
 const resolvedOgDescription = ogDescription || description
@@ -63,14 +66,24 @@ const resolvedTwitterDescription = twitterDescription || description
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    {useHarmonySans ? <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin /> : null}
+    {useHarmonySans ? (
+      <>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/harmonyos-sans-sc-webfont-splitted@1.1.0/dist/Regular.css"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/harmonyos-sans-sc-webfont-splitted@1.1.0/dist/Semibold.css"
+        />
+      </>
+    ) : null}
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/harmonyos-sans-sc-webfont-splitted@1.1.0/dist/Semibold.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap"
+      href={useHarmonySans
+        ? "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Noto+Serif+SC:wght@400..900&display=swap"
+        : "https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Noto+Sans+SC:wght@400..700&family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Noto+Serif+SC:wght@400..900&display=swap"}
     />
     <link rel="icon" href="/icon-light-32x32.png" media="(prefers-color-scheme: light)" />
     <link rel="icon" href="/icon-dark-32x32.png" media="(prefers-color-scheme: dark)" />
@@ -183,7 +196,7 @@ const resolvedTwitterDescription = twitterDescription || description
     </script>
     <ClientRouter />
   </head>
-  <body class="bg-background text-foreground">
+  <body class:list={["bg-background text-foreground", { "font-profile-interface": useHarmonySans }]}>
     <slot />
     <script is:inline>
       // View Transitions 页面切换后重应用主题

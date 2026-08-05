@@ -184,6 +184,11 @@
   }
 }
 
+body.font-profile-interface,
+body.font-profile-interface .font-sans {
+  font-family: "HarmonyOS Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
 /* Custom smooth scrolling (avoid hash navigation animation) */
 html {
   scroll-behavior: auto;

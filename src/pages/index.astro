@@ -17,7 +17,7 @@ const thoughts = await getSortedThoughts()
 const thoughtPreviews = thoughts.map((thought) => toThoughtPreview(thought)).slice(0, 4)
 ---
 
-<BaseLayout {title} {description}>
+<BaseLayout {title} {description} fontProfile="interface">
   <div class="min-h-screen bg-background dark:bg-muted/30">
     <SiteHeader />
     <main>
