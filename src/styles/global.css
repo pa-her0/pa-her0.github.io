@@ -361,11 +361,9 @@ html[data-prefilter="1"] .article-list-root {
   .prose .katex-display {
     margin: 1.6rem -0.25rem;
     padding: 0.35rem 0.25rem;
-    text-align: left;
   }
 
   .prose .katex-display > .katex {
-    text-align: left;
     font-size: 1.1em;
   }
 }
