@@ -537,7 +537,14 @@ const siteInfoText = [
         let emptyRows = 0
         let leadingGaps = 0
         let lowerLeadingGaps = 0
-        for (let y = 0; y < height - 1; y++) holes += grid[y].filter((cell) => !cell).length
+        for (let y = 0; y < height; y++) {
+          const row = grid[y]
+          let lastFilled = -1
+          for (let x = row.length - 1; x >= 0; x--) {
+            if (row[x]) { lastFilled = x; break }
+          }
+          for (let x = 0; x < lastFilled; x++) if (!row[x]) holes++
+        }
         for (let y = 0; y < height - 1; y++) if (grid[y].every((cell) => !cell)) emptyRows++
         grid.forEach((row, y) => {
           const firstFilled = row.findIndex(Boolean)
