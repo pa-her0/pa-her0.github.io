@@ -173,6 +173,12 @@
         "desc": "看看~ 看看~",
         "siteurl": "https://blog.thricecola.com/",
         "rss": "https://blog.thricecola.com/rss.xml"
+      },
+      {
+        "title": "MingBlog（Ming 博客）",
+        "imgurl": "https://mingblog.site/icons/icon-512.png",
+        "desc": "记录日常生活、城市影像、旅行与观察，以及认真看过、读过和听过的作品。",
+        "siteurl": "https://mingblog.site"
       }
     ]
   },
