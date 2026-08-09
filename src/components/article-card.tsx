@@ -98,7 +98,7 @@ export function ArticleCard({
           </div>
 
           {/* Excerpt */}
-          <p className="text-content-secondary text-base leading-6 mb-3 line-clamp-2">{article.excerpt}</p>
+          <p className="text-content-secondary text-sm leading-relaxed mb-3 line-clamp-2">{article.excerpt}</p>
 
           {/* Footer stats */}
           <div className="flex items-center gap-3 text-[13px] text-muted-foreground">
