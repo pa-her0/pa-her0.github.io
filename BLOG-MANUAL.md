@@ -260,30 +260,22 @@ git rebase --continue
 
 ### 重要：先检查远程仓库
 
-截至本手册创建时，新博客的 `origin` 仍然指向主题作者仓库：
-
-```text
-https://github.com/Lapis0x0/VermilionVoid.git
-```
-
-这不是你的正式博客数据仓库。不要在未调整远程仓库前直接执行 `git push origin main`。
-
-旧博客使用两个仓库：
+当前博客使用两个自己的仓库，并保留主题作者仓库作为上游参考：
 
 ```text
 源码和全部数据：https://github.com/pa-her0/whalefall-blog-source.git
 公开博客部署：https://github.com/pa-her0/pa-her0.github.io.git
 ```
 
-建议的远程名称：
+当前远程配置：
 
 ```text
-origin   -> 自己的源码和全部数据仓库
-blog     -> 对外部署博客的仓库
-upstream -> VermilionVoid 原主题仓库，仅用于参考
+origin   -> https://github.com/pa-her0/whalefall-blog-source.git
+blog     -> https://github.com/pa-her0/pa-her0.github.io.git
+upstream -> https://github.com/Lapis0x0/VermilionVoid.git
 ```
 
-远程仓库只需配置一次。由于新旧项目 Git 历史不同，第一次迁移到现有仓库时不要自行强制推送；先备份仓库并确认目标分支。日常更新则按下面的流程操作。
+新博客已经完成首次迁移，不需要再次强制推送。日常更新请使用下面的普通提交和推送流程；不要使用 `--force`。
 
 ### 日常提交
 
