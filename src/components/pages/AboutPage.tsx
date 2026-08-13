@@ -1,131 +1,110 @@
-import { MapPin, Heart } from "lucide-react"
+import { BrainCircuit, Github, Mail, MapPin, ScanEye, Waypoints } from "lucide-react"
 import { profile } from "@/data/profile"
-import { ProfileContactLink } from "@/components/profile-contact-link"
+
+const technologies = [
+  { name: "Python", icon: "/icons/tech/python.svg" },
+  { name: "C++", icon: "/icons/tech/cplusplus.svg" },
+  { name: "TypeScript", icon: "/icons/tech/typescript.svg" },
+  { name: "PyTorch", icon: "/icons/tech/pytorch.svg" },
+  { name: "Astro", icon: "/icons/tech/astro.svg" },
+]
+
+const directions = [
+  { name: "人工智能", detail: "Artificial Intelligence", icon: BrainCircuit, tone: "rose" },
+  { name: "多智能体系统", detail: "Multi-Agent Systems", icon: Waypoints, tone: "amber" },
+  { name: "计算机视觉", detail: "Computer Vision", icon: ScanEye, tone: "sky" },
+] as const
+
+const directionTone = {
+  rose: "border-rose-200/80 bg-rose-50 text-rose-700 dark:border-rose-900/70 dark:bg-rose-950/35 dark:text-rose-300",
+  amber: "border-amber-200/80 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/35 dark:text-amber-300",
+  sky: "border-sky-200/80 bg-sky-50 text-sky-700 dark:border-sky-900/70 dark:bg-sky-950/35 dark:text-sky-300",
+} as const
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background dark:bg-surface-subtle">
-      <main className="pt-32 pb-8">
+      <main className="pt-32 pb-20">
         <div className="max-w-4xl mx-auto px-6">
-          {/* Hero Section */}
-          <section className="mb-10">
-            <div className="flex flex-col md:flex-row gap-10 items-start">
-              {/* Avatar */}
-              <div className="shrink-0">
-                <div className="w-36 h-36 rounded-2xl overflow-hidden border-2 border-border shadow-lg">
-                  <img
-                    src={profile.avatar}
-                    alt={profile.name}
-                    width={144}
-                    height={144}
-                    loading="lazy"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
+          <section className="mb-14 flex flex-col gap-8 md:flex-row md:items-center">
+            <img
+              src={profile.avatar}
+              alt={profile.name}
+              width={152}
+              height={152}
+              className="h-36 w-36 rounded-2xl border-2 border-border object-cover shadow-lg"
+            />
+            <div>
+              <p className="mb-2 text-sm uppercase tracking-[0.22em] text-primary">About</p>
+              <h1 className="mb-3 text-4xl font-bold text-foreground">你好，我是 Jiely</h1>
+              <p className="mb-5 text-lg text-muted-foreground">{profile.bio}</p>
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4" />China</span>
+                <a className="inline-flex items-center gap-1.5 hover:text-foreground" href="https://github.com/pa-her0"><Github className="h-4 w-4" />GitHub</a>
+                <a className="inline-flex items-center gap-1.5 hover:text-foreground" href="mailto:2799620892@qq.com"><Mail className="h-4 w-4" />Email</a>
               </div>
+            </div>
+          </section>
 
-              {/* Info */}
-              <div className="flex-1">
-                <h1 className="text-4xl font-bold text-foreground mb-2 flex items-center gap-3">
-                  <span className="w-1 h-8 bg-primary rounded-full" />
-                  关于我
-                </h1>
-                <p className="text-xl text-muted-foreground mb-4">{profile.bio}</p>
+          <div className="space-y-6">
+            <section className="rounded-2xl border border-border bg-card p-7">
+              <h2 className="mb-5 text-xl font-semibold text-foreground">教育与研究</h2>
+              <div className="grid gap-2 sm:grid-cols-[13rem_minmax(0,1fr)] sm:items-start sm:gap-8">
+                <div>
+                  <h3 className="text-lg font-medium text-foreground">西南财经大学</h3>
+                  <p className="mt-1 text-muted-foreground">超算协会 · 会长</p>
+                </div>
+                <p className="leading-7 text-foreground/80">关注人工智能、多智能体系统、算法交易与计算机视觉，也在这里记录科研、学习和生活。</p>
+              </div>
+            </section>
+            <section className="rounded-2xl border border-border bg-card p-7">
+              <h2 className="mb-5 text-xl font-semibold text-foreground">技术与方向</h2>
 
-                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
-                  <span className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4" />
-                    中国
-                  </span>
+              <div className="grid gap-6 lg:grid-cols-[1fr_1.25fr] lg:gap-8">
+                <div>
+                <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">技术栈</p>
+                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-2">
+                  {technologies.map((technology) => (
+                    <div
+                      key={technology.name}
+                      className="flex items-center gap-2.5 rounded-xl border border-border/80 bg-secondary/55 px-3 py-2.5"
+                    >
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-background shadow-sm">
+                        <img src={technology.icon} alt="" className="h-5 w-5 object-contain" loading="lazy" />
+                      </span>
+                      <span className="min-w-0 truncate text-sm font-medium text-foreground/85">{technology.name}</span>
+                    </div>
+                  ))}
+                </div>
                 </div>
 
-                {/* Social Links */}
-                <div className="flex items-center gap-3">
-                  {profile.links.map((link) => {
+                <div className="border-t border-border/70 pt-5 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+                <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">研究方向</p>
+                <div className="grid gap-2.5 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+                  {directions.map((direction) => {
+                    const Icon = direction.icon
                     return (
-                      <ProfileContactLink
-                        key={link.name}
-                        link={link}
-                        className="p-2.5 rounded-lg bg-secondary text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                        iconClassName="w-5 h-5"
-                      />
+                      <div
+                        key={direction.name}
+                        className={`flex items-center gap-3 rounded-xl border px-3.5 py-3 ${directionTone[direction.tone]}`}
+                      >
+                        <Icon className="h-5 w-5 shrink-0" />
+                        <span>
+                          <strong className="block text-sm font-medium">{direction.name}</strong>
+                          <span className="block text-[11px] opacity-70">{direction.detail}</span>
+                        </span>
+                      </div>
                     )
                   })}
                 </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Bio Section */}
-          <section className="mb-16">
-            <div className="prose prose-neutral dark:prose-invert max-w-none
-              prose-p:text-base prose-p:leading-8 prose-p:my-5 prose-p:text-foreground/90
-              prose-a:text-primary prose-a:no-underline prose-a:hover:underline
-              prose-blockquote:border-l-primary prose-blockquote:border-l-2 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-content-secondary prose-blockquote:font-normal prose-blockquote:bg-surface-subtle prose-blockquote:py-2 prose-blockquote:rounded-r-lg
-              prose-strong:text-foreground prose-strong:font-semibold
-              prose-ul:text-foreground/90 prose-ul:my-5
-              prose-li:marker:text-primary prose-li:my-1.5"
-            >
-              <blockquote>
-                理解以真实为本，但真实本身并不会自动呈现
-              </blockquote>
-              <p>
-                你好，我叫时歌，也可以叫我 Lapis0x0。
-              </p>
-              <p>
-                2004年出生在河南，在大山中长大。
-              </p>
-              <p>
-                可能是因为我从小性格就较为安静，因此有幸在最好奇的年龄读了很多杂七杂八的书；又因为喜欢打游戏，好让游戏能顺利跑起来而被迫自学计算机知识。这两件事不知不觉帮我训练出了一种跨学科的直觉，后来不管是学习、研究还是设计写代码，这种直觉都会冒出来且经常比我预想的有用。
-              </p>
-              <p>
-                我说不太清楚它到底是什么，但我很喜欢它的存在，像是少年时的自己悄悄留给现在的礼物。
-              </p>
-              <p>
-                我当过一段时间的老师，上一份工作是量化策略研究员。现在业余的大部分精力在维护一个叫 <a href="https://github.com/Lapis0x0/obsidian-yolo" target="_blank" rel="noopener noreferrer">YOLO</a> 的开源项目，它是一个 Obsidian AI 插件。我始终认为，鉴于 LLM 的潜能，它不应该仅仅止于被我们督促去做一些事情，它本可以在茫茫识海中自由穿梭，把你曾经记下的知识碎片、曾经习得的写作风格、曾经积累的对世界的理解融会贯通，生成真正流畅而自主的内容，做一些更有趣有价值的事情——这也就是 YOLO 想去探寻的方向。
-              </p>
-              <p>个人兴趣：</p>
-              <ul>
-                <li>LLM 算法</li>
-                <li>社会学与人类学</li>
-              </ul>
-              <p>对世界充满兴趣，也总是心怀戒备。</p>
-              <p>
-                📮 <a href="mailto:lapiscafe@foxmail.com">lapiscafe@foxmail.com</a>　微信：shizhiyunzhe
-              </p>
-            </div>
-          </section>
-
-          {/* Appreciation Section */}
-          <section className="mb-16">
-            <h2 className="text-2xl font-semibold text-foreground mb-6 flex items-center gap-3">
-              <span className="w-1 h-6 bg-primary rounded-full" />
-              赞赏支持
-            </h2>
-            <div className="p-6 rounded-2xl border border-border bg-card">
-              <div className="flex items-start gap-3 mb-6">
-                <Heart className="w-5 h-5 text-primary mt-0.5" />
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  如果你觉得我的博客内容对你有所帮助或启发，可以考虑赞赏支持我继续创作。你的每一份支持都是我前进的动力，非常感谢！
-                </p>
-              </div>
-              <div className="flex justify-center gap-8 flex-wrap">
-                <div className="text-center">
-                  <div className="w-52 h-52 rounded-xl overflow-hidden border border-border mb-2">
-                    <img src="/images/vote/weixin.jpg" alt="微信赞赏码" className="w-full h-full object-cover" />
-                  </div>
-                  <p className="text-sm font-medium text-green-600">微信赞赏</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-52 h-52 rounded-xl overflow-hidden border border-border mb-2">
-                    <img src="/images/vote/zhifubao.jpg" alt="支付宝赞赏码" className="w-full h-full object-cover" />
-                  </div>
-                  <p className="text-sm font-medium text-blue-600">支付宝赞赏</p>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
 
+          <blockquote className="mt-8 rounded-2xl border-l-4 border-primary bg-surface-subtle px-6 py-5 italic text-content-secondary">
+            “计算机不是黑魔法，都是人做出来的。”
+          </blockquote>
         </div>
       </main>
     </div>

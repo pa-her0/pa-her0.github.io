@@ -1,0 +1,225 @@
+<canvas
+  id="cursor-trail"
+  class="pointer-events-none fixed inset-0 z-[9999]"
+  aria-hidden="true"
+  transition:persist="cursor-trail"></canvas>
+
+<script>
+  type FireworkParticle = {
+    startX: number
+    startY: number
+    endX: number
+    endY: number
+    radius: number
+    alpha: number
+    color: string
+    startedAt: number
+    duration: number
+  }
+
+  type FireworkRing = {
+    x: number
+    y: number
+    maxRadius: number
+    startedAt: number
+    duration: number
+  }
+
+  type CursorTrailRuntime = {
+    canvas: HTMLCanvasElement
+    destroy: () => void
+  }
+
+  declare global {
+    interface Window {
+      __cursorTrailRuntime?: CursorTrailRuntime
+    }
+  }
+
+  function createCursorTrail(
+    canvas: HTMLCanvasElement,
+  ): CursorTrailRuntime | null {
+    const context = canvas.getContext('2d')
+    if (!context) return null
+
+    const fireworkParticles: FireworkParticle[] = []
+    const fireworkRings: FireworkRing[] = []
+    const fireworkColors = [
+      '0, 229, 255',
+      '0, 242, 148',
+      '255, 24, 116',
+      '255, 211, 59',
+      '52, 120, 246',
+      '168, 85, 247',
+    ]
+    const motionPreference = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    )
+    let animationFrame = 0
+    let pixelRatio = 1
+
+    const resize = () => {
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 2)
+      canvas.width = Math.round(window.innerWidth * pixelRatio)
+      canvas.height = Math.round(window.innerHeight * pixelRatio)
+      canvas.style.width = `${window.innerWidth}px`
+      canvas.style.height = `${window.innerHeight}px`
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+    }
+
+    const easeOutExpo = (progress: number) =>
+      progress >= 1 ? 1 : 1 - 2 ** (-10 * progress)
+
+    const draw = (timestamp: number) => {
+      animationFrame = 0
+      context.clearRect(0, 0, window.innerWidth, window.innerHeight)
+
+      for (let index = fireworkRings.length - 1; index >= 0; index -= 1) {
+        const ring = fireworkRings[index]
+        const progress = Math.min(1, (timestamp - ring.startedAt) / ring.duration)
+        const easedProgress = easeOutExpo(progress)
+
+        context.globalAlpha = 0.45 * (1 - progress)
+        context.strokeStyle = document.documentElement.classList.contains(
+          'dark',
+        )
+          ? '#ffffff'
+          : '#000000'
+        context.lineWidth = Math.max(0.1, 6 * (1 - easedProgress))
+        context.beginPath()
+        context.arc(
+          ring.x,
+          ring.y,
+          0.1 + ring.maxRadius * easedProgress,
+          0,
+          Math.PI * 2,
+        )
+        context.stroke()
+
+        if (progress >= 1) fireworkRings.splice(index, 1)
+      }
+
+      for (
+        let index = fireworkParticles.length - 1;
+        index >= 0;
+        index -= 1
+      ) {
+        const particle = fireworkParticles[index]
+        const progress = Math.min(
+          1,
+          (timestamp - particle.startedAt) / particle.duration,
+        )
+        const easedProgress = easeOutExpo(progress)
+        const x =
+          particle.startX + (particle.endX - particle.startX) * easedProgress
+        const y =
+          particle.startY + (particle.endY - particle.startY) * easedProgress
+
+        context.globalAlpha = particle.alpha
+        context.fillStyle = particle.color
+        context.beginPath()
+        context.arc(
+          x,
+          y,
+          Math.max(0.1, particle.radius * (1 - easedProgress)),
+          0,
+          Math.PI * 2,
+        )
+        context.fill()
+
+        if (progress >= 1) fireworkParticles.splice(index, 1)
+      }
+
+      context.globalAlpha = 1
+      if (
+        fireworkParticles.length > 0 ||
+        fireworkRings.length > 0
+      ) {
+        animationFrame = window.requestAnimationFrame(draw)
+      }
+    }
+
+    const scheduleDraw = () => {
+      if (animationFrame === 0) {
+        animationFrame = window.requestAnimationFrame(draw)
+      }
+    }
+
+    const addFirework = (event: PointerEvent) => {
+      if (
+        motionPreference.matches ||
+        event.pointerType === 'touch' ||
+        (event.pointerType === 'mouse' && event.button !== 0)
+      ) {
+        return
+      }
+
+      const startedAt = performance.now()
+      fireworkRings.push({
+        x: event.clientX,
+        y: event.clientY,
+        maxRadius: 50 + Math.random() * 50,
+        startedAt,
+        duration: 1200 + Math.random() * 600,
+      })
+
+      for (let index = 0; index < 20; index += 1) {
+        const angle = Math.random() * Math.PI * 2
+        const distance = 50 + Math.random() * 50
+        const color =
+          fireworkColors[Math.floor(Math.random() * fireworkColors.length)]
+
+        fireworkParticles.push({
+          startX: event.clientX,
+          startY: event.clientY,
+          endX: event.clientX + Math.cos(angle) * distance,
+          endY: event.clientY + Math.sin(angle) * distance,
+          radius: 10 + Math.random() * 10,
+          alpha: 0.2 + Math.random() * 0.6,
+          color: `rgb(${color})`,
+          startedAt,
+          duration: 900 + Math.random() * 600,
+        })
+      }
+
+      scheduleDraw()
+    }
+
+    const clear = () => {
+      fireworkParticles.length = 0
+      fireworkRings.length = 0
+      context.clearRect(0, 0, window.innerWidth, window.innerHeight)
+      if (animationFrame !== 0) {
+        window.cancelAnimationFrame(animationFrame)
+        animationFrame = 0
+      }
+    }
+
+    resize()
+    window.addEventListener('resize', resize, { passive: true })
+    window.addEventListener('pointerdown', addFirework, { passive: true })
+    motionPreference.addEventListener('change', clear)
+
+    return {
+      canvas,
+      destroy: () => {
+        clear()
+        window.removeEventListener('resize', resize)
+        window.removeEventListener('pointerdown', addFirework)
+        motionPreference.removeEventListener('change', clear)
+      },
+    }
+  }
+
+  function setupCursorTrail() {
+    const canvas = document.querySelector<HTMLCanvasElement>('#cursor-trail')
+    if (!canvas || window.__cursorTrailRuntime?.canvas === canvas) return
+
+    window.__cursorTrailRuntime?.destroy()
+    const runtime = createCursorTrail(canvas)
+    if (runtime) window.__cursorTrailRuntime = runtime
+  }
+
+  setupCursorTrail()
+  document.addEventListener('astro:page-load', setupCursorTrail)
+</script>

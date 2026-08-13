@@ -1,6 +1,7 @@
 ---
 import "@/styles/global.css"
 import { ClientRouter } from "astro:transitions"
+import CursorTrail from "@/components/CursorTrail.astro"
 
 interface Props {
   title?: string
@@ -17,8 +18,8 @@ interface Props {
   fontProfile?: "reading" | "interface"
 }
 
-const defaultTitle = "时歌的博客 | Boundary of Thought"
-const defaultDescription = "探索金融、社会与人工智能的交汇点"
+const defaultTitle = "Jiely 的博客"
+const defaultDescription = "记录 AI、算法、科研与生活"
 
 const {
   title = defaultTitle,
@@ -57,7 +58,7 @@ const resolvedTwitterDescription = twitterDescription || description
     <meta property="og:title" content={resolvedOgTitle} />
     <meta property="og:description" content={resolvedOgDescription} />
     <meta property="og:url" content={resolvedOgUrl} />
-    <meta property="og:site_name" content="时歌的博客" />
+    <meta property="og:site_name" content="Jiely 的博客" />
     <meta property="og:locale" content="zh_CN" />
     <meta name="twitter:card" content={twitterCard} />
     <meta name="twitter:title" content={resolvedTwitterTitle} />
@@ -85,67 +86,8 @@ const resolvedTwitterDescription = twitterDescription || description
         ? "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Noto+Serif+SC:wght@400..900&display=swap"
         : "https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Noto+Sans+SC:wght@400..700&family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Noto+Serif+SC:wght@400..900&display=swap"}
     />
-    <link rel="icon" href="/icon-light-32x32.png" media="(prefers-color-scheme: light)" />
-    <link rel="icon" href="/icon-dark-32x32.png" media="(prefers-color-scheme: dark)" />
-    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-icon.png" />
-    <script is:inline>
-      ;(() => {
-        let analyticsLoaded = false
-        let clarityLoaded = false
-
-        const runWhenIdle = (callback) => {
-          if ("requestIdleCallback" in window) {
-            window.requestIdleCallback(callback, { timeout: 3000 })
-            return
-          }
-          window.setTimeout(callback, 1500)
-        }
-
-        const loadScript = (src) => {
-          const script = document.createElement("script")
-          script.async = true
-          script.src = src
-          document.head.appendChild(script)
-        }
-
-        const initAnalytics = () => {
-          if (analyticsLoaded) return
-          analyticsLoaded = true
-          window.dataLayer = window.dataLayer || []
-          window.gtag = function () {
-            window.dataLayer.push(arguments)
-          }
-          window.gtag("js", new Date())
-          window.gtag("config", "G-1DF2LNJPSY")
-          loadScript("https://www.googletagmanager.com/gtag/js?id=G-1DF2LNJPSY")
-        }
-
-        const initClarity = () => {
-          if (clarityLoaded || window.clarity) return
-          clarityLoaded = true
-          const clarity = function () {
-            clarity.q = clarity.q || []
-            clarity.q.push(Array.from(arguments))
-          }
-          window.clarity = clarity
-          loadScript("https://www.clarity.ms/tag/rkga1fxqqs")
-        }
-
-        const initTracking = () => {
-          runWhenIdle(() => {
-            initAnalytics()
-            initClarity()
-          })
-        }
-
-        if (document.readyState === "complete") {
-          initTracking()
-        } else {
-          window.addEventListener("load", initTracking, { once: true })
-        }
-      })()
-    </script>
+    <link rel="icon" href="/favicon-orange.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/favicon-orange.png" />
     <script is:inline>
       // 主题初始化 - 防止页面加载闪烁
       (function() {
@@ -198,6 +140,7 @@ const resolvedTwitterDescription = twitterDescription || description
   </head>
   <body class:list={["bg-background text-foreground", { "font-profile-interface": useHarmonySans }]}>
     <slot />
+    <CursorTrail />
     <script is:inline>
       // View Transitions 页面切换后重应用主题
       (function() {

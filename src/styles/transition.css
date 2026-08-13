@@ -2,11 +2,11 @@
 
 /* Default fade transition */
 ::view-transition-old(root) {
-  animation: fade-out 200ms ease-out;
+  animation: fade-out 110ms ease-out;
 }
 
 ::view-transition-new(root) {
-  animation: fade-in 200ms ease-in;
+  animation: fade-in 140ms ease-out;
 }
 
 @keyframes fade-out {
@@ -41,7 +41,7 @@
 
 .onload-animation {
   opacity: 0;
-  animation: fade-in-up 320ms ease;
+  animation: fade-in-up 220ms ease-out;
   animation-fill-mode: forwards;
   animation-delay: var(--content-delay, 0ms);
 }

@@ -314,7 +314,7 @@ function TimelineMode({
           <div className="flex items-center gap-3">
             <div className="w-[3px] h-7 rounded-sm bg-primary" />
             <div className="font-serif text-[36px] font-bold leading-none tracking-tight text-foreground">
-              偶得
+              碎碎念
             </div>
           </div>
         </div>
@@ -402,7 +402,7 @@ function TimelineMode({
         })}
 
         {thoughts.length === 0 && (
-          <div className="py-12 text-center text-muted-foreground">暂无偶得</div>
+          <div className="py-12 text-center text-muted-foreground">暂无碎碎念</div>
         )}
       </div>
     </div>
@@ -497,7 +497,7 @@ export function ThoughtsView({ thoughts }: { thoughts: ThoughtMeta[] }) {
   if (total === 0) {
     return (
       <div className="mx-auto max-w-xl px-6 py-32 text-center text-muted-foreground">
-        暂无偶得
+        暂无碎碎念
       </div>
     )
   }

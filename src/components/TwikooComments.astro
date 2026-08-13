@@ -1,0 +1,789 @@
+﻿---
+interface Props {
+  slug: string
+  title: string
+  variant?: 'article' | 'guestbook'
+}
+
+const { slug, title, variant = 'article' } = Astro.props
+const envId =
+  import.meta.env.PUBLIC_TWIKOO_ENV_ID ||
+  'https://roaring-sfogliatella-6ea12b.netlify.app/.netlify/functions/twikoo'
+const commentPath =
+  slug === 'messages' ? '/messages' : `/posts/${slug.replace(/^\/+|\/+$/g, '')}`
+---
+
+<section
+  class:list={[
+    'pure-twikoo not-prose',
+    variant === 'guestbook' && 'pure-twikoo--guestbook',
+  ]}
+  data-twikoo-comments
+  data-env-id={envId}
+  data-comment-path={commentPath}
+  data-page-title={title}
+>
+  <h2 class="pure-twikoo__title">评论</h2>
+  <div id="tcomment" aria-live="polite"></div>
+  <p class="pure-twikoo__error" data-twikoo-error hidden>
+    评论区暂时加载失败，请稍后刷新重试。
+  </p>
+</section>
+
+<script is:inline data-astro-rerun>
+  function loadTwikooScript() {
+    if (window.twikoo) return Promise.resolve()
+    if (window.__twikooLoader) return window.__twikooLoader
+
+    const sources = [
+      'https://cdn.jsdelivr.net/npm/twikoo@1.7.15/dist/twikoo.min.js',
+      'https://unpkg.com/twikoo@1.7.15/dist/twikoo.min.js',
+    ]
+
+    window.__twikooLoader = new Promise((resolve, reject) => {
+      const trySource = (index) => {
+        if (index >= sources.length) {
+          window.__twikooLoader = null
+          reject(new Error('Failed to load Twikoo from all configured CDNs'))
+          return
+        }
+
+        const script = document.createElement('script')
+        script.src = sources[index]
+        script.async = true
+        script.dataset.twikooSdk = 'true'
+        script.onload = resolve
+        script.onerror = () => {
+          script.remove()
+          trySource(index + 1)
+        }
+        document.head.appendChild(script)
+      }
+      trySource(0)
+    })
+
+    return window.__twikooLoader
+  }
+
+  function insertEmoji(textarea, emoji) {
+    const start = textarea.selectionStart ?? textarea.value.length
+    const end = textarea.selectionEnd ?? start
+    textarea.value =
+      textarea.value.slice(0, start) + emoji + textarea.value.slice(end)
+    textarea.selectionStart = textarea.selectionEnd = start + emoji.length
+    textarea.dispatchEvent(new Event('input', { bubbles: true }))
+    textarea.focus()
+  }
+
+  function renderEmojiTokens(root, emojiConfig) {
+    const tokenPattern = /:([a-zA-Z0-9_]+)_([a-zA-Z0-9\u4e00-\u9fa5]+):/g
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+    const textNodes = []
+
+    while (walker.nextNode()) textNodes.push(walker.currentNode)
+
+    textNodes.forEach((textNode) => {
+      const parent = textNode.parentElement
+      if (
+        !parent ||
+        parent.closest('code, pre, textarea, .doge-emoji-picker')
+      ) {
+        return
+      }
+
+      const text = textNode.textContent || ''
+      tokenPattern.lastIndex = 0
+      if (!tokenPattern.test(text)) return
+
+      tokenPattern.lastIndex = 0
+      const fragment = document.createDocumentFragment()
+      let lastIndex = 0
+      let match
+
+      while ((match = tokenPattern.exec(text))) {
+        const pack = emojiConfig[match[1]]
+        const emojiValue = pack?.items?.[match[2]]
+        if (!emojiValue) continue
+
+        fragment.append(
+          document.createTextNode(text.slice(lastIndex, match.index)),
+        )
+        if (pack.type === 'image') {
+          const image = document.createElement('img')
+          image.className = 'doge-comment-emoji'
+          image.src = emojiValue
+          image.alt = match[2]
+          image.title = match[2]
+          image.loading = 'lazy'
+          image.referrerPolicy = 'no-referrer'
+          const size = String(pack.size || 32)
+          image.width = Number(size)
+          image.height = Number(size)
+          fragment.append(image)
+        } else {
+          fragment.append(document.createTextNode(emojiValue))
+        }
+        lastIndex = tokenPattern.lastIndex
+      }
+
+      if (lastIndex === 0) return
+      fragment.append(document.createTextNode(text.slice(lastIndex)))
+      textNode.replaceWith(fragment)
+    })
+  }
+
+  function createEmojiPicker(submit, emojiConfig) {
+    const actions = submit.querySelector('.tk-row-actions-start')
+    const textarea = submit.querySelector('textarea')
+    if (!actions || !textarea || actions.querySelector('[data-doge-emoji]'))
+      return
+
+    if (!textarea.placeholder) {
+      textarea.placeholder = '既然来了，不妨留下几句话再走吧…'
+    }
+
+    actions.classList.add('doge-emoji-actions')
+
+    const trigger = document.createElement('button')
+    trigger.type = 'button'
+    trigger.className = 'doge-emoji-trigger'
+    trigger.dataset.dogeEmoji = 'trigger'
+    trigger.setAttribute('aria-label', '打开更多表情')
+    trigger.setAttribute('aria-expanded', 'false')
+    trigger.textContent = '表情'
+
+    const picker = document.createElement('div')
+    picker.className = 'doge-emoji-picker'
+    picker.dataset.dogeEmoji = 'picker'
+    picker.hidden = true
+
+    const tabs = document.createElement('div')
+    tabs.className = 'doge-emoji-tabs'
+    const content = document.createElement('div')
+    content.className = 'doge-emoji-content'
+    picker.append(tabs, content)
+    actions.append(trigger, picker)
+
+    const packKeys = Object.keys(emojiConfig)
+
+    function renderPack(packKey) {
+      const pack = emojiConfig[packKey]
+      if (!pack) return
+
+      content.replaceChildren()
+      content.classList.toggle(
+        'doge-emoji-content--text',
+        pack.type !== 'image',
+      )
+
+      Object.entries(pack.items).forEach(([name, value]) => {
+        const item = document.createElement('button')
+        item.type = 'button'
+        item.className = 'doge-emoji-item'
+        item.title = name
+        item.dataset.emoji =
+          pack.type === 'image' ? `:${packKey}_${name}:` : value
+
+        if (pack.type === 'image') {
+          const image = document.createElement('img')
+          image.src = value
+          image.alt = name
+          image.loading = 'lazy'
+          image.referrerPolicy = 'no-referrer'
+          item.append(image)
+        } else {
+          item.textContent = value
+        }
+        content.append(item)
+      })
+    }
+
+    packKeys.forEach((packKey, index) => {
+      const pack = emojiConfig[packKey]
+      const tab = document.createElement('button')
+      tab.type = 'button'
+      tab.className = 'doge-emoji-tab'
+      tab.dataset.pack = packKey
+      tab.textContent = pack.name || packKey
+      tab.setAttribute('aria-pressed', String(index === 0))
+      tab.addEventListener('click', () => {
+        tabs.querySelectorAll('[data-pack]').forEach((button) => {
+          button.setAttribute(
+            'aria-pressed',
+            String(button.dataset.pack === packKey),
+          )
+        })
+        renderPack(packKey)
+      })
+      tabs.append(tab)
+    })
+
+    if (packKeys[0]) renderPack(packKeys[0])
+
+    content.addEventListener('click', (event) => {
+      const item = event.target.closest('[data-emoji]')
+      if (!item) return
+      insertEmoji(textarea, item.dataset.emoji || '')
+      picker.hidden = true
+      trigger.setAttribute('aria-expanded', 'false')
+    })
+
+    trigger.addEventListener('click', (event) => {
+      event.stopPropagation()
+      picker.hidden = !picker.hidden
+      trigger.setAttribute('aria-expanded', String(!picker.hidden))
+    })
+
+    document.addEventListener('click', (event) => {
+      if (picker.hidden || picker.contains(event.target)) return
+      picker.hidden = true
+      trigger.setAttribute('aria-expanded', 'false')
+    })
+  }
+
+  function refineCommentForm(submit) {
+    if (submit.dataset.compactForm === 'true') return
+    submit.dataset.compactForm = 'true'
+
+    const fields = {
+      nick: ['名称', '必填，用于展示身份'],
+      mail: ['邮箱', '必填，用于头像和通知'],
+      link: ['网站', '可选，用于引导访问'],
+    }
+
+    Object.entries(fields).forEach(([name, values]) => {
+      const input = submit.querySelector(`[name="${name}"]`)
+      const group = input?.closest('.el-input')
+      const label = group?.querySelector('.el-input-group__prepend')
+      if (label) label.textContent = values[0]
+      if (input) input.placeholder = values[1]
+    })
+
+    const textarea = submit.querySelector('textarea')
+    if (textarea) {
+      textarea.placeholder = '既然来了，不妨留个言再走吧…'
+    }
+
+    const markdown = submit.querySelector('.tk-submit-action-icon.__markdown')
+    if (markdown) {
+      markdown.setAttribute('aria-label', '支持 Markdown')
+      markdown.querySelector('svg')?.remove()
+    }
+  }
+
+  async function enhanceTwikooEmojis(section) {
+    if (section.dataset.emojiEnhanced === 'true') return
+    section.dataset.emojiEnhanced = 'true'
+
+    try {
+      const response = await fetch('/emojis.json')
+      if (!response.ok) throw new Error(`Emoji config: ${response.status}`)
+      const emojiConfig = await response.json()
+
+      const enhance = () => {
+        section
+          .querySelectorAll('.tk-submit')
+          .forEach((submit) => {
+            refineCommentForm(submit)
+            createEmojiPicker(submit, emojiConfig)
+          })
+        section
+          .querySelectorAll('.tk-content')
+          .forEach((content) => renderEmojiTokens(content, emojiConfig))
+      }
+
+      enhance()
+      const observer = new MutationObserver(enhance)
+      observer.observe(section, { childList: true, subtree: true })
+    } catch (error) {
+      section.dataset.emojiEnhanced = 'false'
+      console.error('Emoji library failed to load:', error)
+    }
+  }
+
+  async function initPureTwikoo(section) {
+    if (!section || section.dataset.twikooInitialized === 'true') return
+
+    const error = section.querySelector('[data-twikoo-error]')
+    section.dataset.twikooInitialized = 'loading'
+    try {
+      await loadTwikooScript()
+      await window.twikoo.init({
+        envId: section.dataset.envId,
+        el: '#tcomment',
+        path: section.dataset.commentPath,
+        lang: 'zh-CN',
+      })
+      section.dataset.twikooInitialized = 'true'
+      await enhanceTwikooEmojis(section)
+    } catch (loadError) {
+      console.error('Twikoo initialization failed:', loadError)
+      section.dataset.twikooInitialized = 'false'
+      if (error) error.hidden = false
+    }
+  }
+
+  function schedulePureTwikoo() {
+    const section = document.querySelector('[data-twikoo-comments]')
+    if (!section || section.dataset.twikooScheduled === 'true') return
+    section.dataset.twikooScheduled = 'true'
+
+    if (!('IntersectionObserver' in window)) {
+      void initPureTwikoo(section)
+      return
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return
+      observer.disconnect()
+      void initPureTwikoo(section)
+    }, { rootMargin: '700px 0px' })
+    observer.observe(section)
+  }
+
+  schedulePureTwikoo()
+</script>
+
+<style>
+  .pure-twikoo {
+    --twikoo-theme-color: var(--primary);
+    --twikoo-active-text-color: var(--primary);
+    margin-top: 2.5rem;
+    color: var(--foreground);
+  }
+
+  .pure-twikoo__title {
+    margin: 0 0 1.25rem;
+    color: var(--foreground);
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .pure-twikoo__error {
+    margin-top: 1rem;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) * 1.3);
+    background: color-mix(in oklab, var(--muted) 55%, transparent);
+    padding: 0.9rem 1rem;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+  }
+
+  :global(.pure-twikoo .tk-comments) {
+    color: var(--foreground);
+  }
+
+  :global(.pure-twikoo .tk-submit) {
+    border: 1px solid color-mix(in oklab, var(--border) 92%, transparent);
+    border-radius: calc(var(--radius) * 1.35);
+    background: color-mix(in oklab, var(--background) 52%, transparent);
+    padding: 0.85rem 1.1rem 0.7rem;
+    box-shadow: none;
+  }
+
+  :global(.pure-twikoo .tk-submit .tk-row) {
+    gap: 0;
+  }
+
+  :global(.pure-twikoo .tk-submit > .tk-row:first-child) {
+    display: block;
+  }
+
+  :global(.pure-twikoo .tk-submit .tk-col) {
+    min-width: 0;
+  }
+
+  :global(.pure-twikoo .tk-submit .tk-avatar) {
+    display: none;
+  }
+
+  :global(.pure-twikoo .tk-avatar) {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--muted);
+    box-shadow: none;
+  }
+
+  :global(.pure-twikoo .tk-meta-input) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    margin-bottom: 0.15rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.4rem;
+  }
+
+  :global(.pure-twikoo .tk-meta-input > .el-input) {
+    position: relative;
+    display: flex !important;
+    align-items: center;
+    min-width: 0;
+    width: auto !important;
+    border-right: 1px solid color-mix(in oklab, var(--border) 75%, transparent);
+  }
+
+  :global(.pure-twikoo .tk-meta-input > .el-input:last-child) {
+    border-right: 0;
+  }
+
+  :global(.pure-twikoo .el-input-group__prepend) {
+    display: block !important;
+    width: auto !important;
+    border: 0 !important;
+    background: transparent !important;
+    padding: 0 0 0 0.35rem !important;
+    color: color-mix(in oklab, var(--foreground) 72%, transparent) !important;
+    font-size: 0.875rem !important;
+  }
+
+  :global(.pure-twikoo .el-input__inner),
+  :global(.pure-twikoo .el-textarea__inner) {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--foreground) !important;
+    box-shadow: none !important;
+    font-family: inherit !important;
+  }
+
+  :global(.pure-twikoo .el-input__inner) {
+    display: block !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    height: 1.9rem !important;
+    padding: 0 0.45rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  :global(.pure-twikoo .el-textarea__inner) {
+    min-height: 9rem !important;
+    padding: 0.75rem 0.25rem !important;
+    resize: vertical !important;
+    font-size: 1rem !important;
+    line-height: 1.75 !important;
+  }
+
+  :global(.pure-twikoo .el-input__inner::placeholder),
+  :global(.pure-twikoo .el-textarea__inner::placeholder) {
+    color: color-mix(in oklab, var(--muted-foreground) 72%, transparent) !important;
+  }
+
+  :global(.pure-twikoo .el-input__inner:focus),
+  :global(.pure-twikoo .el-textarea__inner:focus) {
+    box-shadow: none !important;
+  }
+
+  :global(.pure-twikoo .el-button) {
+    border-color: transparent !important;
+    border-radius: calc(var(--radius) * 0.8) !important;
+    background: transparent !important;
+    color: var(--muted-foreground) !important;
+    font-family: inherit !important;
+    font-size: 0.75rem !important;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  :global(.pure-twikoo .el-button:hover) {
+    background: var(--muted) !important;
+    color: var(--foreground) !important;
+  }
+
+  :global(.pure-twikoo .el-button--primary) {
+    border-color: transparent !important;
+    border-radius: calc(var(--radius) * 0.75) !important;
+    background: transparent !important;
+    padding-inline: 0.45rem !important;
+    color: color-mix(in oklab, var(--foreground) 78%, transparent) !important;
+    font-weight: 500 !important;
+  }
+
+  :global(.pure-twikoo .el-button--primary::after) {
+    content: ' ↗';
+    margin-inline-start: 0.2rem;
+  }
+
+  :global(.pure-twikoo .el-button--primary:hover) {
+    border-color: transparent !important;
+    background: var(--muted) !important;
+    color: var(--foreground) !important;
+  }
+
+  :global(.pure-twikoo .tk-row.actions) {
+    align-items: center;
+    margin-top: 0;
+    padding-top: 0.35rem;
+  }
+
+  :global(.pure-twikoo .tk-preview) {
+    display: none !important;
+  }
+
+  :global(.pure-twikoo .tk-submit-action-icon.__markdown) {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    color: color-mix(in oklab, var(--muted-foreground) 72%, transparent);
+    font-size: 0.75rem;
+  }
+
+  :global(.pure-twikoo .tk-submit-action-icon.__markdown::after) {
+    content: '支持 Markdown';
+    margin-inline-start: 0.35rem;
+    white-space: nowrap;
+  }
+
+  :global(.pure-twikoo .tk-submit-action-icon.__markdown svg) {
+    display: none;
+  }
+
+  :global(.pure-twikoo .el-input__count) {
+    bottom: 0.6rem !important;
+    right: 0.25rem !important;
+    background: transparent !important;
+    color: color-mix(in oklab, var(--muted-foreground) 72%, transparent) !important;
+    font-size: 0.75rem !important;
+  }
+
+  :global(.pure-twikoo .tk-comments-container) {
+    margin-top: 3rem;
+  }
+
+  :global(.pure-twikoo .tk-comments-title) {
+    margin-bottom: 1.25rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
+  :global(.pure-twikoo .tk-comment) {
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--border) 78%, transparent);
+    border-radius: 0;
+    background: transparent;
+    padding: 1.25rem 0;
+    box-shadow: none;
+  }
+
+  :global(.pure-twikoo .tk-replies .tk-comment) {
+    margin-top: 0.75rem;
+    border-bottom: 0;
+    border-left: 2px solid var(--border);
+    padding: 0.75rem 0 0.75rem 1rem;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  :global(.pure-twikoo .tk-nick) {
+    color: var(--foreground) !important;
+    font-weight: 600;
+  }
+
+  :global(.pure-twikoo .tk-time),
+  :global(.pure-twikoo .tk-extras),
+  :global(.pure-twikoo .tk-footer),
+  :global(.pure-twikoo .tk-action) {
+    color: var(--muted-foreground) !important;
+  }
+
+  :global(.pure-twikoo .tk-content) {
+    color: var(--foreground);
+    line-height: 1.75;
+  }
+
+  :global(.pure-twikoo .doge-comment-emoji) {
+    display: inline-block;
+    width: auto;
+    max-width: 5rem;
+    height: auto;
+    max-height: 5rem;
+    margin: 0 0.12rem;
+    vertical-align: middle;
+    object-fit: contain;
+  }
+
+  :global(.pure-twikoo .doge-emoji-actions) {
+    position: relative;
+  }
+
+  :global(.pure-twikoo .doge-emoji-trigger) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.8rem;
+    border: 0;
+    border-radius: calc(var(--radius) * 0.8);
+    background: transparent;
+    padding: 0.25rem 0.4rem;
+    color: var(--muted-foreground);
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  :global(.pure-twikoo .doge-emoji-trigger::before) {
+    content: '☺';
+    margin-inline-end: 0.35rem;
+    font-size: 0.9rem;
+  }
+
+  :global(.pure-twikoo .doge-emoji-trigger:hover),
+  :global(.pure-twikoo .doge-emoji-trigger[aria-expanded='true']) {
+    background: var(--muted);
+    color: var(--foreground);
+  }
+
+  :global(.pure-twikoo .doge-emoji-picker) {
+    position: absolute;
+    z-index: 50;
+    bottom: calc(100% + 0.75rem);
+    left: 0;
+    width: min(28rem, calc(100vw - 4rem));
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) * 1.35);
+    background: var(--background);
+    box-shadow: 0 18px 50px color-mix(in oklab, var(--foreground) 12%, transparent);
+  }
+
+  :global(.pure-twikoo .doge-emoji-picker[hidden]) {
+    display: none;
+  }
+
+  :global(.pure-twikoo .doge-emoji-tabs) {
+    display: flex;
+    gap: 0.2rem;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    padding: 0.45rem;
+    scrollbar-width: thin;
+  }
+
+  :global(.pure-twikoo .doge-emoji-tab) {
+    flex: none;
+    border: 0;
+    border-radius: calc(var(--radius) * 0.7);
+    background: transparent;
+    padding: 0.35rem 0.55rem;
+    color: var(--muted-foreground);
+    font: inherit;
+    font-size: 0.72rem;
+    cursor: pointer;
+  }
+
+  :global(.pure-twikoo .doge-emoji-tab:hover),
+  :global(.pure-twikoo .doge-emoji-tab[aria-pressed='true']) {
+    background: var(--muted);
+    color: var(--foreground);
+  }
+
+  :global(.pure-twikoo .doge-emoji-content) {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.25rem;
+    max-height: 18rem;
+    overflow-y: auto;
+    padding: 0.55rem;
+  }
+
+  :global(.pure-twikoo .doge-emoji-content--text) {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  :global(.pure-twikoo .doge-emoji-item) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 3.6rem;
+    border: 0;
+    border-radius: calc(var(--radius) * 0.7);
+    background: transparent;
+    padding: 0.25rem;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: 0.16s ease;
+  }
+
+  :global(.pure-twikoo .doge-emoji-content--text .doge-emoji-item) {
+    min-height: 2.2rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  :global(.pure-twikoo .doge-emoji-item:hover) {
+    background: var(--muted);
+    transform: translateY(-1px);
+  }
+
+  :global(.pure-twikoo .doge-emoji-item img) {
+    width: 100%;
+    height: 3.1rem;
+    object-fit: contain;
+  }
+
+  :global(.pure-twikoo .tk-footer) {
+    display: none;
+  }
+
+  :global(.pure-twikoo a) {
+    color: var(--primary);
+  }
+
+  :global(.pure-twikoo .tk-admin-container),
+  :global(.pure-twikoo .tk-lightbox) {
+    color: initial;
+  }
+
+  @media (max-width: 640px) {
+    .pure-twikoo {
+      margin-top: 2.25rem;
+    }
+
+    :global(.pure-twikoo .tk-submit) {
+      border-radius: calc(var(--radius) * 1.15);
+      padding: 0.7rem 0.8rem 0.6rem;
+    }
+
+    :global(.pure-twikoo .tk-submit .tk-avatar) {
+      display: none;
+    }
+
+    :global(.pure-twikoo .tk-meta-input) {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
+
+    :global(.pure-twikoo .tk-meta-input > .el-input) {
+      border-right: 0;
+      border-bottom: 1px solid color-mix(in oklab, var(--border) 55%, transparent);
+    }
+
+    :global(.pure-twikoo .tk-meta-input > .el-input:last-child) {
+      border-bottom: 0;
+    }
+
+    :global(.pure-twikoo .doge-emoji-picker) {
+      width: min(22rem, calc(100vw - 3rem));
+    }
+
+    :global(.pure-twikoo .doge-emoji-content) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      max-height: 15rem;
+    }
+
+    :global(.pure-twikoo .el-textarea__inner) {
+      min-height: 7.5rem !important;
+    }
+
+    :global(.pure-twikoo .tk-submit-action-icon.__markdown::after) {
+      content: 'Markdown';
+    }
+  }
+</style>

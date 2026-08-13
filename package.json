@@ -1,6 +1,7 @@
 {
-  "name": "my-v0-project",
+  "name": "jiely-vermilion-blog",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "astro dev",
@@ -10,6 +11,7 @@
     "check": "astro check",
     "sync-thoughts": "node scripts/sync-thoughts.mjs",
     "migrate-thoughts": "node scripts/migrate-thoughts.mjs",
+    "migrate-whalefall": "node scripts/migrate-whalefall.mjs",
     "sync-studies": "node scripts/sync-studies.mjs"
   },
   "dependencies": {

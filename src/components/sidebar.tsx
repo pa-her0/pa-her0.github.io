@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from "react"
 import { cn } from "@/lib/utils"
-import { Calendar } from "lucide-react"
+import { Calendar, FileText, UserRound } from "lucide-react"
 import { profile } from "@/data/profile"
 import { ProfileContactLink } from "@/components/profile-contact-link"
 
@@ -66,6 +66,22 @@ export function Sidebar({
               />
             )
           })}
+          <a
+            href="/acad-homepage/"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground transition-colors"
+            aria-label="查看 CV"
+            title="CV"
+          >
+            <FileText className="h-4 w-4" />
+          </a>
+          <a
+            href="/about/"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground transition-colors"
+            aria-label="关于我"
+            title="About"
+          >
+            <UserRound className="h-4 w-4" />
+          </a>
         </div>
 
         {/* Quick Stats */}

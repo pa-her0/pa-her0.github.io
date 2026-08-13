@@ -28,7 +28,7 @@ export function ThoughtPreview({
       <div className="flex items-center gap-2 mb-4">
         <div className="w-1 h-4 bg-primary rounded-full" />
         <div>
-          <h4 className="font-medium text-foreground">偶得</h4>
+          <h4 className="font-medium text-foreground">碎碎念</h4>
         </div>
       </div>
 
@@ -63,7 +63,7 @@ export function ThoughtPreview({
           ))}
         </div>
       ) : (
-        <div className="text-sm text-muted-foreground">暂无偶得</div>
+        <div className="text-sm text-muted-foreground">暂无碎碎念</div>
       )}
 
       <div className="pt-4 flex justify-end">

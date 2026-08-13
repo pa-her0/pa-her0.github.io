@@ -1,21 +1,5 @@
 import { defineCollection, z } from "astro:content"
 
-const articles = defineCollection({
-  type: "content",
-  schema: z.object({
-    title: z.string(),
-    excerpt: z.string().optional(),
-    category: z.string(),
-    categoryLabel: z.string(),
-    tag: z.string(),
-    date: z.coerce.date(),
-    wordCount: z.number().optional(),
-    readTime: z.string().optional(),
-    image: z.string().optional(),
-    pinned: z.boolean().optional(),
-  }),
-})
-
 const posts = defineCollection({
   type: "content",
   schema: z.object({
@@ -29,6 +13,7 @@ const posts = defineCollection({
     category: z.string().optional().nullable().default(""),
     lang: z.string().optional().default(""),
     pinned: z.boolean().optional().default(false),
+    commentSlug: z.string().optional(),
 
     encrypted: z.boolean().optional().default(false),
     password: z.string().optional().default(""),
@@ -50,18 +35,4 @@ const thoughts = defineCollection({
   }),
 })
 
-const studies = defineCollection({
-  type: "content",
-  // 注意：frontmatter 里的 `slug` 字段被 Astro 当 reserved key 处理（用作 URL slug），
-  // 不会出现在 schema 校验的 data 里。所以这里不声明 slug，直接读 entry.slug。
-  schema: z.object({
-    title: z.string(),
-    status: z.enum(["在读", "沉淀中", "暂搁", "已结"]),
-    started: z.string(), // "YYYY-MM" 或 "YYYY-MM-DD"
-    subtitle: z.string().optional(),
-    epigraph: z.string().optional(),
-    field: z.string().optional(),
-  }),
-})
-
-export const collections = { articles, posts, thoughts, studies }
+export const collections = { posts, thoughts }

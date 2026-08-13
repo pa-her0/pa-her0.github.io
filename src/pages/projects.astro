@@ -1,0 +1,33 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import SiteHeader from "@/components/site-header.astro"
+import { Footer } from "@/components/footer"
+import { projects } from "@/data/projects"
+---
+
+<BaseLayout title="项目 | Jiely 的博客" description="Jiely 的研究与实践项目" fontProfile="interface">
+  <div class="min-h-screen bg-background dark:bg-surface-subtle">
+    <SiteHeader />
+    <main class="mx-auto max-w-6xl px-6 pb-24 pt-32">
+      <header class="mb-12">
+        <p class="mb-2 text-sm uppercase tracking-[0.22em] text-primary">Projects</p>
+        <h1 class="text-4xl font-bold text-foreground">研究与实践项目</h1>
+        <p class="mt-3 max-w-2xl text-muted-foreground">从多智能体金融仿真到计算机视觉，记录正在探索和完成的项目。</p>
+      </header>
+      <section class="grid gap-5 md:grid-cols-2">
+        {projects.map((project) => (
+          <a href={project.href} target="_blank" rel="noreferrer" class="group rounded-2xl border border-border bg-card p-7 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
+            <div class="mb-5 flex items-start justify-between gap-4">
+              <span class="text-sm text-primary">{project.category}</span>
+              <span aria-hidden="true" class="text-muted-foreground transition-transform group-hover:translate-x-1">↗</span>
+            </div>
+            <h2 class="text-xl font-semibold text-foreground">{project.name}</h2>
+            <p class="mt-3 leading-7 text-muted-foreground">{project.description}</p>
+            <span class="mt-6 inline-block rounded-full bg-secondary px-3 py-1 text-xs text-foreground/75">{project.badge}</span>
+          </a>
+        ))}
+      </section>
+    </main>
+    <Footer />
+  </div>
+</BaseLayout>

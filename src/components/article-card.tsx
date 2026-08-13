@@ -59,7 +59,11 @@ export function ArticleCard({
         <div className="flex-1 min-w-0">
           <h3 className="font-display-sans text-[19px] font-semibold text-foreground mb-3 leading-[1.4] group-hover:text-primary dark:group-hover:text-foreground transition-colors duration-75 flex items-start gap-2">
             <span className="w-1 h-6 shrink-0 bg-primary rounded-full" />
-            <a href={postHref} className="flex-1 min-w-0 hover:text-primary transition-colors duration-75">
+            <a
+              href={postHref}
+              data-astro-prefetch="hover"
+              className="flex-1 min-w-0 hover:text-primary transition-colors duration-75"
+            >
               {article.title}
             </a>
             {article.image ? (

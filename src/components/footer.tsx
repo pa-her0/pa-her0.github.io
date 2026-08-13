@@ -1,5 +1,5 @@
 import type { ComponentType, SVGProps } from "react"
-import { Github, Music, Rss } from "lucide-react"
+import { Github, Music } from "lucide-react"
 import { profile, type ExternalProfileLink, type ExternalProfileLinkType } from "@/data/profile"
 import { QqIcon } from "@/components/icons/qq-icon"
 
@@ -17,19 +17,19 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full overflow-hidden border border-primary/20 bg-secondary">
+              <div className="relative h-8 w-9 overflow-hidden" aria-hidden="true">
                 <img
-                  src={profile.avatar}
-                  alt={profile.name}
+                  src="/brand/whalefall-logo.png"
+                  alt=""
                   loading="lazy"
                   decoding="async"
-                  className="w-full h-full object-cover"
+                  className="absolute left-1/2 top-0 h-[47px] w-[47px] max-w-none -translate-x-1/2"
                 />
               </div>
-              <span className="text-foreground font-medium">时歌的博客</span>
+              <span className="font-serif text-lg font-semibold tracking-tight text-[#0874c9]">Whalefall</span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              理解以真实为本，但真实本身并不会自动呈现
+              In the end, you have to save yourself.
             </p>
           </div>
 
@@ -37,21 +37,18 @@ export function Footer() {
           <div className="md:flex md:justify-center">
             <div>
               <h4 className="text-sm font-medium text-foreground mb-4 uppercase tracking-wide">导航</h4>
-              <nav className="flex flex-col gap-3">
+              <nav className="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-3 md:grid-cols-2">
               {[
                 { name: "首页", href: "/" },
                 { name: "时间线", href: "/timeline/" },
-                { name: "书架", href: "/bookshelf/" },
-                { name: "专题", href: "/studies/" },
+                { name: "项目", href: "/projects/" },
                 { name: "友链", href: "/friends/" },
+                { name: "留言板", href: "/messages/" },
                 { name: "关于", href: "/about/" },
-                { name: "开往", href: "https://www.travellings.cn/go.html", external: true },
               ].map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
-                  target={item.external ? "_blank" : undefined}
-                  rel={item.external ? "noreferrer" : undefined}
                   className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200"
                 >
                   {item.name}
@@ -82,31 +79,14 @@ export function Footer() {
                   )
                 })}
               </div>
-              <p className="text-muted-foreground text-sm mt-6">通过 RSS 订阅，获取最新文章更新。</p>
-              <a
-                href="/rss.xml"
-                target="_blank"
-                rel="noreferrer"
-                className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity duration-200"
-              >
-                <Rss className="w-4 h-4" />
-                订阅 RSS
-              </a>
             </div>
           </div>
         </div>
 
         {/* Bottom */}
         <div className="mt-16 pt-8 border-t border-border/50 grid gap-4 md:grid-cols-3">
-          <p className="text-muted-foreground text-sm">© 2025 时歌. All rights reserved.</p>
-          <a
-            href="https://beian.miit.gov.cn/"
-            target="_blank"
-            rel="noreferrer"
-            className="text-muted-foreground text-xs hover:text-foreground transition-colors duration-200 md:text-center"
-          >
-            辽ICP备2023010881号-1
-          </a>
+          <p className="text-muted-foreground text-sm">© 2026 Jiely. All rights reserved.</p>
+          <span className="text-muted-foreground text-xs md:text-center">Powered by Astro</span>
           <a
             href="https://github.com/Lapis0x0/VermilionVoid"
             target="_blank"

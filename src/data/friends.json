@@ -1,202 +1,25 @@
 [
   {
     "categoryTitle": "朋友们",
-    "categoryDesc": "这些是我的好朋友们，欢迎大家去他们的网站逛逛！",
+    "categoryDesc": "一些有趣的朋友们，互相交流，共同成长。",
     "links": [
       {
-        "title": "朽丘秋雨",
-        "imgurl": "https://cdn.koxiuqiu.cn/koxiuqiu/img/favicon.webp",
-        "desc": "一定会和喜欢的人在夏日夜晚牵手慢步",
-        "siteurl": "https://koxiuqiu.cn"
+        "title": "村中会礼仪",
+        "imgurl": "https://dns.whalefall.top/huiliyi.jpg",
+        "desc": "那天早上的雾散了，不止早上，不止雾。",
+        "siteurl": "https://hanasakura.ink/"
       },
       {
-        "title": "qunqin‘s Blog",
-        "imgurl": "https://uesu.cn-sy1.rains3.com/halo/gptlogo.png",
-        "desc": "在繁杂的世界里，我的信念始终锚定在真理的彼岸",
-        "siteurl": "https://www.qunqin.net"
+        "title": "包子丸",
+        "imgurl": "https://dns.whalefall.top/baoziwan.jpg",
+        "desc": "生活明朗，万物可爱。",
+        "siteurl": "https://baoziwan.top/"
       },
       {
-        "title": "XenWayne’s Blog",
-        "imgurl": "https://gcore.jsdelivr.net/gh/XenWayne/sitefile@master/img/avatar_square.webp",
-        "desc": "寸进具欢喜，万物皆可爱。",
-        "siteurl": "https://xenwayne.top"
-      },
-      {
-        "title": "洛卡日记",
-        "imgurl": "https://bu.dusays.com/2024/08/18/66c1b1239a312.png",
-        "desc": "个人阅读笔记与日常生活留存地",
-        "siteurl": "https://luoca.cn/"
-      },
-      {
-        "title": "姓王者的博客",
-        "imgurl": "https://xingwangzhe.fun/avatar.webp",
-        "desc": "记录学习生活的琐事，或技术文章",
-        "siteurl": "https://xingwangzhe.fun"
-      },
-      {
-        "title": "溪午的博客",
-        "imgurl": "https://www.xiwuqaq.me/_astro/avatar.B24N4CPn_Z10xJVE.webp",
-        "desc": "愿不再遗憾所有",
-        "siteurl": "https://www.xiwuqaq.me"
-      },
-      {
-        "title": "Zellon的博客",
-        "imgurl": "https://www.zellon.top/avatar.jpg",
-        "desc": "告别过去，是为了走向未来",
-        "siteurl": "https://www.zellon.top/",
-        "rss": "https://zellon.top/rss.xml"
-      },
-      {
-        "title": "白咲のblog",
-        "imgurl": "https://www.shiro.team/avatar.png",
-        "desc": "歇斯底里是崩溃，底里歇斯是美味",
-        "siteurl": "https://www.shiro.team/"
-      },
-      {
-        "title": "mikann_OMO",
-        "imgurl": "https://mikann.fun/avatar.webp",
-        "desc": "是一位超级无敌可爱美少女",
-        "siteurl": "https://www.mikann.fun"
-      },
-      {
-        "title": "XnneHang's Blog",
-        "imgurl": "https://s2.loli.net/2024/06/18/7asx58EjJ6lfwIL.jpg",
-        "desc": "青石巷道闻星铃，披虹沐雪见本心。他日北寒仙界会，一声道友尽沧桑。",
-        "siteurl": "https://xnnehang.top"
-      },
-      {
-        "title": "曲速引擎（Warp Drive）- 小曲博客",
-        "imgurl": "https://www.dataeast.cn/upload/saturn-153576_1280.png",
-        "desc": "专注于计算机方面的博客",
-        "siteurl": "https://www.dataeast.cn"
-      },
-      {
-        "title": "Introl's Blog",
-        "imgurl": "https://blog.introl.top/_astro/avatar.CTECrO0x_Z2sL1mt.webp",
-        "desc": "一个OIer的OI弱相关博客",
-        "siteurl": "https://blog.introl.top/"
-      },
-      {
-        "title": "x7aNote",
-        "imgurl": "https://xeonzilla.top/favicon.svg",
-        "desc": "Yuri is life.",
-        "siteurl": "https://xeonzilla.top/"
-      },
-      {
-        "title": "Cloud09_Space",
-        "imgurl": "https://raw.githubusercontent.com/cloud-oc/picx-images-hosting/refs/heads/master/Origin/Cloud_icon.pfpafpaii.png",
-        "desc": "云零九空间",
-        "siteurl": "https://cloud09.space"
-      },
-      {
-        "title": "cry4o4N0tFound",
-        "imgurl": "https://picture.cry4o4n0tfound.cn/2025/09/b4ed0a1d77cacf879e1b3e8fc2190473.jpg",
-        "desc": "Just Study for Fun",
-        "siteurl": "https://cry4o4n0tfound.cn"
-      },
-      {
-        "title": "LANSGANBS's Blog",
-        "imgurl": "https://www.lansganbs.cn/images/friends/lansganbs.png",
-        "desc": "红叶最多情，一舞寄相思。",
-        "siteurl": "https://www.lansganbs.cn/"
-      },
-      {
-        "title": "夏夜流萤",
-        "imgurl": "https://q1.qlogo.cn/g?b=qq&nk=7618557&s=640",
-        "desc": "飞萤之火自无梦的长夜亮起，绽放在终竟的明天。",
-        "siteurl": "https://blog.cuteleaf.cn"
-      },
-      {
-        "title": "一杯为品的博客",
-        "imgurl": "https://www.inkem.space/images/avatar.webp",
-        "desc": "不许平凡，不容悲欢。",
-        "siteurl": "https://www.inkem.space"
-      },
-      {
-        "title": "Viki 写东西的地方",
-        "imgurl": "https://blog.viki.moe/avatar.png",
-        "desc": "生活需要记录。",
-        "siteurl": "https://blog.viki.moe",
-        "rss": "https://blog.viki.moe/rss"
-      },
-      {
-        "title": "LanM",
-        "imgurl": "https://bluelanm.github.io/my-website/img/3.ico",
-        "desc": "蓝莓",
-        "siteurl": "https://bluelanm.github.io"
-      },
-      {
-        "title": "VnYzm的博客",
-        "imgurl": "https://vnyzm.top/img/profile.jpg",
-        "desc": "分享技术心得和摸鱼感想",
-        "siteurl": "https://vnyzm.top"
-      },
-      {
-        "title": "树萌 - 技术与生活的随笔日记",
-        "imgurl": "https://oss.treemoe.cn/icon/yui.webp",
-        "desc": "个人小站，兴趣使然。",
-        "siteurl": "https://www.treemoe.cn"
-      },
-      {
-        "title": "CSS森林",
-        "imgurl": "https://2.gravatar.com/avatar/047f627ac8a6ac2f6df2d730dbaf585011c15dab8e93b9bea3e5609167548eeb",
-        "desc": "一个“页面仔”的成长之路",
-        "siteurl": "https://www.cssforest.org/"
-      },
-      {
-        "title": "Cynosura",
-        "imgurl": "https://cynosura.one/img/avatar.webp",
-        "desc": "Trying to light up the dark.",
-        "siteurl": "https://cynosura.one"
-      },
-      {
-        "title": "伏枥之间",
-        "imgurl": "https://leehenry.top/friends/my-avatar-portrait.jpg",
-        "desc": "何妨吟啸且徐行",
-        "siteurl": "https://www.leehenry.top"
-      },
-      {
-        "title": "Wintel.",
-        "imgurl": "https://mrwintel.xyz/local/avatar.jpg",
-        "desc": "树在。山在。大地在。岁月在。我在。",
-        "siteurl": "https://mrwintel.xyz"
-      },
-      {
-        "title": "橘智的安宁之地",
-        "imgurl": "https://dataer-1257252871.cos.ap-shanghai.myqcloud.com/virtualUserIcon/logo.png",
-        "desc": "共享博客&深度思考。",
-        "siteurl": "https://juzhiart.com"
-      },
-      {
-        "title": "三瓶可乐不过岗",
-        "imgurl": "https://thricecola.com/assets/512-t_MlOS14.jpg",
-        "desc": "看看~ 看看~",
-        "siteurl": "https://blog.thricecola.com/",
-        "rss": "https://blog.thricecola.com/rss.xml"
-      },
-      {
-        "title": "MingBlog（Ming 博客）",
-        "imgurl": "https://mingblog.site/icons/icon-512.png",
-        "desc": "记录日常生活、城市影像、旅行与观察，以及认真看过、读过和听过的作品。",
-        "siteurl": "https://mingblog.site"
-      }
-    ]
-  },
-  {
-    "categoryTitle": "值得关注的博客",
-    "categoryDesc": "一些我经常阅读和关注的、内容非常有意思的博客。",
-    "links": [
-      {
-        "title": "松易涅的写作分享站",
-        "imgurl": "https://www.sungyinieh.com/wp-content/uploads/2025/06/cropped-logo-square-g4-150px-300ppi-192x192.png",
-        "desc": "",
-        "siteurl": "https://www.sungyinieh.com/"
-      },
-      {
-        "title": "滑翔闪",
-        "imgurl": "https://blog.huaxiangshan.com/images/avatar.png",
-        "desc": "",
-        "siteurl": "https://blog.huaxiangshan.com/zh-cn/"
+        "title": "Kirawii",
+        "imgurl": "https://kirawii.cn/og.png",
+        "desc": "在代码的经纬里拾起诗意，也为技术之外的生活留一盏灯。",
+        "siteurl": "https://kirawii.cn/"
       }
     ]
   }

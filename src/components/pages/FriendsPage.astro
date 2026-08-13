@@ -1,7 +1,7 @@
 ---
 import SiteHeader from "@/components/site-header.astro"
 import friendsData from "@/data/friends.json"
-import { ExternalLink, Heart, CheckCircle2, Copy, Check, Mail } from "lucide-react"
+import { ExternalLink, Heart, Copy, Check, Mail } from "lucide-react"
 
 type FriendLink = {
   title: string
@@ -31,12 +31,12 @@ const getTint = (name: string) => {
 }
 
 const siteInfo = {
-  name: "时歌的博客",
-  url: "https://www.lapis.cafe",
-  avatar: "https://www.lapis.cafe/avatar.webp",
-  desc: "理解以真实为本，但真实本身并不会自动呈现",
-  rss: "https://www.lapis.cafe/rss.xml",
-  email: "lapiscafe@foxmail.com",
+  name: "Jiely 的博客",
+  url: "https://www.whalefall.top",
+  avatar: "https://www.whalefall.top/avatar.png",
+  desc: "In the end, you have to save yourself.",
+  rss: "https://www.whalefall.top/rss.xml",
+  email: "2799620892@qq.com",
 }
 
 const siteInfoText = [
@@ -74,11 +74,12 @@ const siteInfoText = [
                 data-index={index}
                 style={`--friend-tint: ${getTint(friend.title)}`}
               >
-                <button
-                  type="button"
+                <a
+                  href={friend.siteurl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="friend-card-surface"
-                  aria-expanded="false"
-                  aria-label={`查看 ${friend.title} 的简介`}
+                  aria-label={`访问 ${friend.title}`}
                 >
                   <span class="friend-card-media" aria-hidden="true">
                     <span class="friend-card-initial">{getInitial(friend.title)}</span>
@@ -99,16 +100,12 @@ const siteInfoText = [
                     <span class="friend-card-name">{friend.title}</span>
                     <span class="friend-card-desc">{desc}</span>
                   </span>
-                </button>
-                <a
-                  class="friend-card-link"
-                  href={friend.siteurl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`访问 ${friend.title}`}
-                  tabindex="-1"
-                >
-                  <ExternalLink className="w-4 h-4" />
+                  <span
+                    class="friend-card-link"
+                    aria-hidden="true"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </span>
                 </a>
               </article>
             )
@@ -127,24 +124,7 @@ const siteInfoText = [
           </div>
         </div>
 
-        <div class="grid gap-6 lg:grid-cols-2">
-          <div class="p-6 rounded-xl border border-border bg-card">
-            <h3 class="text-sm font-medium text-foreground mb-4">申请标准</h3>
-            <ul class="space-y-3">
-              {[
-                "贵站有一定深度的原创内容输出（读书笔记、专业研究、技术钻研或深度思考类内容）",
-                "建站时间至少半年以上，且已有十篇以上的原创博文",
-                "非以商业化为主，广告、推广内容不过多干扰阅读",
-                "申请者具备一定的基本教育背景（最好完成高中或同等学力层次教育）",
-              ].map((item) => (
-                <li class="flex items-start gap-3 text-sm text-muted-foreground">
-                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
+        <div>
           <div class="p-6 rounded-xl border border-border bg-card relative">
             <h3 class="text-sm font-medium text-foreground mb-4">本站信息</h3>
             <button
@@ -601,11 +581,9 @@ const siteInfoText = [
       }
 
       const setOpen = (card, open) => {
-        const surface = card.querySelector(".friend-card-surface")
         const link = card.querySelector(".friend-card-link")
         card.classList.toggle("is-open", open)
-        if (surface) surface.setAttribute("aria-expanded", open ? "true" : "false")
-        if (link) link.tabIndex = open ? 0 : -1
+        if (link) link.setAttribute("aria-hidden", "true")
       }
 
       const grid = document.querySelector("[data-friends-grid]")
@@ -641,15 +619,8 @@ const siteInfoText = [
         cards.forEach((card) => {
           const surface = card.querySelector(".friend-card-surface")
           if (!surface) return
-          const clickHandler = () => {
-            const willOpen = !card.classList.contains("is-open")
-            cards.forEach((openCard) => setOpen(openCard, false))
-            setOpen(card, willOpen)
-          }
           const focusHandler = () => setOpen(card, true)
-          surface.addEventListener("click", clickHandler)
           surface.addEventListener("focus", focusHandler)
-          cleanups.push(() => surface.removeEventListener("click", clickHandler))
           cleanups.push(() => surface.removeEventListener("focus", focusHandler))
         })
 

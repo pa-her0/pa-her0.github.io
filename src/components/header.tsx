@@ -4,16 +4,15 @@ import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { HeaderSearch } from "./header-search"
 import { ThemeToggle } from "./theme-toggle"
-import { profile } from "@/data/profile"
 
 const navItems: { name: string; href: string; external?: boolean }[] = [
   { name: "首页", href: "/#home-main" },
   { name: "时间线", href: "/timeline/" },
-  { name: "偶得", href: "/thoughts/" },
-  { name: "书架", href: "/bookshelf/" },
+  { name: "碎碎念", href: "/thoughts/" },
+  { name: "项目", href: "/projects/" },
   { name: "友链", href: "/friends/" },
+  { name: "留言板", href: "/messages/" },
   { name: "关于", href: "/about/" },
-  { name: "开往", href: "https://www.travellings.cn/go.html", external: true },
 ]
 
 export function Header() {
@@ -61,11 +60,11 @@ export function Header() {
       >
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-[1fr_auto_1fr] items-center">
           {/* Left: Logo */}
-          <a href="/#home-main" data-astro-prefetch className="group flex items-center gap-3 justify-self-start">
-            <div className="w-8 h-8 rounded-full overflow-hidden border border-primary/20 bg-secondary transition-transform duration-300 group-hover:scale-105">
-              <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
+          <a href="/#home-main" data-astro-prefetch className="group flex items-center gap-2.5 justify-self-start" aria-label="Whalefall 首页">
+            <div className="relative h-8 w-9 overflow-hidden transition-transform duration-300 group-hover:scale-105" aria-hidden="true">
+              <img src="/brand/whalefall-logo.png" alt="" className="absolute left-1/2 top-0 h-[47px] w-[47px] max-w-none -translate-x-1/2" />
             </div>
-            <span className="text-foreground font-medium tracking-tight hidden sm:block">时歌的博客</span>
+            <span className="hidden font-serif text-lg font-semibold tracking-tight text-[#0874c9] sm:block">Whalefall</span>
           </a>
 
           {/* Center: Navigation */}

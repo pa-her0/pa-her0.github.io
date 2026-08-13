@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 
 const phrases = [
-  { prefix: "探求 AI 的", highlight: "边界" },
-  { prefix: "追问金融的", highlight: "理性" },
-  { prefix: "分析社会的", highlight: "结构" },
-  { prefix: "记录跨学科", highlight: "洞见" },
+  { prefix: "探索 AI 的", highlight: "边界" },
+  { prefix: "构建多智能体", highlight: "系统" },
+  { prefix: "研究算法交易", highlight: "实践" },
+  { prefix: "记录学习与", highlight: "生活" },
 ]
 
 export function Hero() {
@@ -141,7 +141,7 @@ export function Hero() {
           }`}
         >
           <p className="text-xs sm:text-sm tracking-[0.3em] text-muted-foreground uppercase mb-8">
-            金融学 · 社会学 · AI 大模型
+            Jiely · AI · Research · Blog
           </p>
 
           <h1 className="font-sans text-[min(10.5vw,3rem)] sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-foreground leading-[1.1] mb-8 min-h-[1.2em] whitespace-nowrap">
@@ -153,10 +153,10 @@ export function Hero() {
 
           <blockquote className="max-w-xl mx-auto mb-10">
             <p className="text-content-secondary text-base sm:text-lg leading-relaxed italic">
-              「我不知道我在想什么，直到我读到我写的东西。」
+              「In the end, you have to save yourself.」
             </p>
             <footer className="mt-2 text-sm text-muted-foreground/70">
-              —— Flannery O'Connor
+              —— Jiely
             </footer>
           </blockquote>
 

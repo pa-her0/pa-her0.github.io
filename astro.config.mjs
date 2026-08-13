@@ -30,8 +30,12 @@ const createAdmonitionComponent = (type) => (properties = {}, children = []) => 
 export default defineConfig({
   srcDir: "./src",
   output: "static",
-  site: "https://www.lapis.cafe",
+  site: "https://www.whalefall.top",
   trailingSlash: "always",
+  prefetch: {
+    prefetchAll: false,
+    defaultStrategy: "hover",
+  },
   alias: {
     "@": "./src",
   },
