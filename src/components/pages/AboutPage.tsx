@@ -69,8 +69,8 @@ export default function AboutPage() {
                       key={technology.name}
                       className="flex items-center gap-2.5 rounded-xl border border-border/80 bg-secondary/55 px-3 py-2.5"
                     >
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-background shadow-sm">
-                        <img src={technology.icon} alt="" className="h-5 w-5 object-contain" loading="lazy" />
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-black/5 dark:bg-slate-50">
+                        <img src={technology.icon} alt="" className="h-5 w-5 object-contain" />
                       </span>
                       <span className="min-w-0 truncate text-sm font-medium text-foreground/85">{technology.name}</span>
                     </div>
