@@ -1,4 +1,6 @@
 ﻿---
+import 'twikoo/dist/twikoo.css'
+
 interface Props {
   slug: string
   title: string
@@ -372,6 +374,23 @@ const commentPath =
 
   :global(.pure-twikoo .tk-comments) {
     color: var(--foreground);
+  }
+
+  /* Twikoo 会在运行时注入图标样式；切页期间即使样式尚未恢复，也不要让 SVG 撑满页面。 */
+  :global(.pure-twikoo .OwO-logo svg),
+  :global(.pure-twikoo .tk-icon svg) {
+    display: block;
+    width: 1em !important;
+    height: 1em !important;
+    max-width: 1.25rem;
+    max-height: 1.25rem;
+  }
+
+  :global(.pure-twikoo .el-loading-spinner .circular) {
+    width: 2.6rem !important;
+    height: 2.6rem !important;
+    max-width: 2.6rem;
+    max-height: 2.6rem;
   }
 
   :global(.pure-twikoo .tk-submit) {

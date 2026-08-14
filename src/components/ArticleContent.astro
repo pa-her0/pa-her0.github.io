@@ -110,7 +110,7 @@ const primaryTagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#hom
           <span class="text-muted-foreground transition-transform group-open:rotate-180">⌄</span>
         </summary>
         <div class="toc-scroll-container px-4 pb-3 pt-1 border-t border-border/50 max-h-72 overflow-y-auto overscroll-auto toc-scrollbar">
-          <TableOfContents showHeader={false} client:media="(max-width: 1279px)" />
+          <TableOfContents showHeader={false} client:only="react" />
         </div>
       </details>
     </div>
@@ -141,7 +141,7 @@ const primaryTagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#hom
       <aside class="hidden xl:block absolute top-0 left-full pl-12 w-72 h-full">
         <div class="sticky top-24">
           <div class="toc-scroll-container max-h-[calc(100dvh-8rem)] overflow-y-auto overscroll-contain toc-scrollbar border border-border/60 bg-card/60 rounded-xl p-4">
-            <TableOfContents client:media="(min-width: 1280px)" />
+            <TableOfContents client:only="react" />
           </div>
         </div>
       </aside>

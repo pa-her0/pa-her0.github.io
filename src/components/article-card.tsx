@@ -1,10 +1,9 @@
 "use client"
 
-import type { CSSProperties, KeyboardEvent, MouseEvent } from "react"
+import type { CSSProperties } from "react"
 import { Calendar, Folder, Hash, ChevronRight } from "lucide-react"
 import type { ArticleMeta } from "./article-list"
 import { cn } from "@/lib/utils"
-import { navigate } from "astro:transitions/client"
 
 export function ArticleCard({
   article,
@@ -22,18 +21,6 @@ export function ArticleCard({
   const tagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#home-main` : undefined
   const postHref = `/posts/${article.slug}/`
 
-  const handleCardClick = (event: MouseEvent<HTMLElement>) => {
-    const target = event.target as HTMLElement
-    if (target.closest("a, button")) return
-    void navigate(postHref)
-  }
-
-  const handleCardKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-    if (event.key !== "Enter" && event.key !== " ") return
-    event.preventDefault()
-    void navigate(postHref)
-  }
-
   return (
     <article
       className={cn(
@@ -41,20 +28,22 @@ export function ArticleCard({
         className,
       )}
       style={style}
-      role="link"
-      tabIndex={0}
-      aria-label={`阅读：${article.title}`}
-      onClick={handleCardClick}
-      onKeyDown={handleCardKeyDown}
     >
+      <a
+        href={postHref}
+        data-astro-prefetch="hover"
+        className="absolute inset-0 z-0 rounded-xl"
+        aria-label={`阅读：${article.title}`}
+      />
+
       {/* Pinned indicator */}
       {article.pinned && (
-        <span className="absolute top-4 right-4 text-[11px] font-medium tracking-wide text-muted-foreground/80">
+        <span className="pointer-events-none absolute top-4 right-4 z-10 text-[11px] font-medium tracking-wide text-muted-foreground/80">
           置顶
         </span>
       )}
 
-      <div className="flex gap-4 sm:gap-5">
+      <div className="pointer-events-none relative z-10 flex gap-4 sm:gap-5">
         {/* Content */}
         <div className="flex-1 min-w-0">
           <h3 className="font-display-sans text-[19px] font-semibold text-foreground mb-3 leading-[1.4] group-hover:text-primary dark:group-hover:text-foreground transition-colors duration-75 flex items-start gap-2">
@@ -62,7 +51,7 @@ export function ArticleCard({
             <a
               href={postHref}
               data-astro-prefetch="hover"
-              className="flex-1 min-w-0 hover:text-primary transition-colors duration-75"
+              className="pointer-events-auto flex-1 min-w-0 hover:text-primary transition-colors duration-75"
             >
               {article.title}
             </a>
@@ -84,12 +73,12 @@ export function ArticleCard({
               <Calendar className="w-3.5 h-3.5" />
               {article.date}
             </span>
-            <a href={categoryHref} className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+            <a href={categoryHref} className="pointer-events-auto inline-flex items-center gap-1.5 hover:text-primary transition-colors">
               <Folder className="w-3.5 h-3.5" />
               {article.categoryLabel}
             </a>
             {tagHref ? (
-              <a href={tagHref} className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+              <a href={tagHref} className="pointer-events-auto inline-flex items-center gap-1.5 hover:text-primary transition-colors">
                 <Hash className="w-3.5 h-3.5" />
                 {primaryTag}
               </a>

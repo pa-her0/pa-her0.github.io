@@ -9,6 +9,10 @@
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check",
+    "new:post": "node scripts/new-content.mjs post",
+    "new:thought": "node scripts/new-content.mjs thought",
+    "organize:content": "node scripts/organize-content.mjs",
+    "publish:blog": "node scripts/publish-blog.mjs",
     "sync-thoughts": "node scripts/sync-thoughts.mjs",
     "migrate-thoughts": "node scripts/migrate-thoughts.mjs",
     "migrate-whalefall": "node scripts/migrate-whalefall.mjs",
@@ -89,6 +93,7 @@
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "twikoo": "1.7.15",
     "unist-util-visit": "^5.0.0",
     "vaul": "^1.1.2",
     "zod": "3.25.76"
