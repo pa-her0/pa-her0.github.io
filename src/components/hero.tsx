@@ -9,6 +9,16 @@ const phrases = [
   { prefix: "写下仍在发生的", highlight: "思考" },
 ]
 
+const heroImages = [
+  { src: "/hero-avatar.jpg", alt: "橘子角色在雪山前唱歌的插画" },
+  { src: "/hero-avatar-02.jpg", alt: "橘子角色站在蓝色阶梯上的插画" },
+  { src: "/hero-avatar-03.jpg", alt: "橘子角色演绎大白鲨电影的插画" },
+  { src: "/hero-avatar-04.jpg", alt: "橘子角色坐在复古座椅上的插画" },
+  { src: "/hero-avatar-05.jpg", alt: "橘子角色演绎肖申克的救赎电影的插画" },
+]
+
+const HERO_IMAGE_STORAGE_KEY = "jiely-home-hero-image"
+
 interface HeroProps {
   articleCount: number
   thoughtCount: number
@@ -17,6 +27,7 @@ interface HeroProps {
 
 export function Hero({ articleCount, thoughtCount, projectCount }: HeroProps) {
   const [mounted, setMounted] = useState(false)
+  const [heroImageIndex, setHeroImageIndex] = useState(0)
   const [phraseIndex, setPhraseIndex] = useState(0)
   const [displayText, setDisplayText] = useState("")
   const [isDeleting, setIsDeleting] = useState(false)
@@ -28,6 +39,15 @@ export function Hero({ articleCount, thoughtCount, projectCount }: HeroProps) {
 
   useEffect(() => {
     setMounted(true)
+
+    const previousIndex = Number.parseInt(sessionStorage.getItem(HERO_IMAGE_STORAGE_KEY) ?? "-1", 10)
+    const hasPreviousImage = Number.isInteger(previousIndex) && previousIndex >= 0 && previousIndex < heroImages.length
+    const nextIndex = hasPreviousImage
+      ? (previousIndex + 1) % heroImages.length
+      : 0
+
+    sessionStorage.setItem(HERO_IMAGE_STORAGE_KEY, String(nextIndex))
+    setHeroImageIndex(nextIndex)
   }, [])
 
   useEffect(() => {
@@ -217,8 +237,8 @@ export function Hero({ articleCount, thoughtCount, projectCount }: HeroProps) {
           }`}
         >
           <img
-            src="/hero-avatar.jpg"
-            alt="Jiely 与猫的插画"
+            src={heroImages[heroImageIndex].src}
+            alt={heroImages[heroImageIndex].alt}
             width={980}
             height={980}
             className="h-full w-full object-cover object-center transition-transform duration-700 ease-out hover:scale-[1.015] dark:brightness-[0.86]"
