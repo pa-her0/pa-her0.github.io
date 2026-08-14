@@ -141,7 +141,7 @@ export function Hero() {
           }`}
         >
           <p className="text-xs sm:text-sm tracking-[0.3em] text-muted-foreground uppercase mb-8">
-            Jiely · AI · Research · Blog
+            Jiely · 生活 · 学习
           </p>
 
           <h1 className="font-sans text-[min(10.5vw,3rem)] sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-foreground leading-[1.1] mb-8 min-h-[1.2em] whitespace-nowrap">
