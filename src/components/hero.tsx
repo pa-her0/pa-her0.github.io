@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 
 const phrases = [
-  { prefix: "探索 AI 的", highlight: "边界" },
-  { prefix: "构建多智能体", highlight: "系统" },
-  { prefix: "研究算法交易", highlight: "实践" },
-  { prefix: "记录学习与", highlight: "生活" },
+  { prefix: "让智能体学会", highlight: "协作" },
+  { prefix: "在市场噪声中", highlight: "寻找信号" },
+  { prefix: "把模型带进", highlight: "真实世界" },
+  { prefix: "写下仍在发生的", highlight: "思考" },
 ]
 
 export function Hero() {
