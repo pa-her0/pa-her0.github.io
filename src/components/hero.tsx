@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useEffect, useRef, useState, useCallback, type MouseEvent } from "react"
 
 const phrases = [
   { prefix: "让智能体学会", highlight: "协作" },
@@ -9,7 +9,13 @@ const phrases = [
   { prefix: "写下仍在发生的", highlight: "思考" },
 ]
 
-export function Hero() {
+interface HeroProps {
+  articleCount: number
+  thoughtCount: number
+  projectCount: number
+}
+
+export function Hero({ articleCount, thoughtCount, projectCount }: HeroProps) {
   const [mounted, setMounted] = useState(false)
   const [phraseIndex, setPhraseIndex] = useState(0)
   const [displayText, setDisplayText] = useState("")
@@ -122,7 +128,7 @@ export function Hero() {
     }
   }
 
-  const handleBrowseClick = useCallback((event: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleBrowseClick = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
     const target = document.getElementById("home-main")
     if (!target) return
@@ -133,64 +139,93 @@ export function Hero() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative min-h-[90vh] flex items-center justify-center px-6 bg-surface-subtle">
-      <div className="max-w-4xl mx-auto text-center">
+    <section ref={sectionRef} className="relative flex min-h-[calc(100svh-4rem)] items-center bg-surface-subtle px-6 py-14 sm:py-20 lg:py-24">
+      <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-12 lg:gap-16">
         <div
-          className={`transition-all duration-1000 ease-out ${
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          className={`lg:col-span-7 transition-all duration-1000 ease-out ${
+            mounted ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >
-          <p className="text-xs sm:text-sm tracking-[0.3em] text-muted-foreground uppercase mb-8">
-            Jiely · 生活 · 学习
+          <p className="mb-6 text-xs tracking-[0.28em] text-muted-foreground sm:text-sm">
+            JIELY · 生活 · 学习
           </p>
 
-          <h1 className="font-sans text-[min(10.5vw,3rem)] sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-foreground leading-[1.1] mb-8 min-h-[1.2em] whitespace-nowrap">
+          <h1
+            aria-live="polite"
+            className="mb-7 min-h-[2.35em] text-balance font-display-sans text-[clamp(2.65rem,6vw,5.25rem)] font-bold leading-[1.12] tracking-[-0.055em] text-foreground sm:min-h-[2.3em]"
+          >
             {renderText()}
-            <span
-              className="hero-cursor inline-block w-[0.08em] sm:w-[5px] md:w-[6px] lg:w-[7px] h-[0.9em] sm:h-[60px] md:h-[72px] lg:h-[96px] bg-foreground align-middle rounded-sm ml-2 -translate-y-1"
-            />
+            <span className="hero-cursor ml-2 inline-block h-[0.9em] w-[0.075em] -translate-y-[0.04em] rounded-sm bg-foreground align-middle" />
           </h1>
 
-          <blockquote className="max-w-xl mx-auto mb-10">
-            <p className="text-content-secondary text-base sm:text-lg leading-relaxed italic">
+          <blockquote className="mb-8 border-l border-border pl-5">
+            <p className="text-base italic leading-relaxed text-content-secondary sm:text-lg">
               「In the end, you have to save yourself.」
             </p>
-            <footer className="mt-2 text-sm text-muted-foreground/70">
-              —— Jiely
-            </footer>
+            <footer className="mt-2 text-sm text-muted-foreground/70">—— Jiely</footer>
           </blockquote>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="mb-10 flex flex-wrap items-center gap-4">
             <a
               href="#home-main"
               onClick={handleBrowseClick}
-              className="group flex items-center gap-2 px-8 py-3 bg-foreground text-background rounded-full font-medium text-sm hover:bg-foreground/90 transition-all duration-300"
+              className="group inline-flex min-w-36 items-center justify-center gap-2 rounded-full bg-foreground px-8 py-3.5 text-sm font-medium text-background transition-all duration-300 hover:-translate-y-0.5 hover:bg-foreground/90"
             >
               浏览文章
               <svg
-                className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </a>
             <a
               href="/about/"
-              className="px-8 py-3 border border-border rounded-full font-medium text-sm text-foreground hover:border-foreground/40 transition-all duration-300"
+              className="inline-flex min-w-32 items-center justify-center rounded-full border border-border px-8 py-3.5 text-sm font-medium text-foreground transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground/40"
             >
               关于我
             </a>
           </div>
-        </div>
-      </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-        <div className="w-px h-12 bg-gradient-to-b from-border to-transparent relative">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary animate-bounce" />
+          <div className="grid gap-8 border-t border-border pt-8 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end sm:gap-10">
+            <p className="max-w-md text-sm font-light leading-7 text-muted-foreground sm:text-[15px]">
+              在复杂系统中寻找清晰结构。这里记录人工智能、多智能体研究与算法实践，也保存仍在发生的学习和生活。
+            </p>
+            <div className="grid grid-cols-3 gap-6 sm:gap-8">
+              <a href="#home-main" onClick={handleBrowseClick} className="group min-w-14 text-center">
+                <strong className="block text-3xl font-light leading-none tabular-nums text-foreground">{articleCount}</strong>
+                <span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground group-hover:text-primary">Articles</span>
+              </a>
+              <a href="/thoughts/" className="group min-w-14 text-center">
+                <strong className="block text-3xl font-light leading-none tabular-nums text-foreground">{thoughtCount}</strong>
+                <span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground group-hover:text-primary">Thoughts</span>
+              </a>
+              <a href="/projects/" className="group min-w-14 text-center">
+                <strong className="block text-3xl font-light leading-none tabular-nums text-foreground">{projectCount}</strong>
+                <span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground group-hover:text-primary">Projects</span>
+              </a>
+            </div>
+          </div>
         </div>
+
+        <figure
+          className={`relative mx-auto aspect-[3/4] w-full max-w-[32rem] overflow-hidden rounded-xl border border-border bg-surface-subtle shadow-[0_2rem_5rem_rgba(0,0,0,0.08)] lg:col-span-5 transition-all delay-150 duration-1000 ease-out ${
+            mounted ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+          }`}
+        >
+          <img
+            src="/hero-avatar.jpg"
+            alt="Jiely 与猫的插画"
+            width={980}
+            height={980}
+            className="h-full w-full object-cover object-center transition-transform duration-700 ease-out hover:scale-[1.015] dark:brightness-[0.86]"
+            fetchPriority="high"
+          />
+          <figcaption className="sr-only">Jiely 的个人插画头像</figcaption>
+        </figure>
       </div>
     </section>
   )

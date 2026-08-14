@@ -5,6 +5,7 @@ import { Footer } from "@/components/footer"
 import SiteHeader from "@/components/site-header.astro"
 import { Hero } from "@/components/hero"
 import { PAGE_SIZE } from "@/lib/constants"
+import { projects } from "@/data/projects"
 import { buildSidebarMeta, getSortedPosts, toPostMeta } from "@/lib/posts"
 import { getSortedThoughts, toThoughtPreview } from "@/lib/thoughts"
 
@@ -21,7 +22,12 @@ const thoughtPreviews = thoughts.map((thought) => toThoughtPreview(thought)).sli
   <div class="min-h-screen bg-background dark:bg-surface-subtle">
     <SiteHeader />
     <main>
-      <Hero client:idle />
+      <Hero
+        client:idle
+        articleCount={allArticles.length}
+        thoughtCount={thoughts.length}
+        projectCount={projects.length}
+      />
       <section id="home-main" class="scroll-mt-24">
         <ArticleList
           client:visible
