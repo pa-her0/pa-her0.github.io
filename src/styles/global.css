@@ -7,7 +7,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Red & White Apple-inspired theme */
+  /* Original Vermilion red & warm paper theme */
   --content-delay: 150ms;
   --background: oklch(0.994 0.002 85); /* 极淡暖白纸感 */
   --foreground: oklch(0.15 0 0);
@@ -122,6 +122,32 @@
   --math-display-shadow: 0 1px 0 oklch(0.08 0 0 / 0.18);
 }
 
+/* Lulu orange accent. Light/dark mode remains independent from accent choice. */
+:root[data-accent="orange"] {
+  --primary: oklch(0.68 0.19 65);
+  --primary-foreground: oklch(0.15 0.02 65);
+  --secondary: oklch(0.97 0.015 75);
+  --accent: oklch(0.68 0.19 65);
+  --accent-foreground: oklch(0.15 0.02 65);
+  --ring: oklch(0.68 0.19 65);
+  --chart-1: oklch(0.68 0.19 65);
+  --sidebar-primary: oklch(0.68 0.19 65);
+  --sidebar-primary-foreground: oklch(0.15 0.02 65);
+  --sidebar-ring: oklch(0.68 0.19 65);
+}
+
+:root.dark[data-accent="orange"] {
+  --primary: oklch(0.78 0.15 65);
+  --primary-foreground: oklch(0.14 0.02 65);
+  --accent: oklch(0.74 0.16 65);
+  --accent-foreground: oklch(0.14 0.02 65);
+  --ring: oklch(0.78 0.15 65);
+  --chart-1: oklch(0.78 0.15 65);
+  --sidebar-primary: oklch(0.78 0.15 65);
+  --sidebar-primary-foreground: oklch(0.14 0.02 65);
+  --sidebar-ring: oklch(0.78 0.15 65);
+}
+
 @theme inline {
   --font-sans: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --font-display-sans: "HarmonyOS Sans SC", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -230,9 +256,31 @@ html[data-prefilter="1"] .article-list-root {
   background-color: oklch(0.55 0.22 25 / 0.2);
 }
 
+:root[data-accent="orange"] ::selection {
+  background-color: oklch(0.78 0.15 65 / 0.32);
+}
+
 .dark ::selection {
   background-color: oklch(0.45 0.08 250 / 0.4) !important;
   color: oklch(0.95 0 0) !important;
+}
+
+:root.dark[data-accent="orange"] ::selection {
+  background-color: oklch(0.78 0.15 65 / 0.38) !important;
+  color: oklch(0.14 0.02 65) !important;
+}
+
+.accent-style-option {
+  opacity: 0.42;
+  transform: scale(0.88);
+}
+
+:root[data-accent="orange"] .accent-style-option[data-accent-option="orange"],
+:root[data-accent="red"] .accent-style-option[data-accent-option="red"] {
+  background: var(--card);
+  box-shadow: 0 1px 4px oklch(0 0 0 / 0.12);
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* Markdown extensions */

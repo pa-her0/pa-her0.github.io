@@ -97,12 +97,22 @@ const resolvedTwitterDescription = twitterDescription || description
           const theme = stored || (prefersDark ? 'dark' : 'light');
           document.documentElement.classList.toggle('dark', theme === 'dark');
         };
+        const applyAccent = () => {
+          const stored = localStorage.getItem('accent-theme');
+          const accent = stored === 'red' ? 'red' : 'orange';
+          document.documentElement.dataset.accent = accent;
+          document.querySelectorAll('[data-accent-option]').forEach((button) => {
+            button.setAttribute('aria-pressed', String(button.getAttribute('data-accent-option') === accent));
+          });
+        };
         applyTheme();
+        applyAccent();
         window.__applyTheme = applyTheme;
+        window.__applyAccent = applyAccent;
       })();
     </script>
     <script is:inline>
-      // 主题切换按钮（无水合也可用）
+      // 明暗与配色切换按钮（无水合也可用）
       (function() {
         if (window.__themeToggleBound) return;
         window.__themeToggleBound = true;
@@ -112,10 +122,23 @@ const resolvedTwitterDescription = twitterDescription || description
           localStorage.setItem('theme', next);
           document.documentElement.classList.toggle('dark', next === 'dark');
         };
+        const setAccent = (accent) => {
+          const next = accent === 'red' ? 'red' : 'orange';
+          localStorage.setItem('accent-theme', next);
+          document.documentElement.dataset.accent = next;
+          if (typeof window.__applyAccent === 'function') window.__applyAccent();
+        };
         window.__toggleTheme = toggleTheme;
+        window.__setAccent = setAccent;
         document.addEventListener('click', (event) => {
           const target = event.target;
           if (!(target instanceof Element)) return;
+          const accentButton = target.closest('[data-accent-option]');
+          if (accentButton) {
+            event.preventDefault();
+            setAccent(accentButton.getAttribute('data-accent-option'));
+            return;
+          }
           const button = target.closest('[data-theme-toggle]');
           if (!button) return;
           event.preventDefault();
@@ -145,10 +168,14 @@ const resolvedTwitterDescription = twitterDescription || description
       // View Transitions 页面切换后重应用主题
       (function() {
         const applyTheme = window.__applyTheme
-        if (typeof applyTheme !== "function") return
-        document.addEventListener("astro:page-load", applyTheme)
-        document.addEventListener("astro:after-swap", applyTheme)
-        window.addEventListener("pageshow", applyTheme)
+        const applyAccent = window.__applyAccent
+        const applyAllThemes = () => {
+          if (typeof applyTheme === "function") applyTheme()
+          if (typeof applyAccent === "function") applyAccent()
+        }
+        document.addEventListener("astro:page-load", applyAllThemes)
+        document.addEventListener("astro:after-swap", applyAllThemes)
+        window.addEventListener("pageshow", applyAllThemes)
       })()
     </script>
     <script is:inline>

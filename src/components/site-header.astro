@@ -1,6 +1,7 @@
 ---
 import { HeaderSearch } from "@/components/header-search"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { AccentToggle } from "@/components/accent-toggle"
 
 const navItems: { name: string; href: string; external?: boolean }[] = [
   { name: "首页", href: "/#home-main" },
@@ -44,13 +45,15 @@ const navItems: { name: string; href: string; external?: boolean }[] = [
       ))}
     </nav>
 
-    <div class="hidden md:flex items-center gap-4 justify-self-end">
+    <div class="hidden md:flex items-center gap-3 justify-self-end">
       <HeaderSearch client:idle />
+      <AccentToggle />
       <ThemeToggle />
     </div>
 
     <div class="flex items-center gap-1 md:hidden col-start-3 justify-self-end">
       <HeaderSearch client:idle />
+      <AccentToggle />
       <ThemeToggle />
       <button
         id="mobile-menu-toggle"
