@@ -68,7 +68,8 @@ try {
         throw "pnpm is not installed or is not available in PATH."
     }
 
-    Invoke-Native git rev-parse --is-inside-work-tree | Out-Null
+    & git rev-parse --is-inside-work-tree | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Not inside a git work tree." }
     $branch = Get-GitValue branch --show-current
     if ($branch -ne "main") {
         throw "Current branch is '$branch'. Switch to main before publishing."
@@ -120,12 +121,15 @@ try {
             Invoke-Native pnpm build
         }
 
-        Invoke-Native git add -A
-        Invoke-Native git diff --cached --check
+        & git add -A
+        if ($LASTEXITCODE -ne 0) { throw "git add -A failed ($LASTEXITCODE)." }
+        & git @('diff', '--cached', '--check')
+        if ($LASTEXITCODE -ne 0) { throw "Staged changes contain whitespace errors." }
 
         & git diff --cached --quiet
         if ($LASTEXITCODE -ne 0) {
-            Invoke-Native git commit -m $Message
+            & git commit -m $Message
+            if ($LASTEXITCODE -ne 0) { throw "git commit failed." }
         }
     }
     # Re-check immediately before pushing so neither remote is overwritten.
