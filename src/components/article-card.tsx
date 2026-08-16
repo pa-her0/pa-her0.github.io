@@ -1,7 +1,7 @@
 "use client"
 
 import type { CSSProperties } from "react"
-import { Calendar, Folder, Hash, ChevronRight } from "lucide-react"
+import { Calendar, Folder, Hash, ChevronRight, Clock } from "lucide-react"
 import type { ArticleMeta } from "./article-list"
 import { cn } from "@/lib/utils"
 
@@ -73,6 +73,12 @@ export function ArticleCard({
               <Calendar className="w-3.5 h-3.5" />
               {article.date}
             </span>
+            {article.updated && article.updated !== article.date && (
+              <span className="flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" />
+                {article.updated}
+              </span>
+            )}
             <a href={categoryHref} className="pointer-events-auto inline-flex items-center gap-1.5 hover:text-primary transition-colors">
               <Folder className="w-3.5 h-3.5" />
               {article.categoryLabel}

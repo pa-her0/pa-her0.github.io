@@ -23,6 +23,7 @@ export type ArticleMeta = {
   categoryLabel: string
   tags: string[]
   date: string
+  updated?: string
   wordCount?: number
   readTime?: string
   image?: string

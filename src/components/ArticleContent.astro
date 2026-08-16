@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content"
 import { TableOfContents } from "./table-of-contents"
+import { getGitModifiedDate } from "@/lib/git-dates"
 
 interface Props {
   post: CollectionEntry<"posts">
@@ -13,6 +14,9 @@ const { post, Content, words, minutes } = Astro.props as Props
 const hasSlot = Astro.slots.has("default")
 const data = post.data
 const formattedDate = data.published?.toISOString().slice(0, 10)
+const effectiveUpdated = getGitModifiedDate(post.id) ?? data.updated ?? undefined
+const formattedUpdated = effectiveUpdated?.toISOString().slice(0, 10)
+const showUpdated = formattedUpdated && formattedUpdated !== formattedDate
 const tags = data.tags ?? []
 const categoryLabel = data.category?.toString().trim() || "未分类"
 const categoryHref = `/?category=${encodeURIComponent(categoryLabel)}#home-main`
@@ -49,6 +53,14 @@ const primaryTagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#hom
           </svg>
           {formattedDate}
         </span>
+        {showUpdated && (
+          <span class="flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+            </svg>
+            {formattedUpdated}
+          </span>
+        )}
         <a href={categoryHref} class="inline-flex items-center gap-2 hover:text-primary transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10" />
