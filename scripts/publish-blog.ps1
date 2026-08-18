@@ -114,11 +114,10 @@ try {
             }
         }
 
+        # Type-check first so a broken tree never becomes a commit.
         if (-not $SkipChecks) {
             Write-Host "`nRunning pnpm check..." -ForegroundColor Cyan
             Invoke-Native pnpm check
-            Write-Host "`nRunning pnpm build..." -ForegroundColor Cyan
-            Invoke-Native pnpm build
         }
 
         & git add -A
@@ -126,10 +125,27 @@ try {
         & git @('diff', '--cached', '--check')
         if ($LASTEXITCODE -ne 0) { throw "Staged changes contain whitespace errors." }
 
+        $committed = $false
         & git diff --cached --quiet
         if ($LASTEXITCODE -ne 0) {
             & git commit -m $Message
             if ($LASTEXITCODE -ne 0) { throw "git commit failed." }
+            $committed = $true
+        }
+
+        # Build AFTER commit so git-based updated-date detection sees this commit.
+        if (-not $SkipChecks) {
+            try {
+                Write-Host "`nRunning pnpm build..." -ForegroundColor Cyan
+                Invoke-Native pnpm build
+            }
+            catch {
+                if ($committed) {
+                    Write-Host "`nBuild failed after commit. Rolling back with 'git reset --soft HEAD~1' (working tree preserved)..." -ForegroundColor Yellow
+                    & git reset --soft HEAD~1
+                }
+                throw
+            }
         }
     }
     # Re-check immediately before pushing so neither remote is overwritten.
