@@ -107,6 +107,14 @@ $$
 
 其中，$L_1$ 范数是各元素绝对值之和，也称为**曼哈顿范数**；$L_2$ 范数对应欧几里得距离；$L_{\infty}$ 范数表示向量中绝对值最大的元素。
 
+## Frobenuius 范数
+$$
+||A||_F = \sqrt{\sum_i\sum_ja_{ij}^2}
+$$
+
+
+
+
 # 特殊类型的矩阵
 ## 对角矩阵
 其实就是除了对角，其他元素都为0
@@ -247,7 +255,7 @@ $$
 b \in Col(A)
 $$
 ,如果要求 任意$b \in \mathbb{R}^m$,Ax = b 都有解，必须满足$Col(A) = \mathbb{R}^m$.
-为什么要求 n $\beq$ m, **因为 $\mathbb{R}^m$ 本身是一个 m 维空间，至少需要 m 个独立方向(因为b 相当于 n 个 m 维度的列向量线性组合)**，并且线性无关才行。
+为什么要求 n > m, **因为 $\mathbb{R}^m$ 本身是一个 m 维空间，至少需要 m 个独立方向(因为b 相当于 n 个 m 维度的列向量线性组合)**，并且线性无关才行。
 
 #### 线性相关要求：
 一组 向量: $v_1,....,v_n$,
@@ -263,6 +271,70 @@ $$
 
 # 雅可比矩阵(Jacobian)
 **一阶导数矩阵**，其实要理解这个 雅可比矩阵，我们应该考虑**极限 + 导数**，在一个 **极小的位置，F(x) 对 x 的影响 可以看成 线性变换**
+$$
+\Delta y \approx J\Delta x
+$$
+
+比如输入 $X \in \mathbb{R}^n$:
+$$
+x=
+\begin{bmatrix}
+x_1\\
+x_2
+\end{bmatrix}
+$$
+然后输出结果是$Y \in \mathbb{R}^m$:
+$$
+y=
+\begin{bmatrix}
+y_1\\
+y_2\\
+y_3
+\end{bmatrix}
+$$
+,**Jacobian 就是把所有偏导数组成矩阵**,相当于**第 j 个输出，对第 i 个输入端变化敏感度**,
+$$
+J=\frac{\partial y}{\partial x} \quad, J \in \mathbb{R}^{m \times n}
+$$
+矩阵的展开形式:
+$$
+J=
+\begin{bmatrix}
+\frac{\partial y_1}{\partial x_1}
+&
+\frac{\partial y_1}{\partial x_2}
+&
+\cdots
+&
+\frac{\partial y_1}{\partial x_n}
+\\
+\frac{\partial y_2}{\partial x_1}
+&
+\frac{\partial y_2}{\partial x_2}
+&
+\cdots
+&
+\frac{\partial y_2}{\partial x_n}
+\\
+\vdots
+&
+\vdots
+&
+\ddots
+&
+\vdots
+\\
+\frac{\partial y_m}{\partial x_1}
+&
+\frac{\partial y_m}{\partial x_2}
+&
+\cdots
+&
+\frac{\partial y_m}{\partial x_n}
+\end{bmatrix}
+$$
+
+
 # Hessian 矩阵(Hessian)
 **二阶导数矩阵**，
 [参考资料](https://paul.pub/the-matrix/#id-%E5%AF%B9%E7%A7%B0%E7%9F%A9%E9%98%B5)

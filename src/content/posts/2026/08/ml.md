@@ -133,7 +133,68 @@ SGD:
 $$
 \theta^{t + 1} = \theta^t - \alpha_B \sum_{j \in B}(h_\theta(x^{(j)}) - y^{(j)})x^{(j)}
 $$
+#### 正式推导
+设计
+$$
+X\theta =
+\begin{pmatrix}
+h(x^{(1)})\\
+h(x^{(2)})\\
+\vdots\\
+h(x^{(n)})
+\end{pmatrix}
+$$
+引入 如上的 损失函数设:
+$$
+J(\theta)=\frac{1}{2}(X\theta-y)^T(X\theta-y)
+$$
+这个才是 进行 代码实现中的设计，一般都是通过矩阵的形式实现,通过引入 导数矩阵:
+$$
+\nabla_A f(A)
+=
+\begin{pmatrix}
+\frac{\partial}{\partial a_{11}}f(A)&
+\frac{\partial}{\partial a_{12}}f(A)&
+\cdots&
+\frac{\partial}{\partial a_{1d}}f(A)
+\\
+\frac{\partial}{\partial a_{21}}f(A)&
+\frac{\partial}{\partial a_{22}}f(A)&
+\cdots&
+\frac{\partial}{\partial a_{2d}}f(A)
+\\
+\vdots&\vdots&\ddots&\vdots
+\\
+\frac{\partial}{\partial a_{n1}}f(A)&
+\frac{\partial}{\partial a_{n2}}f(A)&
+\cdots&
+\frac{\partial}{\partial a_{nd}}f(A)
+\end{pmatrix}
+$$
 
+在这个部分，我么能不能知道 最优点 的位置:
+引入 $\nabla_{\theta} J(\theta)$
+所以:
+$$
+\nabla_{\theta}J(\theta) = \nabla_{\theta}\frac{1}{2}(X \theta - y)^{T}(X \theta - y)
+$$
+根据拆分合并得到的:
+$$
+J(\theta) = \frac{1}{2}(\theta^TX^TX\theta - 2 \theta^TX^Ty + y^Ty)
+$$
+矩阵求导后的结果:
+$$
+\nabla_{\theta}J(\theta) = X^TX\theta - X^Ty
+$$
+解出$\theta$
+$$
+\theta = (X^TX)^{-1}X^T
+$$
+
+
+
+## 分类问题
+跟线性回归不同，线性回归的数据为连续数据，分类问题的数据可能是离散的数据
 
 
 ### 临时插话
