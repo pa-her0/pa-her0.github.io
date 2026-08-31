@@ -25,6 +25,26 @@ const commentPath =
   data-comment-path={commentPath}
   data-page-title={title}
 >
+  {variant === 'guestbook' && (
+    <section
+      class="guestbook-notes"
+      data-guestbook-notes
+      aria-labelledby="guestbook-notes-title"
+      aria-live="polite"
+      hidden
+    >
+      <div class="guestbook-notes__heading">
+        <div>
+          <p>SELECTED NOTES</p>
+          <h2 id="guestbook-notes-title">留言拾光</h2>
+        </div>
+        <p>从留言板里，摘下几句短短的话。</p>
+      </div>
+      <div class="guestbook-notes__board">
+        <div class="guestbook-notes__grid" data-guestbook-notes-grid></div>
+      </div>
+    </section>
+  )}
   <h2 class="pure-twikoo__title">评论</h2>
   <div id="tcomment" aria-live="polite"></div>
   <p class="pure-twikoo__error" data-twikoo-error hidden>
@@ -273,6 +293,138 @@ const commentPath =
     }
   }
 
+  function getGuestbookNoteData(comment) {
+    const main = Array.from(comment.children).find((child) =>
+      child.classList?.contains('tk-main'),
+    )
+    const content = main?.querySelector(':scope > .tk-content')
+    if (!content) return null
+
+    const text = (content.textContent || '')
+      .trim()
+      .replace(/^回复\s*@[^:：]+[:：]\s*/, '')
+      .replace(/^\s*#+\s*/, '')
+      .replace(/\|\|/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+    const length = Array.from(text).length
+
+    if (length < 2 || length > 36 || /^[A-Za-z0-9]{16,}$/.test(text)) {
+      return null
+    }
+
+    const nick =
+      main.querySelector(':scope > .tk-row .tk-nick')?.textContent?.trim() ||
+      '访客'
+    const time = main.querySelector(':scope > .tk-row time')
+    const datetime = time?.getAttribute('datetime') || ''
+    const fallbackDate = time?.textContent?.trim() || ''
+
+    return {
+      id: comment.id || `${nick}-${datetime}-${text}`,
+      text,
+      nick,
+      datetime,
+      fallbackDate,
+    }
+  }
+
+  function formatGuestbookNoteTime(datetime, fallbackDate) {
+    const date = new Date(datetime)
+    if (!datetime || Number.isNaN(date.getTime())) return fallbackDate
+
+    const pad = (value) => String(value).padStart(2, '0')
+    return [
+      `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())}`,
+      `${pad(date.getHours())}:${pad(date.getMinutes())}`,
+    ].join(' · ')
+  }
+
+  function createGuestbookNote(data, index) {
+    const note = document.createElement('article')
+    note.className = 'guestbook-note'
+    note.dataset.noteIndex = String(index)
+
+    const fastening = document.createElement('span')
+    fastening.className = 'guestbook-note__fastening'
+    fastening.setAttribute('aria-hidden', 'true')
+
+    const message = document.createElement('p')
+    message.className = 'guestbook-note__message'
+    message.textContent = data.text
+
+    const meta = document.createElement('footer')
+    meta.className = 'guestbook-note__meta'
+
+    const author = document.createElement('span')
+    author.className = 'guestbook-note__author'
+    author.textContent = `— ${data.nick}`
+
+    const time = document.createElement('time')
+    time.className = 'guestbook-note__time'
+    time.dateTime = data.datetime
+    time.textContent = formatGuestbookNoteTime(
+      data.datetime,
+      data.fallbackDate,
+    )
+
+    meta.append(author, time)
+    note.append(fastening, message, meta)
+    return note
+  }
+
+  function renderGuestbookNotes(section) {
+    const notesSection = section.querySelector('[data-guestbook-notes]')
+    const grid = section.querySelector('[data-guestbook-notes-grid]')
+    if (!notesSection || !grid) return
+
+    const seen = new Set()
+    const notes = Array.from(section.querySelectorAll('.tk-comment'))
+      .map(getGuestbookNoteData)
+      .filter((note) => {
+        if (!note || seen.has(note.id)) return false
+        seen.add(note.id)
+        return true
+      })
+      .slice(0, 9)
+
+    if (!notes.length) return
+
+    const signature = notes
+      .map((note) => `${note.id}:${note.text}`)
+      .join('|')
+    if (grid.dataset.notesSignature === signature) return
+
+    grid.dataset.notesSignature = signature
+    grid.replaceChildren(
+      ...notes.map((note, index) => createGuestbookNote(note, index)),
+    )
+    notesSection.hidden = false
+  }
+
+  function observeGuestbookNotes(section) {
+    if (
+      !section.querySelector('[data-guestbook-notes]') ||
+      section.dataset.guestbookNotesObserved === 'true'
+    ) {
+      return
+    }
+
+    section.dataset.guestbookNotesObserved = 'true'
+    let animationFrame = 0
+    const update = () => {
+      if (animationFrame) return
+      animationFrame = window.requestAnimationFrame(() => {
+        animationFrame = 0
+        renderGuestbookNotes(section)
+      })
+    }
+
+    update()
+    const observer = new MutationObserver(update)
+    observer.observe(section, { childList: true, subtree: true })
+  }
+
   async function enhanceTwikooEmojis(section) {
     if (section.dataset.emojiEnhanced === 'true') return
     section.dataset.emojiEnhanced = 'true'
@@ -317,6 +469,7 @@ const commentPath =
         lang: 'zh-CN',
       })
       section.dataset.twikooInitialized = 'true'
+      observeGuestbookNotes(section)
       await enhanceTwikooEmojis(section)
     } catch (loadError) {
       console.error('Twikoo initialization failed:', loadError)
@@ -360,6 +513,204 @@ const commentPath =
     font-size: 1.4rem;
     font-weight: 600;
     letter-spacing: -0.02em;
+  }
+
+  .guestbook-notes {
+    margin: 0 0 3.5rem;
+  }
+
+  .guestbook-notes[hidden] {
+    display: none;
+  }
+
+  .guestbook-notes__heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 1.15rem;
+  }
+
+  .guestbook-notes__heading > div > p {
+    margin: 0 0 0.3rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+  }
+
+  .guestbook-notes__heading h2 {
+    margin: 0;
+    color: var(--foreground);
+    font-family: var(--font-serif-cn);
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  .guestbook-notes__heading > p {
+    margin: 0 0 0.2rem;
+    color: var(--muted-foreground);
+    font-size: 0.82rem;
+  }
+
+  .guestbook-notes__board {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, var(--border) 78%, transparent);
+    border-radius: calc(var(--radius) * 1.85);
+    background:
+      radial-gradient(circle at 8% 12%, color-mix(in oklab, #f4b9a8 15%, transparent), transparent 28%),
+      radial-gradient(circle at 92% 5%, color-mix(in oklab, #b8dcef 18%, transparent), transparent 28%),
+      color-mix(in oklab, var(--muted) 52%, var(--background));
+    padding: clamp(1.25rem, 4vw, 2.35rem) clamp(1rem, 3.5vw, 2rem);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, white 58%, transparent),
+      0 20px 52px color-mix(in oklab, var(--foreground) 5%, transparent);
+  }
+
+  .guestbook-notes__board::before {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--foreground) 3%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, var(--foreground) 3%, transparent) 1px, transparent 1px);
+    background-size: 22px 22px;
+    content: '';
+    pointer-events: none;
+    mask-image: linear-gradient(to bottom, black, transparent 82%);
+  }
+
+  .guestbook-notes__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(0.8rem, 2vw, 1.25rem);
+    align-items: start;
+  }
+
+  .guestbook-notes :global(.guestbook-note) {
+    --note-background: #e5f4fb;
+    --note-rotation: -1.8deg;
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 10.4rem;
+    flex-direction: column;
+    border: 1px solid color-mix(in oklab, #53606a 9%, transparent);
+    border-radius: 0.18rem 0.18rem 0.35rem 0.25rem;
+    background: var(--note-background);
+    padding: 2rem 0.9rem 0.85rem;
+    color: #303338;
+    box-shadow:
+      0 1px 1px rgba(55, 47, 42, 0.07),
+      0 10px 18px rgba(63, 56, 52, 0.12);
+    transform: rotate(var(--note-rotation));
+    transform-origin: 50% 8%;
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .guestbook-notes :global(.guestbook-note:nth-child(2n)) {
+    --note-background: #fce8e9;
+    --note-rotation: 1.4deg;
+  }
+
+  .guestbook-notes :global(.guestbook-note:nth-child(3n)) {
+    --note-background: #fff3cf;
+    --note-rotation: -2.6deg;
+  }
+
+  .guestbook-notes :global(.guestbook-note:nth-child(4n)) {
+    --note-background: #eee8fb;
+    --note-rotation: 2.1deg;
+  }
+
+  .guestbook-notes :global(.guestbook-note:nth-child(5n)) {
+    --note-background: #e6f4ec;
+    --note-rotation: 2.8deg;
+  }
+
+  .guestbook-notes :global(.guestbook-note:hover) {
+    z-index: 2;
+    box-shadow:
+      0 2px 2px rgba(55, 47, 42, 0.06),
+      0 16px 28px rgba(63, 56, 52, 0.18);
+    transform: translateY(-0.28rem) rotate(0deg);
+  }
+
+  .guestbook-notes :global(.guestbook-note__fastening) {
+    position: absolute;
+    top: 0.35rem;
+    left: 50%;
+    width: 0.85rem;
+    height: 0.85rem;
+    border: 1px solid rgba(52, 73, 91, 0.16);
+    border-radius: 999px;
+    background: #598eb0;
+    box-shadow:
+      inset -0.12rem -0.12rem 0.16rem rgba(25, 51, 68, 0.22),
+      0.08rem 0.22rem 0.2rem rgba(49, 55, 58, 0.22);
+    transform: translateX(-50%);
+  }
+
+  .guestbook-notes :global(.guestbook-note__fastening::after) {
+    position: absolute;
+    top: 0.72rem;
+    left: 50%;
+    width: 1px;
+    height: 0.7rem;
+    background: rgba(65, 75, 82, 0.28);
+    content: '';
+    transform: translateX(-50%) rotate(7deg);
+    transform-origin: top;
+  }
+
+  .guestbook-notes :global(.guestbook-note:nth-child(3n + 2) .guestbook-note__fastening) {
+    top: -0.18rem;
+    width: 2.7rem;
+    height: 0.62rem;
+    border: 0;
+    border-radius: 0.05rem;
+    background: rgba(229, 198, 129, 0.62);
+    box-shadow: 0 1px 2px rgba(74, 61, 43, 0.12);
+    transform: translateX(-50%) rotate(-2deg);
+  }
+
+  .guestbook-notes :global(.guestbook-note:nth-child(3n + 2) .guestbook-note__fastening::after) {
+    display: none;
+  }
+
+  .guestbook-notes :global(.guestbook-note__message) {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-family: var(--font-serif-cn);
+    font-size: clamp(0.86rem, 1.5vw, 0.98rem);
+    line-height: 1.7;
+  }
+
+  .guestbook-notes :global(.guestbook-note__meta) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    margin-top: auto;
+    padding-top: 0.85rem;
+    color: rgba(48, 51, 56, 0.58);
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    line-height: 1.45;
+  }
+
+  .guestbook-notes :global(.guestbook-note__author) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .guestbook-notes :global(.guestbook-note__time) {
+    font-variant-numeric: tabular-nums;
   }
 
   .pure-twikoo__error {
@@ -765,6 +1116,32 @@ const commentPath =
       margin-top: 2.25rem;
     }
 
+    .guestbook-notes {
+      margin-bottom: 2.75rem;
+    }
+
+    .guestbook-notes__heading {
+      display: block;
+    }
+
+    .guestbook-notes__heading > p {
+      margin-top: 0.45rem;
+    }
+
+    .guestbook-notes__board {
+      padding: 1.35rem 0.85rem;
+    }
+
+    .guestbook-notes__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem 0.7rem;
+    }
+
+    .guestbook-notes :global(.guestbook-note) {
+      min-height: 9.8rem;
+      padding: 1.85rem 0.75rem 0.75rem;
+    }
+
     :global(.pure-twikoo .tk-submit) {
       border-radius: calc(var(--radius) * 1.15);
       padding: 0.7rem 0.8rem 0.6rem;
@@ -803,6 +1180,18 @@ const commentPath =
 
     :global(.pure-twikoo .tk-submit-action-icon.__markdown::after) {
       content: 'Markdown';
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 900px) {
+    .guestbook-notes__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .guestbook-notes :global(.guestbook-note) {
+      transition: none;
     }
   }
 </style>

@@ -10,105 +10,221 @@ interface Props {
 }
 
 const { items } = Astro.props
-
-// 按年份分组
 const groupedByYear = items.reduce(
-  (acc, item) => {
+  (groups, item) => {
     const year = item.date.slice(0, 4)
-    if (!acc[year]) {
-      acc[year] = []
-    }
-    acc[year].push(item)
-    return acc
+    ;(groups[year] ??= []).push(item)
+    return groups
   },
   {} as Record<string, TimelineItem[]>,
 )
-
-// 按年份降序排列
 const years = Object.keys(groupedByYear).sort((a, b) => Number(b) - Number(a))
-
-// 格式化日期显示（月-日）
-const formatDate = (dateStr: string) => {
-  const [, month, day] = dateStr.split("-")
-  return `${month}-${day}`
+const formatDate = (date: string) => {
+  const [, month, day] = date.split("-")
+  return `${month}.${day}`
 }
 ---
 
-<section class="timeline-section py-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    <!-- 页面标题 -->
-    <div class="mb-12 onload-animation" style="animation-delay: 50ms;">
-      <span class="text-primary text-sm font-medium tracking-wide uppercase mb-2 block">
-        Timeline
-      </span>
-      <h1 class="font-serif text-3xl sm:text-4xl font-bold text-foreground">
-        文章归档
-      </h1>
-      <p class="mt-3 text-muted-foreground font-serif">
-        共 {items.length} 篇文章
-      </p>
-    </div>
+<section class="timeline-section" data-flight-timeline>
+  <div class="timeline-shell">
+    <header class="timeline-intro onload-animation">
+      <div class="timeline-kicker">
+        <span>03 / ARCHIVE</span>
+        <span>FLIGHT PLAN</span>
+      </div>
+      <div class="timeline-heading-row">
+        <h1>文章<em>航线</em></h1>
+        <p><strong>{items.length}</strong> 篇记录，沿时间向下飞行</p>
+      </div>
+      <div class="departure" aria-hidden="true">
+        <span class="departure-label">DEPARTURE</span>
+        <svg class="departure-route" viewBox="0 0 900 170" preserveAspectRatio="none">
+          <path class="route-base" d="M 8 136 C 164 138, 205 30, 382 50 C 542 68, 635 150, 892 72"></path>
+          <path class="route-lit" d="M 8 136 C 164 138, 205 30, 382 50 C 542 68, 635 150, 892 72" pathLength="1"></path>
+        </svg>
+        <span class="departure-dot"></span>
+      </div>
+    </header>
 
-    <!-- 时间线 -->
-    <div class="timeline">
-      {
-        years.map((year, yearIndex) => (
-          <div
-            class="year-group mb-8 onload-animation"
-            style={`animation-delay: ${100 + yearIndex * 50}ms;`}
-          >
-            {/* 年份标题 */}
-            <div class="year-header flex items-baseline gap-4 mb-6">
-              <span class="text-2xl font-display-sans font-semibold text-foreground leading-none">
-                {year}
-              </span>
-              <span class="text-sm text-muted-foreground">
-                {groupedByYear[year].length} 篇
-              </span>
-              <div class="flex-1 h-px bg-border" />
+    <div class="flight-track" data-flight-track>
+      <div class="flight-rail" aria-hidden="true"><span class="flight-rail-progress"></span></div>
+      <div class="flight-plane" data-flight-plane aria-hidden="true">
+        <span class="plane-halo"></span>
+        <svg viewBox="0 0 32 32" role="presentation">
+          <path d="M15.9 2.3c1.1 0 2 .9 2 2v7.4l9.5 5.9v2.8l-9.5-3.1v7.1l3 2.1v2.2l-5-1.5-5 1.5v-2.2l3-2.1v-7.1l-9.5 3.1v-2.8l9.5-5.9V4.3c0-1.1.9-2 2-2Z"></path>
+        </svg>
+      </div>
+
+      <div class="flight-years">
+        {years.map((year, yearIndex) => (
+          <section class="year-group" data-flight-node>
+            <div class="year-marker" aria-hidden="true"><span class="year-dot"></span></div>
+            <div class="year-meta">
+              <span class="year-index">{String(yearIndex + 1).padStart(2, "0")}</span>
+              <h2>{year}</h2>
+              <span>{groupedByYear[year].length} ARTICLES</span>
             </div>
-
-            {/* 该年份的文章列表 */}
-            <ul class="article-list space-y-2 pl-6 border-l border-border/40">
+            <ol class="article-list">
               {groupedByYear[year].map((item, itemIndex) => (
-                <li
-                  class="article-item onload-animation"
-                  style={`animation-delay: ${150 + yearIndex * 50 + itemIndex * 30}ms;`}
-                >
-                  <a
-                    href={`/posts/${item.slug}/`}
-                    class="article-link group flex items-baseline gap-4 py-1.5 px-3 -ml-3 rounded-lg transition-colors duration-200 hover:bg-muted/50"
-                  >
-                    {/* 日期 */}
-                    <time class="date text-sm text-muted-foreground font-mono shrink-0 w-14">
-                      {formatDate(item.date)}
-                    </time>
-
-                    {/* 标题 */}
-                    <span class="title font-serif font-semibold text-foreground group-hover:text-primary transition-colors duration-200 leading-relaxed">
-                      {item.title}
-                    </span>
+                <li class="article-item" data-flight-node>
+                  <span class="article-dot" aria-hidden="true"></span>
+                  <a href={`/posts/${item.slug}/`} data-astro-prefetch="hover">
+                    <span class="article-sequence">[{String(yearIndex + 1).padStart(2, "0")}.{String(itemIndex + 1).padStart(2, "0")}]</span>
+                    <time datetime={item.date}>{formatDate(item.date)}</time>
+                    <strong>{item.title}</strong>
+                    <span class="article-arrow" aria-hidden="true">→</span>
                   </a>
                 </li>
               ))}
-            </ul>
-          </div>
-        ))
-      }
+            </ol>
+          </section>
+        ))}
+        <div class="arrival" data-flight-node>
+          <span class="arrival-dot" aria-hidden="true"></span>
+          <div><span>ARRIVAL / 仍在继续</span><p>下一段旅程，正在路上。</p></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<style>
-  /* 响应式调整 */
-  @media (max-width: 640px) {
-    .article-link {
-      flex-direction: column;
-      gap: 0.25rem;
+<script>
+  const setupFlightTimeline = () => {
+    const root = document.querySelector<HTMLElement>("[data-flight-timeline]")
+    const track = root?.querySelector<HTMLElement>("[data-flight-track]")
+    if (!root || !track) return
+
+    const stateWindow = window as typeof window & { __flightTimelineCleanup?: () => void }
+    stateWindow.__flightTimelineCleanup?.()
+
+    const nodes = [...track.querySelectorAll<HTMLElement>("[data-flight-node]")]
+    let trackTop = 0
+    let trackHeight = 1
+    let nodePositions: number[] = []
+    let frame = 0
+
+    const update = () => {
+      const viewportAnchor = window.scrollY + window.innerHeight * 0.54
+      const progress = Math.min(1, Math.max(0, (viewportAnchor - trackTop) / trackHeight))
+      root.style.setProperty("--flight-progress", progress.toFixed(4))
+      root.style.setProperty("--curve-progress", Math.min(1, progress * 5).toFixed(4))
+      nodes.forEach((node, index) => {
+        node.classList.toggle("is-passed", nodePositions[index] <= progress * trackHeight + 10)
+      })
     }
 
-    .date {
-      width: auto;
+    const measure = () => {
+      const rect = track.getBoundingClientRect()
+      trackTop = rect.top + window.scrollY
+      trackHeight = Math.max(track.offsetHeight, 1)
+      nodePositions = nodes.map((node) => node.getBoundingClientRect().top + window.scrollY - trackTop)
+      update()
     }
+
+    const requestUpdate = () => {
+      if (frame) return
+      frame = window.requestAnimationFrame(() => {
+        frame = 0
+        update()
+      })
+    }
+
+    const resizeObserver = new ResizeObserver(measure)
+    resizeObserver.observe(track)
+    window.addEventListener("scroll", requestUpdate, { passive: true })
+    window.addEventListener("resize", measure, { passive: true })
+    measure()
+
+    stateWindow.__flightTimelineCleanup = () => {
+      resizeObserver.disconnect()
+      window.removeEventListener("scroll", requestUpdate)
+      window.removeEventListener("resize", measure)
+      if (frame) window.cancelAnimationFrame(frame)
+    }
+  }
+
+  document.addEventListener("astro:page-load", setupFlightTimeline)
+  setupFlightTimeline()
+</script>
+
+<style>
+  .timeline-section {
+    --flight-progress: 0;
+    --curve-progress: 0;
+    position: relative;
+    overflow: clip;
+    padding: clamp(4.5rem, 7vw, 7rem) clamp(1.25rem, 4vw, 3.5rem) 7rem;
+    background: radial-gradient(circle at 87% 7%, color-mix(in srgb, var(--primary) 7%, transparent), transparent 24rem), var(--background);
+  }
+  .timeline-shell { width: min(100%, 86rem); margin-inline: auto; }
+  .timeline-intro { margin-bottom: clamp(2.5rem, 4vw, 4rem); }
+  .timeline-kicker, .year-index, .year-meta > span:last-child, .article-sequence,
+  .article-item time, .departure-label, .arrival span {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: .68rem; letter-spacing: .13em; text-transform: uppercase; color: var(--muted-foreground);
+  }
+  .timeline-kicker { display: flex; justify-content: space-between; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+  .timeline-heading-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; padding-top: 2rem; }
+  .timeline-heading-row h1 { margin: 0; font-family: var(--font-display, Georgia, serif); font-size: clamp(3rem, 6vw, 5rem); font-weight: 700; line-height: .92; letter-spacing: -.06em; }
+  .timeline-heading-row em { margin-left: .08em; color: var(--primary); font-family: Georgia, "Times New Roman", serif; font-weight: 400; }
+  .timeline-heading-row p { max-width: 18rem; margin: 0 0 .5rem; color: var(--muted-foreground); line-height: 1.7; }
+  .timeline-heading-row strong { color: var(--foreground); font-size: 1.4rem; font-weight: 500; }
+
+  .departure { position: relative; height: clamp(6rem, 10vw, 8rem); margin-top: 1.5rem; }
+  .departure-label { position: absolute; left: 0; bottom: 1.05rem; }
+  .departure-route { position: absolute; inset: 0 0 0 6.5rem; width: calc(100% - 6.5rem); height: 100%; overflow: visible; }
+  .route-base, .route-lit { fill: none; stroke-linecap: round; stroke-width: 1.2; stroke-dasharray: 1 8; }
+  .route-base { stroke: color-mix(in srgb, var(--muted-foreground) 38%, transparent); }
+  .route-lit { stroke: var(--primary); stroke-width: 2; stroke-dasharray: .012 .012; stroke-dashoffset: calc(1 - var(--curve-progress)); transition: stroke-dashoffset 120ms linear; }
+  .departure-dot { position: absolute; right: -.25rem; top: 39%; width: .55rem; aspect-ratio: 1; border: 1px solid var(--primary); border-radius: 50%; background: var(--background); }
+
+  .flight-track { position: relative; min-height: 40rem; }
+  .flight-rail { position: absolute; z-index: 1; inset-block: 0; left: clamp(8.5rem, 17vw, 14rem); width: 2px; background: repeating-linear-gradient(to bottom, color-mix(in srgb, var(--muted-foreground) 38%, transparent) 0 2px, transparent 2px 9px); }
+  .flight-rail-progress { display: block; width: 100%; height: calc(var(--flight-progress) * 100%); background: repeating-linear-gradient(to bottom, var(--primary) 0 3px, transparent 3px 8px); transition: height 90ms linear; }
+  .flight-plane { position: absolute; z-index: 5; top: calc(var(--flight-progress) * 100%); left: clamp(8.5rem, 17vw, 14rem); width: 2.3rem; height: 2.3rem; transform: translate(-50%, -50%); color: var(--primary); filter: drop-shadow(0 4px 10px color-mix(in srgb, var(--primary) 28%, transparent)); transition: top 90ms linear; }
+  .flight-plane svg { position: relative; z-index: 2; width: 100%; height: 100%; padding: .38rem; transform: rotate(180deg); fill: currentColor; border: 1px solid color-mix(in srgb, var(--primary) 35%, var(--border)); border-radius: 50%; background: var(--background); }
+  .plane-halo { position: absolute; inset: -.35rem; border-radius: 50%; background: color-mix(in srgb, var(--primary) 12%, transparent); animation: plane-pulse 2.8s ease-in-out infinite; }
+  .flight-years { position: relative; }
+
+  .year-group { position: relative; display: grid; grid-template-columns: clamp(7rem, 14vw, 11.5rem) minmax(0, 1fr); column-gap: clamp(3rem, 8vw, 7rem); padding-bottom: clamp(3.5rem, 6vw, 5.5rem); }
+  .year-marker { position: absolute; z-index: 3; top: .75rem; left: clamp(8.5rem, 17vw, 14rem); transform: translateX(-50%); }
+  .year-dot, .article-dot, .arrival-dot { display: block; border: 1px solid var(--border); border-radius: 50%; background: var(--background); transition: 280ms ease; }
+  .year-dot { width: 1rem; height: 1rem; }
+  .year-meta { display: flex; flex-direction: column; align-items: flex-end; gap: .45rem; padding-top: .1rem; text-align: right; }
+  .year-meta h2 { margin: 0; font-size: clamp(2rem, 3.4vw, 3rem); font-weight: 400; line-height: 1; letter-spacing: -.04em; }
+  .article-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--border); }
+  .article-item { position: relative; border-bottom: 1px solid var(--border); }
+  .article-dot { position: absolute; z-index: 3; top: 2rem; left: calc(clamp(8.5rem, 17vw, 14rem) - clamp(7rem, 14vw, 11.5rem) - clamp(3rem, 8vw, 7rem)); width: .55rem; height: .55rem; transform: translateX(-50%); }
+  .article-item a { display: grid; grid-template-columns: 5.3rem 6rem minmax(0, 1fr) 2rem; align-items: center; gap: 1.25rem; min-height: 5rem; color: inherit; text-decoration: none; transition: padding 260ms ease, color 260ms ease; }
+  .article-item strong { font-family: var(--font-display, Georgia, serif); font-size: clamp(1rem, 1.35vw, 1.25rem); font-weight: 500; line-height: 1.45; }
+  .article-arrow { font-size: 1.4rem; transition: transform 260ms ease; }
+  .article-item a:hover { padding-inline: .65rem; color: var(--primary); }
+  .article-item a:hover .article-arrow { transform: translateX(.35rem); }
+  .year-group.is-passed .year-dot, .article-item.is-passed .article-dot, .arrival.is-passed .arrival-dot { border-color: var(--primary); background: var(--primary); box-shadow: 0 0 0 5px color-mix(in srgb, var(--primary) 12%, transparent); }
+  .year-group.is-passed .year-index { color: var(--primary); }
+
+  .arrival { position: relative; display: grid; grid-template-columns: clamp(7rem, 14vw, 11.5rem) minmax(0, 1fr); column-gap: clamp(3rem, 8vw, 7rem); min-height: 8rem; }
+  .arrival > div { grid-column: 2; padding-top: .2rem; }
+  .arrival p { margin: .6rem 0 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.25rem, 2vw, 1.65rem); font-style: italic; color: var(--muted-foreground); }
+  .arrival-dot { position: absolute; z-index: 3; top: .3rem; left: clamp(8.5rem, 17vw, 14rem); width: .85rem; height: .85rem; transform: translateX(-50%); }
+
+  @keyframes plane-pulse { 0%, 100% { transform: scale(.82); opacity: .35; } 50% { transform: scale(1.12); opacity: .75; } }
+  @media (max-width: 800px) {
+    .timeline-section { padding-inline: 1rem; }
+    .timeline-heading-row { display: block; }
+    .timeline-heading-row p { margin-top: 1.5rem; }
+    .timeline-heading-row h1 { font-size: clamp(2.8rem, 10vw, 4rem); }
+    .departure-route { left: 4rem; width: calc(100% - 4rem); }
+    .flight-rail, .flight-plane, .year-marker, .arrival-dot { left: 1rem; }
+    .year-group, .arrival { display: block; padding-left: 3.25rem; }
+    .year-meta { align-items: flex-start; margin-bottom: 1.5rem; text-align: left; }
+    .article-dot { left: -2.25rem; top: 1.65rem; }
+    .article-item a { grid-template-columns: 4.25rem minmax(0, 1fr) 1.5rem; gap: .7rem; min-height: 4.75rem; }
+    .article-sequence { display: none; }
+    .arrival > div { padding-top: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .plane-halo { animation: none; }
+    .flight-plane, .flight-rail-progress, .route-lit, .year-dot, .article-dot, .arrival-dot { transition: none; }
   }
 </style>

@@ -159,10 +159,35 @@ export function Hero({ articleCount, thoughtCount, projectCount }: HeroProps) {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative flex min-h-[calc(100svh-4rem)] items-center bg-surface-subtle px-6 py-14 sm:py-20 lg:py-24">
-      <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-12 lg:gap-16">
+    <section
+      ref={sectionRef}
+      className="relative isolate flex min-h-[calc(100svh-4rem)] items-center overflow-hidden bg-surface-subtle px-6 py-14 sm:py-20 lg:py-24"
+    >
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+        <img
+          src={heroImages[heroImageIndex].src}
+          alt=""
+          width={1206}
+          height={1551}
+          style={{
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.2) 14%, rgba(0,0,0,0.8) 32%, black 44%)",
+            maskImage:
+              "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.2) 14%, rgba(0,0,0,0.8) 32%, black 44%)",
+          }}
+          className={`absolute inset-y-0 right-0 h-full w-auto max-w-none object-contain object-right transition-all delay-150 duration-1000 ease-out dark:brightness-[0.68] ${
+            mounted ? "scale-100 opacity-[0.42] dark:opacity-[0.27]" : "scale-[1.015] opacity-0"
+          }`}
+          fetchPriority="high"
+        />
+        <div className="absolute inset-0 bg-surface-subtle/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-surface-subtle via-surface-subtle/90 to-surface-subtle/25" />
+        <div className="absolute inset-0 bg-gradient-to-b from-surface-subtle/55 via-transparent to-surface-subtle" />
+      </div>
+
+      <div className="relative z-10 mx-auto w-full max-w-7xl">
         <div
-          className={`lg:col-span-7 transition-all duration-1000 ease-out ${
+          className={`max-w-3xl transition-all duration-1000 ease-out ${
             mounted ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
           }`}
         >
@@ -204,7 +229,7 @@ export function Hero({ articleCount, thoughtCount, projectCount }: HeroProps) {
             </a>
             <a
               href="/about/"
-              className="inline-flex min-w-32 items-center justify-center rounded-full border border-border px-8 py-3.5 text-sm font-medium text-foreground transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground/40"
+              className="inline-flex min-w-32 items-center justify-center rounded-full border border-border bg-background/35 px-8 py-3.5 text-sm font-medium text-foreground backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground/40 hover:bg-background/55"
             >
               关于我
             </a>
@@ -230,22 +255,6 @@ export function Hero({ articleCount, thoughtCount, projectCount }: HeroProps) {
             </div>
           </div>
         </div>
-
-        <figure
-          className={`relative mx-auto aspect-[3/4] w-full max-w-[32rem] overflow-hidden rounded-xl border border-border bg-surface-subtle shadow-[0_2rem_5rem_rgba(0,0,0,0.08)] lg:col-span-5 transition-all delay-150 duration-1000 ease-out ${
-            mounted ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-          }`}
-        >
-          <img
-            src={heroImages[heroImageIndex].src}
-            alt={heroImages[heroImageIndex].alt}
-            width={980}
-            height={980}
-            className="h-full w-full object-cover object-center transition-transform duration-700 ease-out hover:scale-[1.015] dark:brightness-[0.86]"
-            fetchPriority="high"
-          />
-          <figcaption className="sr-only">Jiely 的个人插画头像</figcaption>
-        </figure>
       </div>
     </section>
   )
