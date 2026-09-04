@@ -3,8 +3,6 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from "react"
 import type { MouseEvent } from "react"
 import { ArticleCard } from "./article-card"
-import { Sidebar } from "./sidebar"
-import { ThoughtPreview, type ThoughtPreviewItem } from "./thought-preview"
 import {
   Pagination,
   PaginationContent,
@@ -14,6 +12,8 @@ import {
 } from "@/components/ui/pagination"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { getPageHref } from "@/lib/page-href"
+import { articleDisplayDate } from "@/lib/post-updated"
 
 export type ArticleMeta = {
   slug: string
@@ -41,17 +41,6 @@ type PaginationMeta = {
 const HIDDEN = -1
 const ADJACENT_DISTANCE = 2
 const VISIBLE_PAGES = ADJACENT_DISTANCE * 2 + 1
-
-const normalizeBasePath = (basePath: string) => {
-  if (!basePath.startsWith("/")) return `/${basePath}`.replace(/\/+$/, "")
-  return basePath === "/" ? "" : basePath.replace(/\/+$/, "")
-}
-
-const getPageHref = (pageNumber: number, basePath: string) => {
-  const base = normalizeBasePath(basePath)
-  if (pageNumber === 1) return base || "/"
-  return `${base}/${pageNumber}/`
-}
 
 const buildPageRange = (currentPage: number, totalPages: number) => {
   if (totalPages <= 1) return []
@@ -95,7 +84,6 @@ export function ArticleList({
   pagination,
   sidebarCategories,
   sidebarTags,
-  sidebarThoughts,
 }: {
   articles: ArticleMeta[]
   title?: string
@@ -103,13 +91,11 @@ export function ArticleList({
   pagination?: PaginationMeta
   sidebarCategories?: SidebarCategory[]
   sidebarTags?: string[]
-  sidebarThoughts?: ThoughtPreviewItem[]
 }) {
   const sectionRef = useRef<HTMLElement | null>(null)
   const [activeCategory, setActiveCategory] = useState("all")
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(pagination?.currentPage ?? 1)
-  const [categoriesExpanded, setCategoriesExpanded] = useState(false)
   const basePath = pagination?.basePath ?? "/"
 
   const computedCategories = useMemo(() => {
@@ -151,21 +137,19 @@ export function ArticleList({
 
     let nextCategory = "all"
     let nextTag: string | null = null
-    let nextExpanded = false
 
     if (queryTag && tags.includes(queryTag)) {
       nextTag = queryTag
     } else if (queryCategory && categories.some((category) => category.id === queryCategory)) {
       nextCategory = queryCategory
-      nextExpanded = true
     }
 
     setActiveCategory(nextCategory)
     setActiveTag(nextTag)
-    setCategoriesExpanded(nextExpanded)
 
     const shouldResetPage = Boolean(nextTag) || nextCategory !== "all"
-    setCurrentPage(shouldResetPage ? 1 : pagination?.currentPage ?? 1)
+    const queryPage = Number(params.get("page") ?? 1)
+    setCurrentPage(shouldResetPage && Number.isInteger(queryPage) && queryPage > 0 ? queryPage : pagination?.currentPage ?? 1)
 
     if (document.documentElement.hasAttribute("data-prefilter")) {
       requestAnimationFrame(() => {
@@ -202,29 +186,6 @@ export function ArticleList({
     })
   }, [articles, activeCategory, activeTag])
 
-  const headerMeta = useMemo(() => {
-    if (activeTag) {
-      return {
-        eyebrow: "标签",
-        heading: activeTag,
-      }
-    }
-
-    if (activeCategory !== "all") {
-      const currentCategory = categories.find((category) => category.id === activeCategory)
-      return {
-        eyebrow: "分类",
-        heading: currentCategory?.name ?? activeCategory,
-      }
-    }
-
-    return {
-      heading: title,
-    }
-  }, [activeTag, activeCategory, categories, title])
-
-  const headerAnimationKey = activeTag ? `tag:${activeTag}` : `category:${activeCategory}`
-
   const isFiltering = activeCategory !== "all" || Boolean(activeTag)
   const pageSize = pagination?.pageSize ?? Math.max(1, articles.length)
   const totalPages = pagination ? Math.max(1, Math.ceil(filteredArticles.length / pageSize)) : 1
@@ -247,7 +208,14 @@ export function ArticleList({
 
   const withHomeHash = (href?: string, pageNumber?: number) => {
     if (!href) return undefined
-    if (pageNumber === 1) return `${href}#home-main`
+    if (isFiltering && pageNumber) {
+      const params = new URLSearchParams()
+      if (activeCategory !== "all") params.set("category", activeCategory)
+      if (activeTag) params.set("tag", activeTag)
+      params.set("page", String(pageNumber))
+      return `${getPageHref(1, basePath)}?${params}`
+    }
+    if (pageNumber === 1) return href
     return href
   }
   const previousUrl = pagination && currentPage > 1 ? getPageHref(currentPage - 1, basePath) : undefined
@@ -275,6 +243,7 @@ export function ArticleList({
       url.searchParams.delete("tag")
     }
 
+    url.searchParams.delete("page")
     const search = url.searchParams.toString()
     window.history.replaceState({}, "", `${targetPath}${search ? `?${search}` : ""}#home-main`)
   }
@@ -283,14 +252,12 @@ export function ArticleList({
     setActiveCategory(category)
     setActiveTag(null)
     setCurrentPage(1)
-    setCategoriesExpanded(true)
     updateSearchParams(category, null)
     requestAnimationFrame(scrollToListTop)
   }
   const handleTagChange = (tag: string | null) => {
     setActiveTag(tag)
     setActiveCategory("all")
-    setCategoriesExpanded(false)
     setCurrentPage(1)
     updateSearchParams("all", tag)
     requestAnimationFrame(scrollToListTop)
@@ -298,61 +265,57 @@ export function ArticleList({
   const handlePageClick =
     (page: number) => (event: MouseEvent<HTMLAnchorElement>) => {
       if (!pagination || !isFiltering) return
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
       event.preventDefault()
+      window.history.pushState({}, "", event.currentTarget.href)
       setCurrentPage(page)
+      requestAnimationFrame(scrollToListTop)
     }
 
   return (
-    <section ref={sectionRef} className="article-list-root px-6 py-16 bg-surface-subtle">
-      <div className="max-w-6xl mx-auto">
-        {/* Section header */}
-        <div className="mb-10 onload-animation" style={{ animationDelay: "50ms" }}>
-          <div
-            key={headerAnimationKey}
-            className="max-w-xl lg:max-w-sm"
-            style={{ animation: "fade-in-up 220ms ease-out" }}
-          >
-            {activeCategory === "all" && !activeTag ? (
-              <h2 className="font-serif text-2xl font-bold leading-tight tracking-tight text-foreground sm:text-3xl lg:text-[2.625rem]">
-                {headerMeta.heading}
-              </h2>
-            ) : (
-              <h2 className="flex flex-wrap items-end gap-x-2 gap-y-1 font-serif text-2xl font-bold leading-tight tracking-tight sm:text-3xl lg:text-[2.625rem]">
-                <span className="text-foreground/68">{headerMeta.eyebrow}</span>
-                <span className="text-foreground/35">/</span>
-                <span className="text-primary">{headerMeta.heading}</span>
-              </h2>
-            )}
-          </div>
+    <section ref={sectionRef} className="article-list-root article-index bg-background">
+      <div className="article-index__shell">
+        <div className="article-index__header">
+          <nav className="article-index__breadcrumb" aria-label="面包屑">
+            <a href="/">首页</a><span aria-hidden="true">›</span>
+            <a href="/articles/">{title}</a><span aria-hidden="true">›</span>
+            <span aria-current="page">第 {currentPage} 页</span>
+          </nav>
+          <details className="article-index__filter-toggle">
+            <summary>{isFiltering ? "正在筛选" : "筛选"}</summary>
+        <div className="article-index__filters">
+          <span className="article-index__count">共 {filteredArticles.length} 篇</span>
+          <label>
+            <span className="sr-only">按分类筛选</span>
+            <select value={activeCategory} onChange={(event) => handleCategoryChange(event.target.value)}>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>{category.id === "all" ? "全部分类" : category.name}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span className="sr-only">按标签筛选</span>
+            <select value={activeTag ?? ""} onChange={(event) => handleTagChange(event.target.value || null)}>
+              <option value="">全部标签</option>
+              {tags.map((tag) => <option key={tag} value={tag}>{tag}</option>)}
+            </select>
+          </label>
         </div>
 
-        {/* Main layout: Sidebar + Articles */}
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar */}
-          <div className="order-2 lg:order-1 onload-animation" style={{ animationDelay: "100ms" }}>
-            <Sidebar
-              categories={categories}
-              tags={tags}
-              activeCategory={activeCategory}
-              onCategoryChange={handleCategoryChange}
-              activeTag={activeTag}
-              onTagChange={handleTagChange}
-              categoriesExpanded={categoriesExpanded}
-              onCategoriesExpandedChange={setCategoriesExpanded}
-              extra={sidebarThoughts && sidebarThoughts.length > 0 ? <ThoughtPreview thoughts={sidebarThoughts} /> : undefined}
-            />
-          </div>
-
-          {/* Article list - Single column */}
-          <div className="order-1 lg:order-2 flex-1 space-y-4">
+          </details>
+        </div>
+        <div>
+          <div className="space-y-6">
             {pagedArticles.length > 0 ? (
-              pagedArticles.map((article, index) => (
-                <ArticleCard
-                  key={article.slug}
-                  article={article}
-                  className="onload-animation"
-                  style={{ animationDelay: `calc(var(--content-delay) + ${index * 50}ms)` }}
-                />
+              [...new Set(pagedArticles.map((article) => articleDisplayDate(article).slice(0, 4)))].sort().reverse().map((year) => (
+                <section key={year} aria-label={year + " 年文章"}>
+                  <h2 className="article-index__year">{year}</h2>
+                  <div className="article-index__cards">
+                    {pagedArticles.filter((article) => articleDisplayDate(article).startsWith(year)).map((article) => (
+                      <ArticleCard key={article.slug} article={article} />
+                    ))}
+                  </div>
+                </section>
               ))
             ) : (
               <div className="text-center py-12 text-muted-foreground">暂无符合条件的文章</div>

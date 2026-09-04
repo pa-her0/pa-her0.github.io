@@ -1,260 +1,217 @@
 "use client"
 
-import { useEffect, useRef, useState, useCallback, type MouseEvent } from "react"
+import { ChevronUp, ChevronDown, MapPin, Pause, Play, Radio, Zap } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { homeDashboard } from "@/data/home-dashboard"
+import { HomeGlobe } from "@/components/home-globe"
+import { useHomeWakatime } from "@/components/use-home-wakatime"
+import type { ActivityDay } from "@/lib/home-activity"
+import { ActivitySnake } from "@/components/activity-snake"
+import { AboutSceneCard } from "@/components/about-scene-card"
+import { TopicCloud } from "@/components/topic-cloud"
+import { FlipDiskMatrix } from "@/components/ui/flip-disk-matrix"
 
-const phrases = [
-  { prefix: "让智能体学会", highlight: "协作" },
-  { prefix: "在市场噪声中", highlight: "寻找信号" },
-  { prefix: "把模型带进", highlight: "真实世界" },
-  { prefix: "写下仍在发生的", highlight: "思考" },
-]
-
-const heroImages = [
-  { src: "/hero-avatar.jpg", alt: "橘子角色在雪山前唱歌的插画" },
-  { src: "/hero-avatar-02.jpg", alt: "橘子角色站在蓝色阶梯上的插画" },
-  { src: "/hero-avatar-03.jpg", alt: "橘子角色演绎大白鲨电影的插画" },
-  { src: "/hero-avatar-04.jpg", alt: "橘子角色坐在复古座椅上的插画" },
-  { src: "/hero-avatar-05.jpg", alt: "橘子角色演绎肖申克的救赎电影的插画" },
-]
-
-const HERO_IMAGE_STORAGE_KEY = "jiely-home-hero-image"
-
-interface HeroProps {
-  articleCount: number
-  thoughtCount: number
-  projectCount: number
+export interface HeroProps {
+  latestPost?: { title: string; description: string; href: string; image: string; date: string }
+  activity: { days: ActivityDay[]; months: { label: string; column: number }[]; total: number }
+  categories: { name: string; count: number }[]
 }
 
-export function Hero({ articleCount, thoughtCount, projectCount }: HeroProps) {
-  const [mounted, setMounted] = useState(false)
-  const [heroImageIndex, setHeroImageIndex] = useState(0)
-  const [phraseIndex, setPhraseIndex] = useState(0)
-  const [displayText, setDisplayText] = useState("")
-  const [isDeleting, setIsDeleting] = useState(false)
-  // Pause the typewriter loop when the hero is offscreen or the tab is hidden;
-  // otherwise the setTimeout chain keeps re-rendering React state while the
-  // user reads other parts of the home page.
-  const [isActive, setIsActive] = useState(true)
-  const sectionRef = useRef<HTMLElement | null>(null)
+function GalleryCard() {
+  const [images, setImages] = useState(() => [...homeDashboard.gallery])
+  return (
+    <div className="bento-card bento-gallery" aria-label="噜噜相册">
+      {images.map((image, index) => (
+        <button key={image.src} type="button" className="bento-photo"
+          style={{ zIndex: images.length - index, transform: `translate(-50%, calc(-50% - ${index * 6}px)) rotate(${[5, -7, 6, -5, 8][index]}deg)` }}
+          aria-label={`切换图片：${image.alt}`} tabIndex={index === 0 ? 0 : -1}
+          onClick={() => setImages((current) => [...current.filter((item) => item.src !== image.src), image])}>
+          <img src={image.src} alt={image.alt} width={300} height={300} draggable={false}
+            decoding="async" fetchPriority={index === 0 ? "high" : "low"} />
+        </button>
+      ))}
+      <span className="sr-only" aria-live="polite">当前图片：{images[0].alt}</span>
+    </div>
+  )
+}
 
-  useEffect(() => {
-    setMounted(true)
+function MusicCard() {
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const requestRef = useRef(0)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const [trackIndex, setTrackIndex] = useState(0)
+  const [status, setStatus] = useState<"idle" | "loading" | "playing" | "error">("idle")
+  const [progress, setProgress] = useState(0)
+  const [coverFailed, setCoverFailed] = useState(false)
+  const track = homeDashboard.tracks[trackIndex]
 
-    const previousIndex = Number.parseInt(sessionStorage.getItem(HERO_IMAGE_STORAGE_KEY) ?? "-1", 10)
-    const hasPreviousImage = Number.isInteger(previousIndex) && previousIndex >= 0 && previousIndex < heroImages.length
-    const nextIndex = hasPreviousImage
-      ? (previousIndex + 1) % heroImages.length
-      : 0
-
-    sessionStorage.setItem(HERO_IMAGE_STORAGE_KEY, String(nextIndex))
-    setHeroImageIndex(nextIndex)
-  }, [])
-
-  useEffect(() => {
-    const onVisibility = () => {
-      if (document.hidden) setIsActive(false)
-      else if (sectionRef.current) {
-        const rect = sectionRef.current.getBoundingClientRect()
-        setIsActive(rect.bottom > 0 && rect.top < window.innerHeight)
+  function stop() {
+    requestRef.current += 1
+    clearTimeout(timerRef.current)
+    audioRef.current?.pause()
+    setStatus("idle")
+  }
+  function changeTrack(direction: number) {
+    stop()
+    const audio = audioRef.current
+    if (audio) { audio.removeAttribute("src"); audio.load() }
+    setTrackIndex((value) => (value + direction + homeDashboard.tracks.length) % homeDashboard.tracks.length)
+    setProgress(0)
+    setCoverFailed(false)
+  }
+  async function toggle() {
+    const audio = audioRef.current
+    if (!audio) return
+    if (status === "playing" || status === "loading") { stop(); return }
+    const request = ++requestRef.current
+    setStatus("loading")
+    if (audio.getAttribute("src") !== track.src) { audio.src = track.src; audio.load() }
+    timerRef.current = setTimeout(() => {
+      if (requestRef.current === request) {
+        requestRef.current += 1
+        audio.pause()
+        setStatus("error")
       }
-    }
-    document.addEventListener("visibilitychange", onVisibility)
-
-    let observer: IntersectionObserver | null = null
-    if (sectionRef.current && typeof IntersectionObserver !== "undefined") {
-      observer = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            setIsActive(entry.isIntersecting && !document.hidden)
-          }
-        },
-        { threshold: 0 },
-      )
-      observer.observe(sectionRef.current)
-    }
-
-    return () => {
-      document.removeEventListener("visibilitychange", onVisibility)
-      observer?.disconnect()
-    }
-  }, [])
-
-  const getTypeSpeed = useCallback(() => {
-    // Random variation for natural typing rhythm (50-90ms)
-    return 50 + Math.random() * 40
-  }, [])
-
-  const getDeleteSpeed = useCallback(() => {
-    // Faster, more consistent deletion (25-40ms)
-    return 25 + Math.random() * 15
-  }, [])
-
-  const innerTimerRef = useRef<number | null>(null)
-
-  const typeWriter = useCallback(() => {
-    const currentPhrase = phrases[phraseIndex]
-    const fullText = currentPhrase.prefix + currentPhrase.highlight
-
-    if (innerTimerRef.current !== null) {
-      window.clearTimeout(innerTimerRef.current)
-      innerTimerRef.current = null
-    }
-
-    if (!isDeleting) {
-      if (displayText.length < fullText.length) {
-        innerTimerRef.current = window.setTimeout(() => {
-          setDisplayText(fullText.slice(0, displayText.length + 1))
-        }, getTypeSpeed())
-      } else {
-        innerTimerRef.current = window.setTimeout(() => setIsDeleting(true), 1500)
-      }
-    } else {
-      if (displayText.length > 0) {
-        innerTimerRef.current = window.setTimeout(() => {
-          setDisplayText(displayText.slice(0, -1))
-        }, getDeleteSpeed())
-      } else {
-        setIsDeleting(false)
-        setPhraseIndex((prev) => (prev + 1) % phrases.length)
-      }
-    }
-  }, [displayText, isDeleting, phraseIndex, getTypeSpeed, getDeleteSpeed])
-
-  useEffect(() => {
-    if (!mounted || !isActive) return
-    const timer = window.setTimeout(typeWriter, 50)
-    return () => {
-      window.clearTimeout(timer)
-      if (innerTimerRef.current !== null) {
-        window.clearTimeout(innerTimerRef.current)
-        innerTimerRef.current = null
-      }
-    }
-  }, [mounted, isActive, typeWriter])
-
-  const renderText = () => {
-    const currentPhrase = phrases[phraseIndex]
-    const prefixLength = currentPhrase.prefix.length
-
-    if (displayText.length <= prefixLength) {
-      return <span>{displayText}</span>
-    } else {
-      return (
-        <>
-          <span>{currentPhrase.prefix}</span>
-          <span className="text-primary">{displayText.slice(prefixLength)}</span>
-        </>
-      )
+    }, 12000)
+    try {
+      await audio.play()
+      if (requestRef.current !== request) return
+      clearTimeout(timerRef.current)
+      setStatus("playing")
+    } catch {
+      if (requestRef.current !== request) return
+      clearTimeout(timerRef.current)
+      setStatus("error")
     }
   }
 
-  const handleBrowseClick = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault()
-    const target = document.getElementById("home-main")
-    if (!target) return
-    target.scrollIntoView({ behavior: "smooth", block: "start" })
-    if (history.replaceState) {
-      history.replaceState({}, "", "#home-main")
+  useEffect(() => {
+    const audio = audioRef.current
+    const halt = () => {
+      requestRef.current += 1
+      clearTimeout(timerRef.current)
+      audio?.pause()
+    }
+    document.addEventListener("astro:before-swap", halt)
+    window.addEventListener("pagehide", halt)
+    return () => {
+      halt()
+      if (audio) { audio.removeAttribute("src"); audio.load() }
+      document.removeEventListener("astro:before-swap", halt)
+      window.removeEventListener("pagehide", halt)
     }
   }, [])
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative isolate flex min-h-[calc(100svh-4rem)] items-center overflow-hidden bg-surface-subtle px-6 py-14 sm:py-20 lg:py-24"
-    >
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
-        <img
-          src={heroImages[heroImageIndex].src}
-          alt=""
-          width={1206}
-          height={1551}
-          style={{
-            WebkitMaskImage:
-              "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.2) 14%, rgba(0,0,0,0.8) 32%, black 44%)",
-            maskImage:
-              "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.2) 14%, rgba(0,0,0,0.8) 32%, black 44%)",
-          }}
-          className={`absolute inset-y-0 right-0 h-full w-auto max-w-none object-contain object-right transition-all delay-150 duration-1000 ease-out dark:brightness-[0.68] ${
-            mounted ? "scale-100 opacity-[0.42] dark:opacity-[0.27]" : "scale-[1.015] opacity-0"
-          }`}
-          fetchPriority="high"
-        />
-        <div className="absolute inset-0 bg-surface-subtle/20" />
-        <div className="absolute inset-0 bg-gradient-to-r from-surface-subtle via-surface-subtle/90 to-surface-subtle/25" />
-        <div className="absolute inset-0 bg-gradient-to-b from-surface-subtle/55 via-transparent to-surface-subtle" />
+    <article className="bento-card bento-music">
+      <a href={track.href} className="bento-music-service" target="_blank" rel="noreferrer" aria-label="在网易云音乐打开当前歌曲">
+        {/* NetEase Cloud Music mark from Simple Icons (CC0), without its outer disc. */}
+        <svg width={25} height={25} viewBox="3 3 18 18" fill="currentColor" aria-hidden="true" focusable="false">
+          <path d="M13.046 9.388a3.919 3.919 0 0 0-.66.19c-.809.312-1.447.991-1.666 1.775a2.269 2.269 0 0 0-.074.81c.048.546.333 1.05.764 1.35a1.483 1.483 0 0 0 2.01-.286c.406-.531.355-1.183.24-1.636-.098-.387-.22-.816-.345-1.249a64.76 64.76 0 0 1-.269-.954zm-.82 10.07c-3.984 0-7.224-3.24-7.224-7.223 0-.98.226-3.02 1.884-4.822A7.188 7.188 0 0 1 9.502 5.6a.792.792 0 1 1 .587 1.472 5.619 5.619 0 0 0-2.795 2.462 5.538 5.538 0 0 0-.707 2.7 5.645 5.645 0 0 0 5.638 5.638c1.844 0 3.627-.953 4.542-2.428 1.042-1.68.772-3.931-.627-5.238a3.299 3.299 0 0 0-1.437-.777c.172.589.334 1.18.494 1.772.284 1.12.1 2.181-.519 2.989-.39.51-.956.888-1.592 1.064a3.038 3.038 0 0 1-2.58-.44 3.45 3.45 0 0 1-1.44-2.514c-.04-.467.002-.93.128-1.376.35-1.256 1.356-2.339 2.622-2.826a5.5 5.5 0 0 1 .823-.246l-.134-.505c-.37-1.371.25-2.579 1.547-3.007.329-.109.68-.145 1.025-.105.792.09 1.476.592 1.709 1.023.258.507-.096 1.153-.706 1.153a.788.788 0 0 1-.54-.213c-.088-.08-.163-.174-.259-.247a.825.825 0 0 0-.632-.166.807.807 0 0 0-.634.551c-.056.191-.031.406.02.595.07.256.159.597.217.82 1.11.098 2.162.54 2.97 1.296 1.974 1.844 2.35 4.886.892 7.233-1.197 1.93-3.509 3.177-5.889 3.177z" />
+        </svg>
+      </a>
+      <div className="bento-music-top">
+        <img className="bento-album" src={coverFailed ? "/hero-avatar.jpg" : track.cover} alt={track.album} width={160} height={160}
+          onError={() => setCoverFailed(true)} />
+        <div className="bento-music-buttons">
+          <button type="button" onClick={() => changeTrack(-1)} aria-label="上一首"><ChevronUp size={20} /></button>
+          <button type="button" onClick={() => void toggle()} aria-label={status === "playing" ? "暂停" : status === "loading" ? "取消加载" : "播放"}>
+            {status === "playing" ? <Pause size={21} /> : <Play size={21} />}
+          </button>
+          <button type="button" onClick={() => changeTrack(1)} aria-label="下一首"><ChevronDown size={20} /></button>
+        </div>
       </div>
+      <div className="bento-music-copy">
+        <p className="bento-playing" aria-live="polite"><Radio size={17} />{status === "playing" ? "Now playing…" : status === "loading" ? "Loading…" : status === "error" ? "暂时无法播放" : "Ready to play"}</p>
+        <h2>{track.title}</h2>
+        <p className="bento-muted">by {track.artist}</p>
+        <p className="bento-muted bento-album-name" title={track.album}>on {track.album}</p>
+        {status === "error" ? <a className="bento-audio-error" href={track.href} target="_blank" rel="noreferrer">音源受限或网络不可用，去网易云收听 ↗</a> : (
+          <input className="bento-progress" type="range" min={0} max={100} step={0.1} value={progress}
+            aria-label="播放进度" disabled={status !== "playing" && progress === 0}
+            onChange={(event) => {
+              const audio = audioRef.current
+              if (audio && Number.isFinite(audio.duration)) {
+                const value = Number(event.target.value)
+                audio.currentTime = audio.duration * value / 100
+                setProgress(value)
+              }
+            }} />
+        )}
+      </div>
+      <audio ref={audioRef} preload="none"
+        onTimeUpdate={() => {
+          const audio = audioRef.current
+          if (audio && Number.isFinite(audio.duration) && audio.duration > 0) setProgress(audio.currentTime / audio.duration * 100)
+        }}
+        onEnded={() => { setStatus("idle"); setProgress(0) }}
+        onError={() => {
+          if (audioRef.current?.getAttribute("src")) {
+            clearTimeout(timerRef.current)
+            setStatus("error")
+          }
+        }} />
+    </article>
+  )
+}
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl">
-        <div
-          className={`max-w-3xl transition-all duration-1000 ease-out ${
-            mounted ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-          }`}
-        >
-          <p className="mb-6 text-xs tracking-[0.28em] text-muted-foreground sm:text-sm">
-            JIELY · 生活 · 学习
-          </p>
-
-          <h1
-            aria-live="polite"
-            className="mb-7 min-h-[2.35em] text-balance font-display-sans text-[clamp(2.65rem,6vw,5.25rem)] font-bold leading-[1.12] tracking-[-0.055em] text-foreground sm:min-h-[2.3em]"
-          >
-            {renderText()}
-            <span className="hero-cursor ml-2 inline-block h-[0.9em] w-[0.075em] -translate-y-[0.04em] rounded-sm bg-foreground align-middle" />
-          </h1>
-
-          <blockquote className="mb-8 border-l border-border pl-5">
-            <p className="text-base italic leading-relaxed text-content-secondary sm:text-lg">
-              「In the end, you have to save yourself.」
-            </p>
-            <footer className="mt-2 text-sm text-muted-foreground/70">—— Jiely</footer>
-          </blockquote>
-
-          <div className="mb-10 flex flex-wrap items-center gap-4">
-            <a
-              href="#home-main"
-              onClick={handleBrowseClick}
-              className="group inline-flex min-w-36 items-center justify-center gap-2 rounded-full bg-foreground px-8 py-3.5 text-sm font-medium text-background transition-all duration-300 hover:-translate-y-0.5 hover:bg-foreground/90"
-            >
-              浏览文章
-              <svg
-                className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </a>
-            <a
-              href="/about/"
-              className="inline-flex min-w-32 items-center justify-center rounded-full border border-border bg-background/35 px-8 py-3.5 text-sm font-medium text-foreground backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-foreground/40 hover:bg-background/55"
-            >
-              关于我
-            </a>
+export function Hero({ latestPost, activity, categories }: HeroProps) {
+  const stackTrack = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const track = stackTrack.current
+    if (!track) return
+    let inView = true
+    const sync = () => { track.style.animationPlayState = document.hidden || !inView ? "paused" : "running" }
+    const observer = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; sync() })
+    observer.observe(track)
+    document.addEventListener("visibilitychange", sync)
+    sync()
+    return () => { observer.disconnect(); document.removeEventListener("visibilitychange", sync) }
+  }, [])
+  const { languages, calendar, error: statsError } = useHomeWakatime()
+  const topics = languages ?? categories
+  const secondsByDate = new Map(calendar?.map((day) => [day.date, day.seconds]))
+  const days = calendar ? activity.days.map((day) => {
+    const seconds = day.future ? 0 : (secondsByDate.get(day.date) ?? 0)
+    return { ...day, count: Math.round(seconds / 60), level: seconds <= 0 ? 0 : seconds < 1800 ? 1 : seconds < 7200 ? 2 : seconds < 14400 ? 3 : 4 }
+  }) : activity.days
+  return (
+    <section id="home-main" className="bento-home" aria-label="个人首页">
+      <div className="bento-grid">
+        <article className="bento-card bento-intro">
+          <h1>{homeDashboard.intro.title}</h1>
+          <div>{homeDashboard.intro.lines.map((line) => <p key={line}>{line}</p>)}</div>
+        </article>
+        <article className="bento-card bento-location">
+          <h2 className="bento-card-label"><MapPin size={19} />{homeDashboard.location}</h2>
+          <HomeGlobe />
+        </article>
+        <article className="bento-card bento-stack">
+          <div className="bento-stack-heading">
+            <h2 className="bento-card-label"><Zap size={19} />Stacks</h2>
           </div>
-
-          <div className="grid gap-8 border-t border-border pt-8 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end sm:gap-10">
-            <p className="max-w-md text-sm font-light leading-7 text-muted-foreground sm:text-[15px]">
-              在复杂系统中寻找清晰结构。这里记录人工智能、多智能体研究与算法实践，也保存仍在发生的学习和生活。
-            </p>
-            <div className="grid grid-cols-3 gap-6 sm:gap-8">
-              <a href="#home-main" onClick={handleBrowseClick} className="group min-w-14 text-center">
-                <strong className="block text-3xl font-light leading-none tabular-nums text-foreground">{articleCount}</strong>
-                <span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground group-hover:text-primary">Articles</span>
-              </a>
-              <a href="/thoughts/" className="group min-w-14 text-center">
-                <strong className="block text-3xl font-light leading-none tabular-nums text-foreground">{thoughtCount}</strong>
-                <span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground group-hover:text-primary">Thoughts</span>
-              </a>
-              <a href="/projects/" className="group min-w-14 text-center">
-                <strong className="block text-3xl font-light leading-none tabular-nums text-foreground">{projectCount}</strong>
-                <span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground group-hover:text-primary">Projects</span>
-              </a>
+          <div className="bento-stack-marquee">
+            <div className="bento-stack-track" ref={stackTrack}>
+              {[0, 1].map((copy) => <div key={copy} className="bento-stack-icons" role="list" aria-label={copy === 0 ? "技术栈" : undefined} aria-hidden={copy === 1 ? true : undefined}>
+                {homeDashboard.stack.map((item) => <div key={item.name} role="listitem" title={item.name}>
+                  <img src={item.icon} alt="" width={34} height={34} /><span>{item.name}</span>
+                </div>)}
+              </div>)}
             </div>
           </div>
-        </div>
+        </article>
+        <GalleryCard />
+        <article className="bento-card bento-flip-matrix" aria-label="翻盘点阵时钟">
+          <FlipDiskMatrix latestPost={latestPost} />
+        </article>
+        <MusicCard />
+        <article className="bento-card bento-usage">
+          <h2 className="bento-card-label">{languages ? "Weekly tools" : "Writing topics"}</h2>
+          <TopicCloud topics={topics} coding={!!languages} />
+          {statsError ? <p className="bento-data-caption">外部统计暂不可用</p> : null}
+        </article>
+        <ActivitySnake days={days} coding={!!calendar} />
+        <AboutSceneCard />
       </div>
     </section>
   )

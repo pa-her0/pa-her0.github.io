@@ -1,6 +1,7 @@
 import { getCollection, type CollectionEntry } from "astro:content"
 import readingTime from "reading-time"
 import { getGitModifiedDate } from "./git-dates"
+import { resolvePostUpdatedDate } from "./post-updated"
 
 export type PostEntry = CollectionEntry<"posts">
 export type SidebarCategory = { id: string; name: string; count: number }
@@ -31,9 +32,9 @@ export async function getSortedPosts(ignorePinned = false): Promise<PostEntry[]>
       if (a.data.pinned && !b.data.pinned) return -1
       if (!a.data.pinned && b.data.pinned) return 1
     }
-    const dateA = getGitModifiedDate(a.id) ?? a.data.updated ?? a.data.published
-    const dateB = getGitModifiedDate(b.id) ?? b.data.updated ?? b.data.published
-    return dateA > dateB ? -1 : 1
+    const dateA = resolvePostUpdatedDate(a.data.published, a.data.updated, getGitModifiedDate(a.id))
+    const dateB = resolvePostUpdatedDate(b.data.published, b.data.updated, getGitModifiedDate(b.id))
+    return dateB.getTime() - dateA.getTime() || (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0)
   })
 
   return sorted
@@ -71,7 +72,7 @@ export const toPostMeta = (post: PostEntry) => {
     categoryLabel: category,
     tags,
     date: formatDate(post.data.published),
-    updated: formatDate(getGitModifiedDate(post.id) ?? post.data.updated ?? undefined),
+    updated: formatDate(resolvePostUpdatedDate(post.data.published, post.data.updated, getGitModifiedDate(post.id))),
     wordCount: words,
     readTime: `${minutes} 分钟`,
     image: post.data.image || undefined,

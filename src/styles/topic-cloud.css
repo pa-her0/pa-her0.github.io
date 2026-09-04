@@ -1,0 +1,8 @@
+.topic-cloud { flex: 1; min-height: 0; min-width: 0; display: flex; align-items: center; justify-content: center; }
+.topic-cloud svg { display: block; width: 100%; height: 100%; overflow: hidden; }
+.topic-cloud-word { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-weight: 800; transition: fill .18s; }
+.topic-cloud-tone-0 { fill: var(--bento-ink); }
+.topic-cloud-tone-1 { fill: var(--bento-blue); }
+.topic-cloud-tone-2 { fill: var(--bento-muted); }
+.topic-cloud-word:hover { fill: var(--bento-blue); }
+@media (prefers-reduced-motion: reduce) { .topic-cloud-word { transition: none; } }

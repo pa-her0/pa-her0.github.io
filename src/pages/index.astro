@@ -1,45 +1,50 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro"
-import { ArticleList } from "@/components/article-list"
 import { Footer } from "@/components/footer"
 import SiteHeader from "@/components/site-header.astro"
 import { Hero } from "@/components/hero"
-import { PAGE_SIZE } from "@/lib/constants"
-import { projects } from "@/data/projects"
-import { buildSidebarMeta, getSortedPosts, toPostMeta } from "@/lib/posts"
-import { getSortedThoughts, toThoughtPreview } from "@/lib/thoughts"
+import { getSortedPosts } from "@/lib/posts"
+import { getSortedThoughts } from "@/lib/thoughts"
+import { buildHomeActivity } from "@/lib/home-activity"
+import "@/styles/home-bento.css"
 
 const title = "Jiely 的博客"
 const description = "记录 AI、算法、科研与生活"
-const posts = await getSortedPosts()
-const allArticles = posts.map((post) => toPostMeta(post))
-const sidebarMeta = buildSidebarMeta(allArticles)
-const thoughts = await getSortedThoughts()
-const thoughtPreviews = thoughts.map((thought) => toThoughtPreview(thought)).slice(0, 4)
+const [allPosts, thoughts] = await Promise.all([getSortedPosts(true), getSortedThoughts()])
+const posts = allPosts.filter((post) => !post.data.draft && post.data.published <= new Date())
+const latest = [...posts].sort((a, b) => b.data.published.getTime() - a.data.published.getTime())[0]
+const latestPost = latest ? {
+  title: latest.data.title,
+  description: latest.data.description,
+  image: latest.data.image,
+  href: `/posts/${latest.slug}/`,
+  date: latest.data.published.toISOString().slice(0, 10),
+} : undefined
+const activity = buildHomeActivity([
+  ...posts.map((post) => post.data.published.toISOString().slice(0, 10)),
+  ...thoughts.map((thought) => thought.data.published.toISOString().slice(0, 10)),
+])
+const categoryCounts = new Map<string, number>()
+for (const post of posts) {
+  // A topic appearing as both category and tag counts only once per article.
+  const names = new Set([post.data.category, ...post.data.tags].map(name => name?.trim()).filter(Boolean))
+  for (const name of names) {
+    if (name) categoryCounts.set(name, (categoryCounts.get(name) ?? 0) + 1)
+  }
+}
+const categories = [...categoryCounts].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 28)
 ---
 
 <BaseLayout {title} {description} fontProfile="interface">
-  <div class="min-h-screen bg-background dark:bg-surface-subtle">
+  <div class="serein-home">
     <SiteHeader />
     <main>
       <Hero
-        client:idle
-        articleCount={allArticles.length}
-        thoughtCount={thoughts.length}
-        projectCount={projects.length}
+        client:load
+        {latestPost}
+        {activity}
+        {categories}
       />
-      <section id="home-main" class="scroll-mt-24">
-        <ArticleList
-          client:visible
-          articles={allArticles}
-          title="全部文章"
-          showViewAll={false}
-          pagination={{ currentPage: 1, pageSize: PAGE_SIZE, basePath: "/" }}
-          sidebarCategories={sidebarMeta.categories}
-          sidebarTags={sidebarMeta.tags}
-          sidebarThoughts={thoughtPreviews}
-        />
-      </section>
     </main>
     <Footer />
   </div>

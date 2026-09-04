@@ -1,0 +1,19 @@
+.bento-card.bento-flip-matrix { grid-area: latest; padding: 8px 10px; overflow: hidden; background: var(--bento-surface); border-color: var(--bento-line); }
+.flip-matrix { height: 100%; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 4px; color: var(--bento-ink); }
+.flip-matrix-toolbar { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; }
+.flip-matrix-modes { display: flex; padding: 3px; gap: 3px; border-radius: 8px; border: 1px solid var(--bento-line); background: transparent; }
+.flip-matrix-modes button { border: 0; background: transparent; padding: 4px 9px; border-radius: 5px; font: 10px/1.4 monospace; text-transform: uppercase; color: var(--bento-muted); cursor: pointer; }
+.flip-matrix-modes button[aria-pressed="true"] { background: color-mix(in srgb, var(--bento-blue) 16%, transparent); color: var(--bento-ink); font-weight: 600; }
+.flip-matrix-display { min-height: 0; min-width: 0; display: flex; align-items: center; justify-content: center; container-type: size; }
+.flip-matrix-bezel { flex: none; width: 100%; height: 100%; min-width: 0; padding: 6px; border: 1px solid var(--bento-line); border-radius: 12px; background: transparent; }
+.flip-matrix-grid { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(31, minmax(0, 1fr)); grid-template-rows: repeat(9, minmax(0, 1fr)); gap: 2px; padding: 4px; border-radius: 7px; background: transparent; }
+.flip-disk { display: block; position: relative; width: 100%; height: 100%; min-width: 0; min-height: 0; perspective: 400px; cursor: crosshair; container-type: size; }
+.flip-disk-rotor { display: block; position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: min(100cqw, 100cqh); height: min(100cqw, 100cqh); transform-style: preserve-3d; transition: transform 600ms cubic-bezier(.34,1.56,.64,1); }
+.flip-disk[data-on="true"] .flip-disk-rotor { transform: rotateX(180deg); }
+.flip-disk:hover .flip-disk-rotor { transform: rotateX(90deg); transition-duration: 100ms; }
+.flip-disk-front, .flip-disk-back { position: absolute; inset: 0; border-radius: 50%; backface-visibility: hidden; border: 1px solid color-mix(in srgb, var(--bento-line) 65%, transparent); background: color-mix(in srgb, var(--bento-line) 45%, var(--bento-surface)); box-shadow: inset 0 1px 2px #00000008; }
+.flip-disk-back { transform: rotateX(180deg); background: var(--bento-blue); border-color: var(--bento-blue); box-shadow: inset 0 -1px 2px #00000012; }
+.flip-matrix-caption { min-width: 0; text-align: center; color: var(--bento-muted); font: 10px/1.4 monospace; }
+.flip-matrix-caption a { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.flip-matrix-caption a:hover { text-decoration: underline; }
+@media (prefers-reduced-motion: reduce) { .flip-disk-rotor { transition: none; } .flip-disk:hover .flip-disk-rotor { transform: none; } .flip-disk[data-on="true"]:hover .flip-disk-rotor { transform: rotateX(180deg); } }

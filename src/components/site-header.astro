@@ -1,21 +1,26 @@
 ---
-import { HeaderSearch } from "@/components/header-search"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { AccentToggle } from "@/components/accent-toggle"
 
-const navItems: { name: string; href: string; external?: boolean }[] = [
-  { name: "首页", href: "/#home-main" },
+const blogItems = [
+  { name: "文章", href: "/articles/" },
   { name: "时间线", href: "/timeline/" },
   { name: "碎碎念", href: "/thoughts/" },
   { name: "项目", href: "/projects/" },
+]
+
+const navItems = [
+  { name: "首页", href: "/#home-main" },
   { name: "友链", href: "/friends/" },
   { name: "留言板", href: "/messages/" },
   { name: "关于", href: "/about/" },
 ]
+
+const mobileItems = [navItems[0], ...blogItems, ...navItems.slice(1)]
 ---
 
-<header class="site-header fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50 py-4">
-  <div class="max-w-6xl mx-auto px-6 grid grid-cols-[1fr_auto_1fr] items-center">
+<header class="site-header fixed top-0 left-0 right-0 z-50 bg-background/88 backdrop-blur-xl border-b border-border/40 py-3">
+  <div class="site-header__inner mx-auto flex max-w-[78rem] items-center justify-between px-6">
     <a href="/#home-main" data-astro-prefetch class="group flex items-center gap-2.5 justify-self-start" aria-label="Whalefall 首页">
       <div class="relative h-8 w-9 overflow-hidden transition-transform duration-300 group-hover:scale-105" aria-hidden="true">
         <img
@@ -30,13 +35,19 @@ const navItems: { name: string; href: string; external?: boolean }[] = [
       <span class="hidden font-serif text-lg font-semibold tracking-tight text-[#0874c9] sm:block">Whalefall</span>
     </a>
 
-    <nav class="hidden md:flex items-center gap-8 justify-self-center">
-      {navItems.map((item) => (
+    <nav class="hidden md:flex items-center gap-7 ml-auto">
+      <details class="blog-menu relative">
+        <summary class="cursor-pointer list-none text-sm text-muted-foreground transition-colors hover:text-foreground">博客</summary>
+        <div class="blog-menu__panel absolute right-1/2 top-[calc(100%+0.8rem)] grid min-w-36 translate-x-1/2 gap-1 rounded-2xl border border-[var(--panel-border)] bg-background/96 p-2 shadow-xl backdrop-blur-xl">
+          {blogItems.map((item) => (
+            <a href={item.href} data-astro-prefetch class="rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-primary/8 hover:text-foreground">{item.name}</a>
+          ))}
+        </div>
+      </details>
+      {navItems.slice(1).map((item) => (
         <a
           href={item.href}
-          target={item.external ? "_blank" : undefined}
-          rel={item.external ? "noreferrer" : undefined}
-          data-astro-prefetch={item.external ? undefined : ""}
+          data-astro-prefetch
           class="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 relative group"
         >
           {item.name}
@@ -45,14 +56,12 @@ const navItems: { name: string; href: string; external?: boolean }[] = [
       ))}
     </nav>
 
-    <div class="hidden md:flex items-center gap-3 justify-self-end">
-      <HeaderSearch client:idle />
+    <div class="hidden md:flex items-center gap-3 ml-7">
       <AccentToggle />
       <ThemeToggle />
     </div>
 
-    <div class="flex items-center gap-1 md:hidden col-start-3 justify-self-end">
-      <HeaderSearch client:idle />
+    <div class="flex items-center gap-1 md:hidden ml-auto">
       <AccentToggle />
       <ThemeToggle />
       <button
@@ -98,12 +107,10 @@ const navItems: { name: string; href: string; external?: boolean }[] = [
     </div>
 
     <nav class="flex-1 flex flex-col items-center justify-center gap-7 px-8">
-      {navItems.map((item, i) => (
+      {mobileItems.map((item, i) => (
         <a
           href={item.href}
-          target={item.external ? "_blank" : undefined}
-          rel={item.external ? "noreferrer" : undefined}
-          data-astro-prefetch={item.external ? undefined : ""}
+          data-astro-prefetch
           class="mobile-nav-item group text-3xl font-medium tracking-tight text-foreground"
           style={`--stagger: ${60 + i * 40}ms`}
         >
@@ -123,6 +130,10 @@ const navItems: { name: string; href: string; external?: boolean }[] = [
     opacity: 1;
     pointer-events: auto;
   }
+
+  .blog-menu > summary::-webkit-details-marker { display: none; }
+  .blog-menu:not([open]) .blog-menu__panel { pointer-events: none; opacity: 0; transform: translate(50%, -5px); }
+  .blog-menu__panel { transform: translate(50%, 0); transition: opacity 160ms ease, transform 160ms ease; }
 
   .mobile-menu .mobile-nav-item {
     opacity: 0;

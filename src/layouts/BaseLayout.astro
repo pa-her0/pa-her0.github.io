@@ -2,6 +2,7 @@
 import "@/styles/global.css"
 import { ClientRouter } from "astro:transitions"
 import CursorTrail from "@/components/CursorTrail.astro"
+import { ArticleActions } from "@/components/article-actions"
 
 interface Props {
   title?: string
@@ -37,6 +38,7 @@ const {
 } = Astro.props as Props
 
 const useHarmonySans = fontProfile === "interface"
+const showArticleActions = Astro.url.pathname.startsWith("/posts/") || Astro.url.pathname.startsWith("/articles") || /^\/\d+\/?$/.test(Astro.url.pathname)
 const canonicalUrl = canonical || Astro.url.toString()
 const resolvedOgTitle = ogTitle || title
 const resolvedOgDescription = ogDescription || description
@@ -98,8 +100,9 @@ const resolvedTwitterDescription = twitterDescription || description
           document.documentElement.classList.toggle('dark', theme === 'dark');
         };
         const applyAccent = () => {
-          const stored = localStorage.getItem('accent-theme');
-          const accent = stored === 'red' ? 'red' : 'orange';
+          // New palette defaults to homepage blue, without deleting the old preference.
+          const stored = localStorage.getItem('accent-theme-v2');
+          const accent = stored === 'red' || stored === 'orange' ? stored : 'blue';
           document.documentElement.dataset.accent = accent;
           document.querySelectorAll('[data-accent-option]').forEach((button) => {
             button.setAttribute('aria-pressed', String(button.getAttribute('data-accent-option') === accent));
@@ -123,8 +126,8 @@ const resolvedTwitterDescription = twitterDescription || description
           document.documentElement.classList.toggle('dark', next === 'dark');
         };
         const setAccent = (accent) => {
-          const next = accent === 'red' ? 'red' : 'orange';
-          localStorage.setItem('accent-theme', next);
+          const next = accent === 'red' || accent === 'orange' ? accent : 'blue';
+          localStorage.setItem('accent-theme-v2', next);
           document.documentElement.dataset.accent = next;
           if (typeof window.__applyAccent === 'function') window.__applyAccent();
         };
@@ -137,12 +140,29 @@ const resolvedTwitterDescription = twitterDescription || description
           if (accentButton) {
             event.preventDefault();
             setAccent(accentButton.getAttribute('data-accent-option'));
+            const palette = accentButton.closest('[data-palette-menu]');
+            if (palette) {
+              palette.removeAttribute('open');
+              palette.querySelector('summary')?.focus();
+            }
             return;
           }
           const button = target.closest('[data-theme-toggle]');
           if (!button) return;
           event.preventDefault();
           toggleTheme();
+        });
+        document.addEventListener('pointerdown', (event) => {
+          document.querySelectorAll('[data-palette-menu][open]').forEach((palette) => {
+            if (event.target instanceof Node && !palette.contains(event.target)) palette.removeAttribute('open');
+          });
+        });
+        document.addEventListener('keydown', (event) => {
+          if (event.key !== 'Escape') return;
+          document.querySelectorAll('[data-palette-menu][open]').forEach((palette) => {
+            palette.removeAttribute('open');
+            palette.querySelector('summary')?.focus();
+          });
         });
       })();
     </script>
@@ -163,6 +183,7 @@ const resolvedTwitterDescription = twitterDescription || description
   </head>
   <body class:list={["bg-background text-foreground", { "font-profile-interface": useHarmonySans }]}>
     <slot />
+    {showArticleActions && <ArticleActions client:load />}
     <CursorTrail />
     <script is:inline>
       // View Transitions 页面切换后重应用主题

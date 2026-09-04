@@ -17,8 +17,10 @@ const {
 
 const sketchId = `sketch-${Math.random().toString(36).slice(2, 10)}`
 
+// Split generated tags so Vite's dependency scanner does not parse this
+// frontmatter template as a real client script (with an unexpanded ${...}).
 const resizeScript = autoSize
-  ? `<script>(function(){function post(){var h=Math.max(document.documentElement.scrollHeight,document.body?document.body.scrollHeight:0);parent.postMessage({__sketch:true,id:${JSON.stringify(sketchId)},height:h},'*');}var ro=new ResizeObserver(post);ro.observe(document.documentElement);if(document.body)ro.observe(document.body);window.addEventListener('load',post);setTimeout(post,50);setTimeout(post,300);})();<\/script>`
+  ? "<scr" + `ipt>(function(){function post(){var h=Math.max(document.documentElement.scrollHeight,document.body?document.body.scrollHeight:0);parent.postMessage({__sketch:true,id:${JSON.stringify(sketchId)},height:h},'*');}var ro=new ResizeObserver(post);ro.observe(document.documentElement);if(document.body)ro.observe(document.body);window.addEventListener('load',post);setTimeout(post,50);setTimeout(post,300);})();</scr` + "ipt>"
   : ""
 
 const hasDoctype = html.trim().toLowerCase().startsWith("<!doctype")

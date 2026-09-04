@@ -39,6 +39,22 @@ export default defineConfig({
   alias: {
     "@": "./src",
   },
+  vite: {
+    plugins: [{
+      name: "isolated-dependency-cache",
+      config(_config, { mode }) {
+        // Astro's build/check can optimize dependencies while dev is still running.
+        // Never overwrite development React modules with production variants.
+        return { cacheDir: mode === "production" ? "node_modules/.vite-production" : "node_modules/.vite-development" }
+      },
+    }],
+    resolve: { dedupe: ["react", "react-dom"] },
+    optimizeDeps: {
+      include: ["liquid-gooey", "@splinetool/react-spline", "framer-motion"],
+      // Keep Spline's scene-version updater chunks relative to its runtime file.
+      exclude: ["@splinetool/runtime"],
+    },
+  },
   integrations: [
     expressiveCode({
       themes: ["github-dark", "github-light"],

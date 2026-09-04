@@ -40,7 +40,7 @@ export function Sidebar({
   return (
     <aside className="w-full lg:w-72 shrink-0 space-y-8">
       {/* Author Card */}
-      <div className="bg-card border border-border/50 rounded-xl p-6 text-center">
+      <div className="site-panel p-6 text-center">
         <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-primary/20">
           <img
             src={profile.avatar}
@@ -94,7 +94,7 @@ export function Sidebar({
       </div>
 
       {/* Categories */}
-      <div className="bg-card border border-border/50 rounded-xl p-5">
+      <div className="site-panel p-5">
         <div className="flex items-center gap-2 mb-4">
           <div className="w-1 h-4 bg-primary rounded-full" />
           <h4 className="font-medium text-foreground">分类</h4>
@@ -137,7 +137,7 @@ export function Sidebar({
       </div>
 
       {/* Tags */}
-      <div className="bg-card border border-border/50 rounded-xl p-5">
+      <div className="site-panel p-5">
         <div className="flex items-center gap-2 mb-4">
           <div className="w-1 h-4 bg-primary rounded-full" />
           <h4 className="font-medium text-foreground">标签</h4>

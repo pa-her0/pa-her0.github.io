@@ -1,127 +1,60 @@
 "use client"
 
-import type { CSSProperties } from "react"
-import { Calendar, Folder, Hash, ChevronRight, Clock } from "lucide-react"
+import { useState, type CSSProperties } from "react"
 import type { ArticleMeta } from "./article-list"
+import { profile } from "@/data/profile"
 import { cn } from "@/lib/utils"
+import { articleDisplayDate } from "@/lib/post-updated"
+import "@/styles/article-card.css"
 
-export function ArticleCard({
-  article,
-  className,
-  style,
-}: {
+export function ArticleCard({ article, className, style }: {
   article: ArticleMeta
   className?: string
   style?: CSSProperties
 }) {
-  const primaryTag = article.tags?.[0]
-  const wordCount = article.wordCount ? `${article.wordCount} 字` : "——"
-  const readTime = article.readTime ?? "——"
-  const categoryHref = `/?category=${encodeURIComponent(article.category)}#home-main`
-  const tagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#home-main` : undefined
+  const [failedImage, setFailedImage] = useState<string>()
   const postHref = `/posts/${article.slug}/`
+  const hasImage = article.image && article.image !== failedImage
+  const tags = [...new Set(article.tags ?? [])]
+  const displayDate = articleDisplayDate(article)
 
   return (
-    <article
-      className={cn(
-        "group relative bg-card border border-border/50 rounded-xl p-5",
-        className,
-      )}
-      style={style}
-    >
-      <a
-        href={postHref}
-        data-astro-prefetch="hover"
-        className="absolute inset-0 z-0 rounded-xl"
-        aria-label={`阅读：${article.title}`}
-      />
-
-      {/* Pinned indicator */}
-      {article.pinned && (
-        <span className="pointer-events-none absolute top-4 right-4 z-10 text-[11px] font-medium tracking-wide text-muted-foreground/80">
-          置顶
-        </span>
-      )}
-
-      <div className="pointer-events-none relative z-10 flex gap-4 sm:gap-5">
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <h3 className="font-display-sans text-[19px] font-semibold text-foreground mb-3 leading-[1.4] group-hover:text-primary dark:group-hover:text-foreground transition-colors duration-75 flex items-start gap-2">
-            <span className="w-1 h-6 shrink-0 bg-primary rounded-full" />
-            <a
-              href={postHref}
-              data-astro-prefetch="hover"
-              className="pointer-events-auto flex-1 min-w-0 hover:text-primary transition-colors duration-75"
-            >
-              {article.title}
-            </a>
-            {article.image ? (
-              <div className="sm:hidden block w-20 h-14 shrink-0 rounded-lg overflow-hidden">
-                <img
-                  src={article.image}
-                  alt=""
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-            ) : null}
-          </h3>
-
-          {/* Meta info */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted-foreground mb-3">
-            <span className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5" />
-              {article.date}
-            </span>
-            {article.updated && article.updated !== article.date && (
-              <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5" />
-                {article.updated}
-              </span>
-            )}
-            <a href={categoryHref} className="pointer-events-auto inline-flex items-center gap-1.5 hover:text-primary transition-colors">
-              <Folder className="w-3.5 h-3.5" />
-              {article.categoryLabel}
-            </a>
-            {tagHref ? (
-              <a href={tagHref} className="pointer-events-auto inline-flex items-center gap-1.5 hover:text-primary transition-colors">
-                <Hash className="w-3.5 h-3.5" />
-                {primaryTag}
-              </a>
-            ) : (
-              <span className="flex items-center gap-1.5">
-                <Hash className="w-3.5 h-3.5" />
-                未标签
-              </span>
-            )}
+    <article className={cn("article-preview", className)} style={style}>
+      <a href={postHref} data-astro-prefetch="hover" className="article-preview__cover" tabIndex={-1} aria-hidden="true">
+        {hasImage ? (
+          <img src={article.image} alt="" loading="lazy" decoding="async"
+            onError={() => setFailedImage(article.image)} />
+        ) : (
+          <div className="article-preview__placeholder">
+            <span>{article.categoryLabel} / NOTES</span>
+            <strong>{article.title}</strong>
+            <span>WHALEFALL · {displayDate.slice(0, 4)}</span>
           </div>
+        )}
+      </a>
 
-          {/* Excerpt */}
-          <p className="text-content-secondary text-sm leading-relaxed mb-3 line-clamp-2">{article.excerpt}</p>
+      <div className="article-preview__body">
+        <h3 className="article-preview__title">
+          <a href={postHref} data-astro-prefetch="hover">{article.title}</a>
+          {article.pinned && <span className="article-preview__pinned">置顶</span>}
+        </h3>
+        {article.excerpt && <p className="article-preview__excerpt">{article.excerpt}</p>}
 
-          {/* Footer stats */}
-          <div className="flex items-center gap-3 text-[13px] text-muted-foreground">
-            <span>{wordCount}</span>
-            <span className="text-border">|</span>
-            <span>{readTime}</span>
-          </div>
+        <div className="article-preview__meta">
+          <a href="/about/" className="article-preview__author">
+            <img src={profile.avatar} alt="" width={24} height={24} loading="lazy" />
+            {profile.name}
+          </a>
+          <time dateTime={displayDate} aria-label={`更新于 ${displayDate}`}
+            title={`最后更新：${displayDate} · 创建于：${article.date}`}>{displayDate}</time>
+          <span title={article.wordCount != null ? `${article.wordCount} 字` : undefined}>{article.readTime ?? "阅读文章"}</span>
         </div>
 
-        {/* Thumbnail (optional) */}
-        {article.image ? (
-          <div className="hidden sm:block w-28 h-20 shrink-0 rounded-lg overflow-hidden">
-            <img
-              src={article.image}
-              alt=""
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              loading="lazy"
-            />
-          </div>
-        ) : null}
-
-        {/* Arrow */}
-        <div className="hidden sm:flex items-center shrink-0 text-muted-foreground opacity-0 group-hover:text-primary group-hover:opacity-100 transition-[color,opacity] duration-200">
-          <ChevronRight className="w-5 h-5" />
+        <div className="article-preview__tags" aria-label="文章分类与标签">
+          <a href={`/articles/?category=${encodeURIComponent(article.category)}`} className="article-preview__category">{article.categoryLabel}</a>
+          {tags.filter((tag) => tag !== article.categoryLabel).map((tag) => (
+            <a key={tag} href={`/articles/?tag=${encodeURIComponent(tag)}`}># {tag}</a>
+          ))}
         </div>
       </div>
     </article>

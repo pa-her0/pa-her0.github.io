@@ -10,8 +10,10 @@ const description = "Jiely 的学习、研究与博客介绍"
 ---
 
 <BaseLayout {title} {description} fontProfile="interface">
+  <div class="site-page">
   <SiteHeader />
   <AboutPage client:load />
   <Comments />
   <Footer />
+  </div>
 </BaseLayout>

@@ -1,0 +1,799 @@
+---
+import { projects } from '@/data/projects'
+
+const layouts = [
+  {
+    openX: '-236px',
+    mobileX: '-176px',
+    openY: '62px',
+    openR: '-14deg',
+    peekX: '-54px',
+    peekY: '-54px',
+    peekR: '-7deg',
+    width: '184px',
+    height: '148px',
+    delay: '0ms',
+  },
+  {
+    openX: '-126px',
+    mobileX: '-88px',
+    openY: '2px',
+    openR: '-7deg',
+    peekX: '-28px',
+    peekY: '-74px',
+    peekR: '-3deg',
+    width: '168px',
+    height: '194px',
+    delay: '38ms',
+  },
+  {
+    openX: '0px',
+    mobileX: '0px',
+    openY: '-30px',
+    openR: '-1deg',
+    peekX: '0px',
+    peekY: '-86px',
+    peekR: '1deg',
+    width: '184px',
+    height: '170px',
+    delay: '76ms',
+  },
+  {
+    openX: '130px',
+    mobileX: '88px',
+    openY: '0px',
+    openR: '7deg',
+    peekX: '30px',
+    peekY: '-72px',
+    peekR: '4deg',
+    width: '166px',
+    height: '194px',
+    delay: '114ms',
+  },
+  {
+    openX: '238px',
+    mobileX: '176px',
+    openY: '60px',
+    openR: '14deg',
+    peekX: '56px',
+    peekY: '-52px',
+    peekR: '8deg',
+    width: '184px',
+    height: '148px',
+    delay: '152ms',
+  },
+]
+
+const folderProjects = projects.slice(0, layouts.length).map((project, index) => ({
+  ...project,
+  ...layouts[index],
+  index: String(index + 1).padStart(2, '0'),
+}))
+---
+
+<section class="project-folder-hero" aria-labelledby="project-folder-heading">
+  <div class="project-folder-hero__word" aria-hidden="true">
+    PROJECT<br />ARCHIVE
+  </div>
+
+  <div class="project-folder-hero__copy">
+    <div>
+      <p>PROJECT ARCHIVE / {String(folderProjects.length).padStart(2, '0')}</p>
+      <h1 id="project-folder-heading">研究与实践项目</h1>
+    </div>
+  </div>
+
+  <div class="project-folder-stage">
+    <div
+      class="project-folder"
+      data-project-folder
+      data-folder-open="false"
+      aria-label="Jiely 的项目文件夹"
+    >
+      <div class="project-folder__shadow" aria-hidden="true"></div>
+      <div class="project-folder__shell">
+        <div class="project-folder__back" aria-hidden="true">
+          <span>SELECTED WORKS</span>
+        </div>
+
+        <div class="project-folder__cards" aria-label="项目卡片">
+          {folderProjects.map((project) => (
+            <a
+              class="folder-project-card"
+              href={project.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`打开项目：${project.name}`}
+              style={`--open-x:${project.openX};--mobile-open-x:${project.mobileX};--open-y:${project.openY};--open-r:${project.openR};--peek-x:${project.peekX};--peek-y:${project.peekY};--peek-r:${project.peekR};--card-width:${project.width};--card-height:${project.height};--card-delay:${project.delay};--card-accent:${project.accent};--card-z:${project.index};`}
+            >
+              <span class="folder-project-card__surface">
+                <span class="folder-project-card__topline">
+                  <span>{project.index}</span>
+                  <span>{project.category}</span>
+                </span>
+                <span class="folder-project-card__visual">
+                  <img
+                    src={project.cover}
+                    alt=""
+                    loading="eager"
+                    style={`object-fit:${project.coverFit}`}
+                  />
+                </span>
+                <span class="folder-project-card__caption">
+                  <strong>{project.shortName}</strong>
+                  <span>{project.badge}</span>
+                </span>
+                <span class="folder-project-card__arrow" aria-hidden="true">↗</span>
+              </span>
+            </a>
+          ))}
+        </div>
+
+        <button
+          class="project-folder__front"
+          type="button"
+          data-folder-toggle
+          aria-expanded="false"
+          aria-label="展开项目文件夹"
+        >
+          <span class="project-folder__label">
+            <small>JIELY / {folderProjects.length} FILES</small>
+            <strong>Projects</strong>
+          </span>
+          <span class="project-folder__sticker" aria-hidden="true">
+            <img src="/brand/whalefall-logo.png" alt="" />
+          </span>
+          <span class="project-folder__action" aria-hidden="true">
+            <span></span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-folder-hero__footer" aria-hidden="true">
+    <span>AI · MULTI-AGENT · COMPUTER VISION</span>
+    <span>OPEN THE FOLDER ↑</span>
+  </div>
+</section>
+
+<script is:inline data-astro-rerun>
+  function setupProjectFolder() {
+    document.querySelectorAll('[data-project-folder]').forEach((folder) => {
+      if (folder.dataset.folderReady === 'true') return
+      folder.dataset.folderReady = 'true'
+
+      const toggle = folder.querySelector('[data-folder-toggle]')
+      folder.dataset.folderPinned = 'false'
+
+      const setOpen = (open) => {
+        folder.dataset.folderOpen = String(open)
+        folder.classList.toggle('is-open', open)
+        toggle?.setAttribute('aria-expanded', String(open))
+        toggle?.setAttribute(
+          'aria-label',
+          open ? '收起项目文件夹' : '展开项目文件夹',
+        )
+      }
+
+      toggle?.addEventListener('click', () => {
+        const pinned = folder.dataset.folderPinned !== 'true'
+        folder.dataset.folderPinned = String(pinned)
+        setOpen(pinned)
+      })
+
+      folder.addEventListener('pointerenter', (event) => {
+        if (event.pointerType !== 'touch') setOpen(true)
+      })
+
+      folder.addEventListener('pointerleave', (event) => {
+        if (
+          event.pointerType !== 'touch' &&
+          folder.dataset.folderPinned !== 'true' &&
+          !folder.contains(document.activeElement)
+        ) {
+          setOpen(false)
+        }
+      })
+
+      folder.addEventListener('focusin', () => setOpen(true))
+      folder.addEventListener('focusout', (event) => {
+        if (
+          !folder.contains(event.relatedTarget) &&
+          folder.dataset.folderPinned !== 'true'
+        ) {
+          setOpen(false)
+        }
+      })
+    })
+  }
+
+  setupProjectFolder()
+</script>
+
+<style>
+  .project-folder-hero {
+    position: relative;
+    min-height: min(760px, calc(100svh - 4.5rem));
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    color: var(--foreground);
+    isolation: isolate;
+  }
+
+  .project-folder-hero::before {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(circle at 50% 44%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 34%),
+      linear-gradient(180deg, color-mix(in oklab, var(--background) 92%, transparent), var(--background));
+    content: '';
+  }
+
+  .project-folder-hero::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--foreground) 9%, transparent) 0 1px,
+      transparent 1.2px
+    );
+    background-position: center;
+    background-size: 28px 28px;
+    content: '';
+    opacity: 0.34;
+    mask-image: radial-gradient(circle at center, black, transparent 70%);
+  }
+
+  .project-folder-hero__copy,
+  .project-folder-hero__footer {
+    position: relative;
+    z-index: 4;
+    width: min(100% - 3rem, 72rem);
+    margin-inline: auto;
+  }
+
+  .project-folder-hero__copy {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 3rem;
+    padding-top: 2.5rem;
+  }
+
+  .project-folder-hero__copy > div > p,
+  .project-folder-hero__footer {
+    font-family: var(--font-mono);
+    font-size: 0.67rem;
+    letter-spacing: 0.14em;
+  }
+
+  .project-folder-hero__copy > div > p {
+    margin: 0 0 0.65rem;
+    color: var(--muted-foreground);
+  }
+
+  .project-folder-hero__copy h1 {
+    margin: 0;
+    font-family: var(--font-serif-cn);
+    font-size: clamp(2.2rem, 5vw, 4.5rem);
+    font-weight: 650;
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+  }
+
+  .project-folder-hero__word {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 0;
+    color: transparent;
+    font-family: var(--font-sans);
+    font-size: clamp(6rem, 17vw, 13rem);
+    font-weight: 850;
+    line-height: 0.72;
+    letter-spacing: -0.09em;
+    opacity: 0.12;
+    pointer-events: none;
+    text-align: center;
+    -webkit-text-stroke: 1px var(--foreground);
+    transform: translate(-50%, -43%);
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .project-folder-stage {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    min-height: 540px;
+    place-items: center;
+    perspective: 1400px;
+  }
+
+  .project-folder {
+    --folder-front-rest: translateX(-50%) translateY(0) rotateX(0deg) scale(0.97);
+    --folder-front-open: translateX(-50%) translateY(28px) rotateX(-8deg) scale(0.92);
+    --folder-back-rest: translateX(-50%) translateY(0) scale(0.97);
+    --folder-back-open: translateX(-50%) translateY(27px) scale(0.92);
+    position: relative;
+    width: 520px;
+    height: 390px;
+    outline: none;
+    transform: translateY(34px);
+    transform-style: preserve-3d;
+  }
+
+  .project-folder__shell {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    animation: project-folder-float 3.2s ease-in-out infinite;
+  }
+
+  .project-folder__shadow {
+    position: absolute;
+    right: 105px;
+    bottom: 4px;
+    left: 105px;
+    z-index: 0;
+    height: 38px;
+    border-radius: 999px;
+    background: radial-gradient(
+      ellipse at center,
+      color-mix(in oklab, var(--primary) 52%, transparent),
+      transparent 72%
+    );
+    filter: blur(14px);
+    opacity: 0.55;
+    transition: 0.5s ease;
+  }
+
+  .project-folder__back,
+  .project-folder__front,
+  .project-folder__cards {
+    position: absolute;
+    left: 50%;
+    transform-style: preserve-3d;
+  }
+
+  .project-folder__back {
+    bottom: 66px;
+    z-index: 5;
+    width: 402px;
+    height: 286px;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, white 22%, transparent);
+    border-radius: 34px;
+    background:
+      linear-gradient(150deg, color-mix(in oklab, white 22%, transparent), transparent 42%),
+      color-mix(in oklab, var(--primary) 82%, var(--foreground));
+    box-shadow:
+      inset 0 1px color-mix(in oklab, white 34%, transparent),
+      0 22px 34px color-mix(in oklab, var(--primary) 16%, transparent);
+    clip-path: polygon(0 0, 34% 0, 46% 22%, 100% 22%, 100% 100%, 0 100%);
+    transform: var(--folder-back-rest);
+    transition: transform 0.58s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .project-folder__back span {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    color: color-mix(in oklab, white 82%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+  }
+
+  .project-folder__cards {
+    bottom: 182px;
+    z-index: 10;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+
+  :global(.folder-project-card) {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: var(--card-z);
+    display: block;
+    width: var(--card-width);
+    height: var(--card-height);
+    color: #111;
+    opacity: 0.96;
+    pointer-events: none;
+    transform: translate(calc(-50% + var(--peek-x)), calc(var(--peek-y) + 72px)) rotate(var(--peek-r)) scale(0.76);
+    transform-origin: center bottom;
+    transition:
+      transform 0.58s cubic-bezier(0.2, 0.8, 0.2, 1) var(--card-delay),
+      box-shadow 0.35s ease var(--card-delay),
+      filter 0.24s ease,
+      opacity 0.24s ease;
+  }
+
+  :global(.folder-project-card__surface) {
+    position: relative;
+    display: grid;
+    width: 100%;
+    height: 100%;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, var(--card-accent) 22%, #fff);
+    border-radius: 18px;
+    background: #fff;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.82),
+      0 18px 38px rgba(15, 23, 42, 0.16);
+  }
+
+  :global(.folder-project-card__surface::after) {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.34), transparent 40%);
+    content: '';
+    pointer-events: none;
+  }
+
+  :global(.folder-project-card__topline) {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-height: 1.8rem;
+    padding: 0.45rem 0.6rem;
+    color: color-mix(in oklab, var(--card-accent) 72%, #222);
+    background: color-mix(in oklab, var(--card-accent) 10%, white);
+    font-family: var(--font-mono);
+    font-size: 0.46rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  :global(.folder-project-card__topline span:last-child) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :global(.folder-project-card__visual) {
+    position: relative;
+    display: block;
+    min-height: 0;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 70% 30%, color-mix(in oklab, var(--card-accent) 24%, transparent), transparent 45%),
+      color-mix(in oklab, var(--card-accent) 8%, #f3f3ef);
+  }
+
+  :global(.folder-project-card__visual img) {
+    width: 100%;
+    height: 100%;
+    object-position: center;
+  }
+
+  :global(.folder-project-card__caption) {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.55rem 0.65rem 0.6rem;
+    border-top: 3px solid var(--card-accent);
+    background: #fff;
+  }
+
+  :global(.folder-project-card__caption strong) {
+    overflow: hidden;
+    font-size: 0.72rem;
+    font-weight: 760;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :global(.folder-project-card__caption span) {
+    overflow: hidden;
+    color: #6f6f6b;
+    font-size: 0.48rem;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :global(.folder-project-card__arrow) {
+    position: absolute;
+    top: 2.18rem;
+    right: 0.5rem;
+    z-index: 4;
+    display: grid;
+    width: 1.45rem;
+    height: 1.45rem;
+    place-items: center;
+    border-radius: 999px;
+    color: #111;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.14);
+    font-size: 0.62rem;
+    backdrop-filter: blur(8px);
+  }
+
+  .project-folder__front {
+    bottom: 46px;
+    z-index: 15;
+    display: flex;
+    width: 420px;
+    height: 222px;
+    align-items: end;
+    justify-content: space-between;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, white 27%, transparent);
+    border-radius: 38px;
+    background:
+      linear-gradient(118deg, rgba(255, 255, 255, 0.28), transparent 48%),
+      color-mix(in oklab, var(--primary) 70%, transparent);
+    padding: 0 2rem 1.75rem;
+    color: white;
+    cursor: pointer;
+    box-shadow:
+      inset 0 1px rgba(255, 255, 255, 0.34),
+      inset 0 -22px 36px rgba(255, 255, 255, 0.08),
+      0 16px 30px color-mix(in oklab, var(--primary) 18%, transparent);
+    backdrop-filter: blur(13px) saturate(1.35);
+    transform: var(--folder-front-rest);
+    transform-origin: 50% 100%;
+    transition:
+      transform 0.58s cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 0.32s ease,
+      box-shadow 0.32s ease;
+  }
+
+  .project-folder__front::before {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(112deg, rgba(255, 255, 255, 0.17), transparent 35%),
+      radial-gradient(circle at 48% 58%, rgba(255, 255, 255, 0.1), transparent 34%);
+    content: '';
+    pointer-events: none;
+  }
+
+  .project-folder__label {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: 0.35rem;
+    text-align: left;
+  }
+
+  .project-folder__label small {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  .project-folder__label strong {
+    font-family: var(--font-serif);
+    font-size: 2.05rem;
+    font-weight: 650;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .project-folder__sticker {
+    position: absolute;
+    top: 1.15rem;
+    left: 50%;
+    z-index: 3;
+    display: grid;
+    width: 4.5rem;
+    height: 4.5rem;
+    place-items: center;
+    border: 3px solid white;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 3px 5px 0 rgba(59, 36, 11, 0.12);
+    transform: translateX(-50%) rotate(-8deg);
+    transition: transform 0.48s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .project-folder__sticker img {
+    width: 3.5rem;
+    height: 3.5rem;
+    object-fit: contain;
+  }
+
+  .project-folder__action {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    width: 3.35rem;
+    height: 3.35rem;
+    place-items: center;
+    border-radius: 999px;
+    color: var(--primary);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow:
+      inset 0 1px rgba(255, 255, 255, 0.9),
+      0 8px 18px rgba(80, 44, 5, 0.14);
+  }
+
+  .project-folder__action span {
+    position: relative;
+    width: 1.35rem;
+    height: 0.8rem;
+  }
+
+  .project-folder__action span::before,
+  .project-folder__action span::after {
+    position: absolute;
+    content: '';
+  }
+
+  .project-folder__action span::before {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: 99px;
+    background: currentColor;
+    transform: translateY(-50%);
+  }
+
+  .project-folder__action span::after {
+    top: 0.08rem;
+    right: 0;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-top: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: rotate(45deg);
+  }
+
+  .project-folder.is-open :global(.folder-project-card) {
+    z-index: calc(6 + var(--card-z));
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(calc(-50% + var(--open-x)), var(--open-y)) rotate(var(--open-r)) scale(1);
+  }
+
+  .project-folder.is-open :global(.folder-project-card:hover),
+  .project-folder :global(.folder-project-card:focus-visible) {
+    z-index: 25;
+    filter: saturate(1.06) brightness(1.03);
+    transform: translate(calc(-50% + var(--open-x)), calc(var(--open-y) - 10px)) rotate(0deg) scale(1.06);
+  }
+
+  :global(.folder-project-card:focus-visible) {
+    border-radius: 18px;
+    outline: 2px solid var(--foreground);
+    outline-offset: 5px;
+  }
+
+  .project-folder.is-open .project-folder__back {
+    transform: var(--folder-back-open);
+  }
+
+  .project-folder.is-open .project-folder__front {
+    opacity: 0.82;
+    transform: var(--folder-front-open);
+  }
+
+  .project-folder.is-open .project-folder__sticker {
+    transform: translateX(-50%) translateY(4px) rotate(-3deg) scale(0.96);
+  }
+
+  .project-folder.is-open .project-folder__shadow {
+    opacity: 0.76;
+    transform: translateY(18px) scaleX(1.28);
+  }
+
+  .project-folder-hero__footer {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1.35rem;
+    color: var(--muted-foreground);
+    font-size: 0.58rem;
+  }
+
+  @keyframes project-folder-float {
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-10px) scale(1.012);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .project-folder-hero {
+      min-height: 720px;
+    }
+
+    .project-folder-hero__copy {
+      align-items: start;
+    }
+
+    .project-folder-stage {
+      min-height: 520px;
+    }
+
+    .project-folder {
+      transform: translateY(38px) scale(0.86);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .project-folder-hero {
+      min-height: 650px;
+    }
+
+    .project-folder-hero__copy,
+    .project-folder-hero__footer {
+      width: auto;
+      margin-inline: 1rem;
+    }
+
+    .project-folder-hero__copy {
+      display: block;
+      padding-top: 1.75rem;
+    }
+
+    .project-folder-hero__copy h1 {
+      font-size: 2.45rem;
+    }
+
+    .project-folder-hero__word {
+      font-size: 6rem;
+      line-height: 0.77;
+    }
+
+    .project-folder-stage {
+      min-height: 450px;
+    }
+
+    .project-folder {
+      transform: translateY(40px) scale(0.65);
+    }
+
+    .project-folder.is-open :global(.folder-project-card) {
+      transform: translate(calc(-50% + var(--mobile-open-x)), var(--open-y)) rotate(var(--open-r)) scale(1);
+    }
+
+    .project-folder.is-open :global(.folder-project-card:hover),
+    .project-folder :global(.folder-project-card:focus-visible) {
+      transform: translate(calc(-50% + var(--mobile-open-x)), calc(var(--open-y) - 8px)) rotate(0deg) scale(1.04);
+    }
+
+    .project-folder-hero__footer span:first-child {
+      display: none;
+    }
+
+    .project-folder-hero__footer {
+      justify-content: flex-end;
+      padding-bottom: 1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-folder__shell {
+      animation: none;
+    }
+
+    :global(.folder-project-card),
+    .project-folder__back,
+    .project-folder__front,
+    .project-folder__sticker {
+      transition-duration: 0.01ms;
+    }
+  }
+</style>

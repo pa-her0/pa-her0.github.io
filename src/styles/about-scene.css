@@ -1,0 +1,15 @@
+.bento-card.bento-about-scene { grid-area: portrait; display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden; isolation: isolate; box-shadow: none; color: var(--bento-ink); background: var(--bento-surface); border-color: var(--bento-line); }
+.about-scene-heading { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 12px 15px 0; pointer-events: none; }
+.about-scene-heading h2 { margin: 0; font-size: 14px; font-weight: 500; }
+.about-scene-heading > span { font: 8px/1.4 monospace; letter-spacing: .08em; color: var(--bento-muted); }
+.about-scene-viewport { flex: 1; min-height: 0; width: 100%; position: relative; }
+.about-scene-canvas { position: absolute !important; inset: 0; }
+.about-scene-canvas canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; }
+.about-scene-link { align-self: flex-end; position: relative; z-index: 2; display: flex; align-items: center; gap: 5px; padding: 5px 15px 10px; font-size: 11px; color: var(--bento-ink); }
+.about-scene-link:hover { color: var(--bento-blue); }
+.about-scene-spotlight { position: absolute; pointer-events: none; z-index: 1; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--bento-blue) 22%, transparent), transparent 75%); filter: blur(12px); transition: opacity .2s; }
+.about-scene-status { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; text-align: center; font-size: 10px; color: var(--bento-muted); }
+.about-scene-loader { width: 18px; height: 18px; border: 2px solid var(--bento-line); border-top-color: var(--bento-blue); border-radius: 50%; animation: about-scene-spin 1s linear infinite; }
+@keyframes about-scene-spin { to { transform: rotate(360deg); } }
+@media (max-width: 600px) { .about-scene-heading { padding: 12px 10px 0; } .about-scene-heading > span { display: none; } }
+@media (prefers-reduced-motion: reduce) { .about-scene-spotlight { display: none; } .about-scene-loader { animation: none; } }

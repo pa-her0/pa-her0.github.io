@@ -23,16 +23,16 @@ const directionTone = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-background dark:bg-surface-subtle">
-      <main className="pt-32 pb-20">
-        <div className="max-w-4xl mx-auto px-6">
-          <section className="mb-14 flex flex-col gap-8 md:flex-row md:items-center">
+    <div className="bg-background dark:bg-surface-subtle">
+      <main className="pb-20 pt-28 sm:pt-32">
+        <div className="page-shell max-w-4xl">
+          <section className="site-panel mb-6 flex flex-col gap-8 p-7 md:flex-row md:items-center sm:p-9">
             <img
               src={profile.avatar}
               alt={profile.name}
               width={152}
               height={152}
-              className="h-36 w-36 rounded-2xl border-2 border-border object-cover shadow-lg"
+              className="h-36 w-36 rounded-[1.35rem] border border-[var(--panel-border)] object-cover shadow-lg"
             />
             <div>
               <p className="mb-2 text-sm uppercase tracking-[0.22em] text-primary">About</p>
@@ -47,7 +47,7 @@ export default function AboutPage() {
           </section>
 
           <div className="space-y-6">
-            <section className="rounded-2xl border border-border bg-card p-7">
+            <section className="site-panel p-7">
               <h2 className="mb-5 text-xl font-semibold text-foreground">教育与研究</h2>
               <div className="grid gap-2 sm:grid-cols-[13rem_minmax(0,1fr)] sm:items-start sm:gap-8">
                 <div>
@@ -57,7 +57,7 @@ export default function AboutPage() {
                 <p className="leading-7 text-foreground/80">关注人工智能、多智能体系统、算法交易与计算机视觉，也在这里记录科研、学习和生活。</p>
               </div>
             </section>
-            <section className="rounded-2xl border border-border bg-card p-7">
+            <section className="site-panel p-7">
               <h2 className="mb-5 text-xl font-semibold text-foreground">技术与方向</h2>
 
               <div className="grid gap-6 lg:grid-cols-[1fr_1.25fr] lg:gap-8">
@@ -102,7 +102,7 @@ export default function AboutPage() {
             </section>
           </div>
 
-          <blockquote className="mt-8 rounded-2xl border-l-4 border-primary bg-surface-subtle px-6 py-5 italic text-content-secondary">
+          <blockquote className="site-panel mt-8 border-l-4 border-l-primary px-6 py-5 italic text-content-secondary">
             “计算机不是黑魔法，都是人做出来的。”
           </blockquote>
         </div>

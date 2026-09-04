@@ -1,0 +1,22 @@
+.palette-menu { position: relative; color: var(--foreground); }
+.palette-menu > summary { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 12px; cursor: pointer; list-style: none; background: var(--card); }
+.palette-menu > summary::-webkit-details-marker { display: none; }
+.palette-menu > summary:focus-visible, .palette-menu button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.palette-menu__icon { transition: transform .45s cubic-bezier(.34,1.56,.64,1); }
+.palette-menu:hover .palette-menu__icon, .palette-menu[open] .palette-menu__icon { transform: rotate(-16deg) scale(1.08); }
+.palette-dot { transform-box: fill-box; transform-origin: center; animation: paint-breathe 3.6s ease-in-out infinite; }
+.palette-dot--orange { animation-delay: .3s; }
+.palette-dot--red { animation-delay: .6s; }
+@keyframes paint-breathe { 0%, 65%, 100% { transform: scale(1); } 30% { transform: scale(.78) translateY(-.6px); } 45% { transform: scale(1.12); } }
+.palette-menu__panel { position: absolute; right: 0; top: calc(100% + 12px); width: 166px; padding: 10px; background: var(--popover); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 12px 32px rgb(28 63 98 / 12%); z-index: 80; }
+.palette-menu[open] .palette-menu__panel { animation: palette-arrive .28s cubic-bezier(.2,.8,.3,1.25); }
+@keyframes palette-arrive { from { opacity: 0; transform: translateY(-6px) scale(.94); } to { opacity: 1; transform: none; } }
+.palette-menu__caption { display: block; margin: 3px 8px 8px; font-size: 11px; letter-spacing: .12em; color: var(--muted-foreground); }
+.palette-menu__panel button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 8px; border: 0; border-radius: 10px; background: transparent; color: var(--foreground); font-size: 13px; cursor: pointer; }
+.palette-menu__panel button:hover, .palette-menu__panel button[aria-pressed="true"] { background: color-mix(in srgb, var(--primary) 12%, var(--popover)); }
+.palette-menu__swatch { width: 17px; height: 17px; border-radius: 50% 45% 50% 40%; transition: transform .3s; }
+.palette-menu__panel button:hover .palette-menu__swatch { transform: rotate(28deg) scale(1.12); }
+.palette-menu__check { margin-left: auto; opacity: 0; }
+.palette-menu__panel button[aria-pressed="true"] .palette-menu__check { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .palette-menu *, .palette-menu[open] .palette-menu__panel { animation: none !important; transition: none !important; } }
+@media print { .palette-menu { display: none; } }

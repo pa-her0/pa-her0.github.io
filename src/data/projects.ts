@@ -5,6 +5,10 @@ export const projects = [
     description: "实时监控、动态调度、物流分配与路径规划。",
     href: "https://github.com/pa-her0",
     badge: "2026 TE AI CUP 冠军（队长）",
+    shortName: "IMR Dispatch",
+    cover: "/acad-homepage/images/te-connectivity.png",
+    accent: "#f28a00",
+    coverFit: "contain",
   },
   {
     name: "Hermes-EM",
@@ -12,6 +16,10 @@ export const projects = [
     description: "情绪市场与 Hermes Agent 驱动的多 Agent 金融仿真市场。",
     href: "https://github.com/HanaViolet/Hermes-EM",
     badge: "研究项目",
+    shortName: "Hermes-EM",
+    cover: "/report-assets/hermes-em-financial-big-data/dynamic_agent_market.png",
+    accent: "#2766c7",
+    coverFit: "cover",
   },
   {
     name: "StableGuard",
@@ -19,6 +27,10 @@ export const projects = [
     description: "基于 Multi-Agent 的稳定币模拟市场。",
     href: "https://github.com/pa-her0",
     badge: "花旗金融创新赛国家三等奖",
+    shortName: "StableGuard",
+    cover: "/learning/projects/stableguard.webp",
+    accent: "#e1b924",
+    coverFit: "cover",
   },
   {
     name: "语见 YuJian",
@@ -26,6 +38,10 @@ export const projects = [
     description: "AI 驱动的双向手语翻译微信小程序。",
     href: "https://github.com/HanaViolet/gesture",
     badge: "计算机设计大赛省级二等奖",
+    shortName: "YuJian",
+    cover: "/learning/projects/yujian.png",
+    accent: "#ec5b76",
+    coverFit: "contain",
   },
   {
     name: "Lightly YOLO Detection",
@@ -33,5 +49,9 @@ export const projects = [
     description: "面向边缘设备部署的 YOLO 剪枝模型设计。",
     href: "https://github.com/pa-her0/YOLO_object_detection",
     badge: "2025 TE AI CUP 冠军（队长）",
+    shortName: "Lightly YOLO",
+    cover: "/learning/projects/lightly-yolo.jpg",
+    accent: "#31a5a8",
+    coverFit: "cover",
   },
 ]

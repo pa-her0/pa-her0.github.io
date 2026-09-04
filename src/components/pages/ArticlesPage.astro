@@ -1,0 +1,32 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import { ArticleList } from "@/components/article-list"
+import { Footer } from "@/components/footer"
+import SiteHeader from "@/components/site-header.astro"
+import { buildSidebarMeta, getSortedPosts, toPostMeta } from "@/lib/posts"
+
+const { currentPage = 1 } = Astro.props
+const title = `全部文章 · 第 ${currentPage} 页 | Jiely 的博客`
+const description = "全部文章、研究笔记与生活记录"
+const posts = await getSortedPosts(true)
+const articles = posts.map((post) => toPostMeta(post))
+const sidebarMeta = buildSidebarMeta(articles)
+---
+
+<BaseLayout {title} {description} fontProfile="interface">
+  <div class="site-page bg-surface-subtle">
+    <SiteHeader />
+    <main class="pt-24">
+      <ArticleList
+        client:load
+        articles={articles}
+        title="全部文章"
+        showViewAll={false}
+        pagination={{ currentPage, pageSize: 3, basePath: "/articles" }}
+        sidebarCategories={sidebarMeta.categories}
+        sidebarTags={sidebarMeta.tags}
+      />
+    </main>
+    <Footer />
+  </div>
+</BaseLayout>

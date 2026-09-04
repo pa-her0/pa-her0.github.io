@@ -76,7 +76,8 @@
 
       for (let index = fireworkRings.length - 1; index >= 0; index -= 1) {
         const ring = fireworkRings[index]
-        const progress = Math.min(1, (timestamp - ring.startedAt) / ring.duration)
+        // A queued frame timestamp can precede a pointer event in that frame.
+        const progress = Math.max(0, Math.min(1, (timestamp - ring.startedAt) / ring.duration))
         const easedProgress = easeOutExpo(progress)
 
         context.globalAlpha = 0.45 * (1 - progress)
@@ -105,10 +106,10 @@
         index -= 1
       ) {
         const particle = fireworkParticles[index]
-        const progress = Math.min(
+        const progress = Math.max(0, Math.min(
           1,
           (timestamp - particle.startedAt) / particle.duration,
-        )
+        ))
         const easedProgress = easeOutExpo(progress)
         const x =
           particle.startX + (particle.endX - particle.startX) * easedProgress

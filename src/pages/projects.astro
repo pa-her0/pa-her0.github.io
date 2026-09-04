@@ -1,33 +1,257 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro"
-import SiteHeader from "@/components/site-header.astro"
-import { Footer } from "@/components/footer"
-import { projects } from "@/data/projects"
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import SiteHeader from '@/components/site-header.astro'
+import ProjectFolderShowcase from '@/components/ProjectFolderShowcase.astro'
+import { Footer } from '@/components/footer'
+import { projects } from '@/data/projects'
 ---
 
 <BaseLayout title="项目 | Jiely 的博客" description="Jiely 的研究与实践项目" fontProfile="interface">
-  <div class="min-h-screen bg-background dark:bg-surface-subtle">
+  <div class="site-page bg-background dark:bg-surface-subtle">
     <SiteHeader />
-    <main class="mx-auto max-w-6xl px-6 pb-24 pt-32">
-      <header class="mb-12">
-        <p class="mb-2 text-sm uppercase tracking-[0.22em] text-primary">Projects</p>
-        <h1 class="text-4xl font-bold text-foreground">研究与实践项目</h1>
-        <p class="mt-3 max-w-2xl text-muted-foreground">从多智能体金融仿真到计算机视觉，记录正在探索和完成的项目。</p>
-      </header>
-      <section class="grid gap-5 md:grid-cols-2">
-        {projects.map((project) => (
-          <a href={project.href} target="_blank" rel="noreferrer" class="group rounded-2xl border border-border bg-card p-7 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
-            <div class="mb-5 flex items-start justify-between gap-4">
-              <span class="text-sm text-primary">{project.category}</span>
-              <span aria-hidden="true" class="text-muted-foreground transition-transform group-hover:translate-x-1">↗</span>
-            </div>
-            <h2 class="text-xl font-semibold text-foreground">{project.name}</h2>
-            <p class="mt-3 leading-7 text-muted-foreground">{project.description}</p>
-            <span class="mt-6 inline-block rounded-full bg-secondary px-3 py-1 text-xs text-foreground/75">{project.badge}</span>
-          </a>
-        ))}
+    <main class="pt-20">
+      <ProjectFolderShowcase />
+
+      <section class="project-directory" aria-labelledby="project-directory-title">
+        <header class="project-directory__header">
+          <div>
+            <p>PROJECT DIRECTORY</p>
+            <h2 id="project-directory-title">项目档案</h2>
+          </div>
+          <p>{String(projects.length).padStart(2, '0')} 个研究、比赛与实践项目</p>
+        </header>
+
+        <div class="project-directory__grid">
+          {projects.map((project, index) => (
+            <a
+              href={project.href}
+              target="_blank"
+              rel="noreferrer"
+              class="project-file"
+              style={`--project-accent:${project.accent}`}
+            >
+              <figure class="project-file__visual">
+                <img
+                  src={project.cover}
+                  alt=""
+                  loading="lazy"
+                  style={`object-fit:${project.coverFit}`}
+                />
+                <span>{String(index + 1).padStart(2, '0')}</span>
+              </figure>
+              <div class="project-file__body">
+                <div class="project-file__meta">
+                  <span>{project.category}</span>
+                  <span>OPEN ↗</span>
+                </div>
+                <h3>{project.name}</h3>
+                <p>{project.description}</p>
+                <span class="project-file__badge">{project.badge}</span>
+              </div>
+            </a>
+          ))}
+        </div>
       </section>
     </main>
     <Footer />
   </div>
 </BaseLayout>
+
+<style>
+  .project-directory {
+    width: min(calc(100% - (var(--page-gutter) * 2)), var(--page-max));
+    margin-inline: auto;
+    padding: 6rem 0 7rem;
+  }
+
+  .project-directory__header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 3rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .project-directory__header > div > p,
+  .project-directory__header > p,
+  .project-file__meta {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+  }
+
+  .project-directory__header > div > p {
+    margin: 0 0 0.55rem;
+    color: var(--muted-foreground);
+  }
+
+  .project-directory__header h2 {
+    margin: 0;
+    font-family: var(--font-serif-cn);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 650;
+    letter-spacing: -0.05em;
+  }
+
+  .project-directory__header > p {
+    margin: 0 0 0.25rem;
+    color: var(--muted-foreground);
+  }
+
+  .project-directory__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .project-file {
+    position: relative;
+    display: grid;
+    min-width: 0;
+    grid-template-columns: minmax(11rem, 0.86fr) minmax(0, 1.14fr);
+    overflow: hidden;
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    color: var(--foreground);
+    background: var(--panel-background);
+    box-shadow: var(--panel-shadow);
+    transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+  }
+
+  .project-file:first-child {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(18rem, 0.9fr) minmax(0, 1.1fr);
+  }
+
+  .project-file:hover {
+    border-color: color-mix(in oklab, var(--project-accent) 52%, var(--border));
+    box-shadow: 0 24px 50px color-mix(in oklab, var(--project-accent) 12%, transparent);
+    transform: translateY(-0.35rem);
+  }
+
+  .project-file:focus-visible {
+    outline: 2px solid var(--foreground);
+    outline-offset: 4px;
+  }
+
+  .project-file__visual {
+    position: relative;
+    min-height: 15.5rem;
+    margin: 0;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+    background: radial-gradient(circle at 72% 24%, color-mix(in oklab, var(--project-accent) 26%, transparent), transparent 42%), color-mix(in oklab, var(--project-accent) 8%, var(--muted));
+  }
+
+  .project-file:first-child .project-file__visual { min-height: 21rem; }
+
+  .project-file__visual::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, rgba(255,255,255,.12), transparent 42%), linear-gradient(to top, rgba(0,0,0,.12), transparent 45%);
+    content: '';
+    pointer-events: none;
+  }
+
+  .project-file__visual img {
+    width: 100%;
+    height: 100%;
+    object-position: center;
+    transition: transform .45s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .project-file:hover .project-file__visual img { transform: scale(1.035); }
+
+  .project-file__visual > span {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 2;
+    display: grid;
+    width: 2.2rem;
+    height: 2.2rem;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.48);
+    border-radius: 999px;
+    color: white;
+    background: rgba(10,10,10,.4);
+    font-family: var(--font-mono);
+    font-size: .58rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .project-file__body {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    padding: 1.45rem;
+  }
+
+  .project-file__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--muted-foreground);
+  }
+
+  .project-file__meta span:first-child { color: color-mix(in oklab, var(--project-accent) 76%, var(--foreground)); }
+
+  .project-file h3 {
+    margin: auto 0 .85rem;
+    font-family: var(--font-serif-cn);
+    font-size: clamp(1.25rem, 2.2vw, 1.85rem);
+    font-weight: 650;
+    line-height: 1.18;
+    letter-spacing: -.035em;
+  }
+
+  .project-file:first-child h3 { font-size: clamp(1.7rem, 3.4vw, 2.75rem); }
+
+  .project-file__body > p {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: .88rem;
+    line-height: 1.75;
+  }
+
+  .project-file__badge {
+    width: fit-content;
+    margin-top: 1.2rem;
+    border: 1px solid color-mix(in oklab, var(--project-accent) 28%, var(--border));
+    border-radius: 999px;
+    padding: .35rem .7rem;
+    color: color-mix(in oklab, var(--project-accent) 74%, var(--foreground));
+    background: color-mix(in oklab, var(--project-accent) 8%, transparent);
+    font-size: .66rem;
+    line-height: 1.35;
+  }
+
+  @media (max-width: 900px) {
+    .project-directory__grid { grid-template-columns: 1fr; }
+    .project-file, .project-file:first-child {
+      grid-column: auto;
+      grid-template-columns: minmax(11rem, .8fr) minmax(0, 1.2fr);
+    }
+    .project-file:first-child .project-file__visual, .project-file__visual { min-height: 16rem; }
+  }
+
+  @media (max-width: 640px) {
+    .project-directory { width: min(100% - 2rem, 72rem); padding: 4rem 0 5rem; }
+    .project-directory__header { display: block; }
+    .project-directory__header > p { margin-top: .65rem; }
+    .project-file, .project-file:first-child { display: block; }
+    .project-file__visual, .project-file:first-child .project-file__visual {
+      min-height: 13.5rem;
+      border-right: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .project-file__body { min-height: 13rem; }
+    .project-file h3, .project-file:first-child h3 { margin-top: 2.4rem; font-size: 1.45rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-file, .project-file__visual img { transition: none; }
+  }
+</style>
