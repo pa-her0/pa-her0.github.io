@@ -1,4 +1,27 @@
-.article-index { padding-block: 0 48px; }
+/* The reference blog uses the page itself as the card surface, not filled panels. */
+.article-page {
+  --background: #fff;
+  --foreground: #174d84;
+  --card: #fff;
+  --muted-foreground: #708ba3;
+  --content-secondary: #708ba3;
+  --border: #b0dcffb1;
+  --secondary: #e8f5ff;
+  --secondary-foreground: #397daf;
+  background: var(--background);
+  color: var(--foreground);
+}
+.dark .article-page {
+  --background: #171717;
+  --foreground: #fafafa;
+  --card: #171717;
+  --muted-foreground: #b3b3b3;
+  --content-secondary: #b3b3b3;
+  --border: #ffffff1a;
+  --secondary: #262626;
+  --secondary-foreground: #dedede;
+}
+.article-index { padding-block: 0 48px; background: transparent; }
 .article-index__shell { width: min(100% - 32px, 736px); margin-inline: auto; }
 .article-index__header { margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .article-index__breadcrumb { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--muted-foreground); }
@@ -43,44 +66,24 @@
   align-items: start;
   gap: 16px;
   padding: 16px;
-  border: 1px solid color-mix(in oklab, var(--primary) 15%, var(--border));
+  border: 1px solid var(--border);
   border-radius: 12px;
-  background: var(--card);
-  transition: background-color 180ms, border-color 180ms;
+  background: transparent;
+  transition: background-color 300ms ease-in-out;
 }
 .article-preview:hover,
 .article-preview:focus-within {
-  background: color-mix(in oklab, var(--primary) 3%, var(--card));
-  border-color: color-mix(in oklab, var(--primary) 36%, var(--border));
+  background: color-mix(in srgb, var(--secondary) 50%, transparent);
 }
+.article-preview--text-only { grid-template-columns: minmax(0, 1fr); }
 .article-preview__cover {
   display: block;
   aspect-ratio: 1.9;
   overflow: hidden;
   border-radius: 0;
-  background: var(--muted);
+  background: transparent;
 }
 .article-preview__cover > img { width: 100%; height: 100%; object-fit: cover; }
-.article-preview__placeholder {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-  padding: clamp(12px, 2vw, 22px);
-  background: color-mix(in oklab, var(--primary) 7%, var(--card));
-  border-left: 3px solid var(--primary);
-}
-.article-preview__placeholder > span { color: var(--muted-foreground); font-size: 9px; letter-spacing: .12em; }
-.article-preview__placeholder > strong {
-  font-family: var(--font-serif);
-  font-size: 18px;
-  line-height: 1.4;
-  font-weight: 500;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
 .article-preview__body { min-width: 0; }
 .article-preview__title {
   margin: 0;
@@ -123,15 +126,14 @@
   font-size: 12px;
   line-height: 1.5;
   overflow-wrap: anywhere;
-  background: color-mix(in oklab, var(--primary) 8%, var(--card));
-  color: var(--content-secondary);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
 }
-.article-preview__tags a:hover { color: var(--foreground); background: color-mix(in oklab, var(--primary) 17%, var(--card)); }
+.article-preview__tags a:hover { color: var(--foreground); background: color-mix(in srgb, var(--primary) 12%, var(--background)); }
 @media (max-width: 639px) {
   .article-preview { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 16px; }
   .article-preview__cover { max-width: 256px; width: 100%; }
   .article-preview__title { font-size: 18px; }
-  .article-preview__placeholder > strong { font-size: 18px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .article-preview { transition: none; }

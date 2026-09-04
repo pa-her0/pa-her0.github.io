@@ -19,19 +19,13 @@ export function ArticleCard({ article, className, style }: {
   const displayDate = articleDisplayDate(article)
 
   return (
-    <article className={cn("article-preview", className)} style={style}>
-      <a href={postHref} data-astro-prefetch="hover" className="article-preview__cover" tabIndex={-1} aria-hidden="true">
-        {hasImage ? (
+    <article className={cn("article-preview", !hasImage && "article-preview--text-only", className)} style={style}>
+      {hasImage && (
+        <a href={postHref} data-astro-prefetch="hover" className="article-preview__cover" tabIndex={-1} aria-hidden="true">
           <img src={article.image} alt="" loading="lazy" decoding="async"
             onError={() => setFailedImage(article.image)} />
-        ) : (
-          <div className="article-preview__placeholder">
-            <span>{article.categoryLabel} / NOTES</span>
-            <strong>{article.title}</strong>
-            <span>WHALEFALL · {displayDate.slice(0, 4)}</span>
-          </div>
-        )}
-      </a>
+        </a>
+      )}
 
       <div className="article-preview__body">
         <h3 className="article-preview__title">
