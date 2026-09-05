@@ -2,7 +2,7 @@
 
 import { ChevronUp, ChevronDown, MapPin, Pause, Play, Radio, Zap } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
-import { homeDashboard } from "@/data/home-dashboard"
+import { homeDashboard, type HomeTrack } from "@/data/home-dashboard"
 import { HomeGlobe } from "@/components/home-globe"
 import { useHomeWakatime } from "@/components/use-home-wakatime"
 import type { ActivityDay } from "@/lib/home-activity"
@@ -43,7 +43,7 @@ function MusicCard() {
   const [status, setStatus] = useState<"idle" | "loading" | "playing" | "error">("idle")
   const [progress, setProgress] = useState(0)
   const [coverFailed, setCoverFailed] = useState(false)
-  const track = homeDashboard.tracks[trackIndex]
+  const track: HomeTrack = homeDashboard.tracks[trackIndex]
 
   function stop() {
     requestRef.current += 1
@@ -63,6 +63,10 @@ function MusicCard() {
     const audio = audioRef.current
     if (!audio) return
     if (status === "playing" || status === "loading") { stop(); return }
+    if (!track.src || !track.mimeType || audio.canPlayType(track.mimeType) === "") {
+      setStatus("error")
+      return
+    }
     const request = ++requestRef.current
     setStatus("loading")
     if (audio.getAttribute("src") !== track.src) { audio.src = track.src; audio.load() }
@@ -72,7 +76,7 @@ function MusicCard() {
         audio.pause()
         setStatus("error")
       }
-    }, 12000)
+    }, 20000)
     try {
       await audio.play()
       if (requestRef.current !== request) return
@@ -139,7 +143,7 @@ function MusicCard() {
             }} />
         )}
       </div>
-      <audio ref={audioRef} preload="none"
+      <audio ref={audioRef} preload="none" playsInline crossOrigin="anonymous"
         onTimeUpdate={() => {
           const audio = audioRef.current
           if (audio && Number.isFinite(audio.duration) && audio.duration > 0) setProgress(audio.currentTime / audio.duration * 100)
