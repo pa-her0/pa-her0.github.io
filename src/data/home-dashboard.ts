@@ -8,10 +8,9 @@ export interface HomeTrack {
   href: string
 }
 
-const applePreview = (src: string) => ({ src, mimeType: 'audio/mp4; codecs="mp4a.40.2"' } as const)
+const localMp3 = (file: string) => ({ src: `/music/${file}`, mimeType: "audio/mpeg" } as const)
 
-// Edit personal content here. Playlist metadata comes from the public NetEase
-// playlist; direct playback uses confirmed HTTPS previews where available.
+// Edit personal content here. The audio files are served from public/music.
 export const homeDashboard = {
   // Flip-disk display: up to 5 characters (A-Z, 0-9, colon or space).
   flipMatrix: { text: "JIELY", defaultMode: "text" },
@@ -49,65 +48,119 @@ export const homeDashboard = {
   ],
   tracks: [
     {
-      title: "Color Your Night", artist: "Lotus Juice, 高橋あず美, ATLUS GAME MUSIC",
+      title: "Color Your Night", artist: "Lotus Juice, 高橋あず美, アトラスサウンドチーム, ATLUS GAME MUSIC",
       album: "ペルソナ3 リロード オリジナル・サウンドトラック",
       cover: "https://p1.music.126.net/wV5oF-XNh-RsjrYzmBbe3w==/109951172181637798.jpg",
-      ...applePreview("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/32/75/ae/3275ae8f-b72b-a742-71f8-89c7a6edd7c4/mzaf_7866588247365893353.plus.aac.p.m4a"),
+      ...localMp3("color-your-night.mp3"),
       href: "https://music.163.com/#/song?id=2123807718",
     },
     {
       title: "红", artist: "罗言", album: "When the world is came，take it！",
       cover: "https://p1.music.126.net/G-inyKjA-jO5MuOuV3g7Pg==/109951167027986653.jpg",
-      ...applePreview("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/14/86/3d/14863d27-303e-d0cb-751f-fbe69d437df6/mzaf_11966529949809566500.plus.aac.p.m4a"),
+      ...localMp3("red.mp3"),
       href: "https://music.163.com/#/song?id=1918576268",
+    },
+    {
+      title: "总有一天你会出现在我身边", artist: "棱镜乐队", album: "一次有预谋的初次相遇",
+      cover: "https://p2.music.126.net/RfUHXkanpxImcaGqFNWBeA==/109951163598901405.jpg",
+      ...localMp3("one-day-you-will-appear.mp3"),
+      href: "https://music.163.com/#/song?id=1303027499",
+    },
+    {
+      title: "两 难", artist: "加木", album: "两 难",
+      cover: "https://p2.music.126.net/Qvenb5t_hL37b7hRfscjaw==/109951169686160429.jpg",
+      ...localMp3("dilemma.mp3"),
+      href: "https://music.163.com/#/song?id=2163210456",
+    },
+    {
+      title: "最近", artist: "王小帅", album: "最近 (正式版)",
+      cover: "https://p2.music.126.net/OS8zeoIGLdE4o2kDGCCo1A==/109951171485395177.jpg",
+      ...localMp3("recently.mp3"),
+      href: "https://music.163.com/#/song?id=1357825630",
     },
     {
       title: "还是分开", artist: "张叶蕾", album: "还是分开",
       cover: "https://p1.music.126.net/tH5FdakJX47uy8mlM0GMWQ==/19218363741925314.jpg",
-      ...applePreview("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/69/28/a0/6928a0ed-f26d-bf93-7fe9-626d0e96f41a/mzaf_11681966968364511203.plus.aac.p.m4a"),
+      ...localMp3("still-apart.mp3"),
       href: "https://music.163.com/#/song?id=465921195",
     },
     {
       title: "晴れゆく空", artist: "RADWIMPS", album: "天気の子",
       cover: "https://p1.music.126.net/dRwInA9PpkiKkmNWeUvi0w==/109951164220136544.jpg",
-      ...applePreview("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/b9/42/e4/b942e4ea-a3c4-4f88-e246-8b6c7745bd54/mzaf_7036707976427874414.plus.aac.p.m4a"),
+      ...localMp3("clearing-sky.mp3"),
       href: "https://music.163.com/#/song?id=1378492140",
+    },
+    {
+      title: "グランドエスケープ (Movie edit)", artist: "三浦透子, RADWIMPS", album: "天気の子",
+      cover: "https://p1.music.126.net/dRwInA9PpkiKkmNWeUvi0w==/109951164220136544.jpg",
+      ...localMp3("grand-escape-movie-edit.mp3"),
+      href: "https://music.163.com/#/song?id=1378491296",
     },
     {
       title: "痛快", artist: "Aioz, 董唧唧", album: "痛快",
       cover: "https://p1.music.126.net/4d0TEEUvB9vjolovUiB0Vw==/109951164744024471.jpg",
-      ...applePreview("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/45/cc/17/45cc17c9-5963-cb95-0b8c-33a7c092f815/mzaf_14660695672884565463.plus.aac.p.m4a"),
+      ...localMp3("happy.mp3"),
       href: "https://music.163.com/#/song?id=1426233208",
     },
     {
       title: "我该怎么描述遗憾", artist: "莫得桑, 刘宏宇Honey L", album: "我该怎么描述遗憾",
       cover: "https://p1.music.126.net/2y7TT5kS8O1iNlrEDoYdbg==/109951169210378440.jpg",
-      ...applePreview("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/93/51/65/93516585-c172-ce0b-4a4a-34225896ec3e/mzaf_6691274926752410753.plus.aac.p.m4a"),
+      ...localMp3("regret.mp3"),
       href: "https://music.163.com/#/song?id=2111736129",
     },
     {
       title: "不再联系", artist: "夏天Alex", album: "不再联系",
       cover: "https://p1.music.126.net/1IyS4hDwsxgzIObfQU5__g==/71468255818380.jpg",
-      ...applePreview("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/8f/ca/b6/8fcab6b5-2397-54d4-8c2e-5a43f396f50d/mzaf_8929340981270531818.plus.aac.p.m4a"),
+      ...localMp3("no-contact.mp3"),
       href: "https://music.163.com/#/song?id=175072",
     },
     {
       title: "我爱他", artist: "王小帅", album: "我爱他",
       cover: "https://p1.music.126.net/BHiLD5MChwKG6pveY1qX7g==/109951171482536944.jpg",
-      ...applePreview("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/9b/12/c8/9b12c824-6c06-c9e6-5ea4-bc6ba2a4c6ce/mzaf_6479825854719730853.plus.aac.p.m4a"),
+      ...localMp3("i-love-him.mp3"),
       href: "https://music.163.com/#/song?id=1412022967",
     },
     {
       title: "好久不见", artist: "陈奕迅", album: "认了吧",
       cover: "https://p1.music.126.net/o_OjL_NZNoeog9fIjBXAyw==/18782957139233959.jpg",
-      ...applePreview("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/07/1f/1f/071f1f75-6b42-e932-e8a3-cf5f1e019b6d/mzaf_15016512238504534591.plus.aac.p.m4a"),
+      ...localMp3("long-time-no-see.mp3"),
       href: "https://music.163.com/#/song?id=65538",
     },
     {
       title: "遥不可及的你(Live)", artist: "花粥", album: "花粥2019“两碗三百”巡演LIVE",
       cover: "https://p1.music.126.net/dbLkqitOHj-l9_W3XWJN2g==/109951164836699487.jpg",
-      ...applePreview("https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview126/v4/56/61/d6/5661d67c-43ae-e03e-8103-fe90356ad078/mzaf_7822685735505503353.plus.aac.p.m4a"),
+      ...localMp3("unreachable-you-live.mp3"),
       href: "https://music.163.com/#/song?id=1433736573",
+    },
+    {
+      title: "不如不见面", artist: "王极, 梁淞Tsong", album: "不如不见面",
+      cover: "https://p1.music.126.net/HPNMl6kw6crK_dDIzG2iVg==/109951169682298615.jpg",
+      ...localMp3("better-not-meet.mp3"),
+      href: "https://music.163.com/#/song?id=572980533",
+    },
+    {
+      title: "卡农（经典钢琴版）", artist: "dylanf", album: "卡农Canon in D",
+      cover: "https://p1.music.126.net/fL7FAeRby1s7JreBqoOKjg==/109951165175371079.jpg",
+      ...localMp3("canon-piano.mp3"),
+      href: "https://music.163.com/#/song?id=478507889",
+    },
+    {
+      title: "愛にできることはまだあるかい (Movie edit)", artist: "RADWIMPS", album: "天気の子",
+      cover: "https://p1.music.126.net/dRwInA9PpkiKkmNWeUvi0w==/109951164220136544.jpg",
+      ...localMp3("is-there-still-anything-love-can-do-movie-edit.mp3"),
+      href: "https://music.163.com/#/song?id=1378492142",
+    },
+    {
+      title: "一般的一天", artist: "Wiz_H张子豪", album: "一般的一天",
+      cover: "https://p2.music.126.net/ldE9ZonTO_PbRxOcQz7KFg==/109951168667718667.jpg",
+      ...localMp3("ordinary-day.mp3"),
+      href: "https://music.163.com/#/song?id=2054300084",
+    },
+    {
+      title: "最后的旅行（伴奏）", artist: "上杉绘梨衣", album: "龙族",
+      cover: "https://p2.music.126.net/hlEe-IWaFrXwXjwAj69Flw==/109951170006323682.jpg",
+      ...localMp3("last-journey-instrumental.mp3"),
+      href: "https://music.163.com/#/song?id=2632584632",
     },
   ] satisfies HomeTrack[],
   illustration: { src: "/hero-avatar-05.jpg", hover: "/hero-avatar-04.jpg", alt: "噜噜的电影时刻" },

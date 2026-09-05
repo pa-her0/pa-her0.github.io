@@ -78,6 +78,8 @@ function MusicCard() {
       }
     }, 20000)
     try {
+      document.querySelectorAll("audio").forEach((item) => { if (item !== audio) item.pause() })
+      window.dispatchEvent(new CustomEvent("jiely:audio-play", { detail: audio }))
       await audio.play()
       if (requestRef.current !== request) return
       clearTimeout(timerRef.current)
@@ -96,13 +98,20 @@ function MusicCard() {
       clearTimeout(timerRef.current)
       audio?.pause()
     }
+    const stopForAnotherPlayer = (event: Event) => {
+      if (event instanceof CustomEvent && event.detail === audio) return
+      halt()
+      setStatus("idle")
+    }
     document.addEventListener("astro:before-swap", halt)
     window.addEventListener("pagehide", halt)
+    window.addEventListener("jiely:audio-play", stopForAnotherPlayer)
     return () => {
       halt()
       if (audio) { audio.removeAttribute("src"); audio.load() }
       document.removeEventListener("astro:before-swap", halt)
       window.removeEventListener("pagehide", halt)
+      window.removeEventListener("jiely:audio-play", stopForAnotherPlayer)
     }
   }, [])
 

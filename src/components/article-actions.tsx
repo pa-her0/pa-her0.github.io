@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react"
-import { ArrowUp, FileDown, House, Newspaper, UserRound, type LucideIcon } from "lucide-react"
+import { ArrowUp, FileDown, House, Music2, Newspaper, Pause, Play, UserRound, type LucideIcon } from "lucide-react"
+import { homeDashboard, type HomeTrack } from "@/data/home-dashboard"
 import "@/styles/article-actions.css"
 
 type PetPose = "idle" | "waving" | "jumping" | "running-left" | "running-right" | "review" | "failed"
@@ -26,8 +27,11 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
   const [pose, setPose] = useState<PetPose>("idle")
   const [position, setPosition] = useState<Point | null>(null)
   const [labelsRight, setLabelsRight] = useState(false)
+  const [musicStatus, setMusicStatus] = useState<"idle" | "loading" | "playing" | "paused" | "error">("idle")
+  const [trackIndex, setTrackIndex] = useState<number | null>(null)
   const root = useRef<HTMLDivElement>(null)
   const toggle = useRef<HTMLButtonElement>(null)
+  const audioRef = useRef<HTMLAudioElement>(null)
   const drag = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number; moved: boolean } | null>(null)
   const poseTimer = useRef<number | null>(null)
 
@@ -78,12 +82,74 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", escape) }
   }, [open])
 
+  useEffect(() => {
+    const audio = audioRef.current
+    const stopForAnotherPlayer = (event: Event) => {
+      if (event instanceof CustomEvent && event.detail === audio) return
+      audio?.pause()
+      setMusicStatus((current) => current === "playing" || current === "loading" ? "paused" : current)
+    }
+    const halt = () => audio?.pause()
+    window.addEventListener("jiely:audio-play", stopForAnotherPlayer)
+    document.addEventListener("astro:before-swap", halt)
+    window.addEventListener("pagehide", halt)
+    return () => {
+      audio?.pause()
+      window.removeEventListener("jiely:audio-play", stopForAnotherPlayer)
+      document.removeEventListener("astro:before-swap", halt)
+      window.removeEventListener("pagehide", halt)
+    }
+  }, [])
+
   const flashPose = (nextPose: PetPose, duration = 650) => {
     if (poseTimer.current) window.clearTimeout(poseTimer.current)
     setPose(reducedMotion ? "idle" : nextPose)
     poseTimer.current = window.setTimeout(() => setPose("idle"), duration)
   }
   const closeWithJump = () => { setOpen(false); flashPose("jumping") }
+  const playRandomTrack = async () => {
+    const audio = audioRef.current
+    if (!audio || homeDashboard.tracks.length === 0) return
+    const available = homeDashboard.tracks.length
+    let nextIndex = Math.floor(Math.random() * available)
+    if (available > 1 && nextIndex === trackIndex) nextIndex = (nextIndex + 1) % available
+    const nextTrack: HomeTrack = homeDashboard.tracks[nextIndex]
+    setTrackIndex(nextIndex)
+    setOpen(false)
+    flashPose("waving", 900)
+    document.querySelectorAll("audio").forEach((item) => { if (item !== audio) item.pause() })
+    window.dispatchEvent(new CustomEvent("jiely:audio-play", { detail: audio }))
+    setMusicStatus("loading")
+    try {
+      audio.src = nextTrack.src
+      audio.load()
+      await audio.play()
+      setMusicStatus("playing")
+    } catch {
+      setMusicStatus("error")
+      flashPose("failed", 1100)
+    }
+  }
+  const toggleMusic = async () => {
+    const audio = audioRef.current
+    if (!audio || !currentTrack) return
+    if (musicStatus === "playing" || musicStatus === "loading") {
+      audio.pause()
+      setMusicStatus("paused")
+      return
+    }
+    document.querySelectorAll("audio").forEach((item) => { if (item !== audio) item.pause() })
+    window.dispatchEvent(new CustomEvent("jiely:audio-play", { detail: audio }))
+    setMusicStatus("loading")
+    try {
+      await audio.play()
+      setMusicStatus("playing")
+      flashPose("waving", 700)
+    } catch {
+      setMusicStatus("error")
+      flashPose("failed", 1100)
+    }
+  }
   const printPage = async () => {
     if (printing) return
     setPrinting(true); setOpen(false); flashPose("review", 900); toggle.current?.focus()
@@ -123,19 +189,22 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
   }
 
   const articleActions: PetAction[] = [
+    { name: "随机播放", icon: Music2, action: playRandomTrack },
     { name: "导出 PDF", icon: FileDown, action: printPage },
     { name: "回到顶部", icon: ArrowUp, action: () => { window.scrollTo({ top: 0, behavior: reducedMotion ? "instant" : "smooth" }); closeWithJump(); toggle.current?.focus() } },
     { name: "返回首页", icon: House, href: "/#home-main" },
   ]
   const siteActions: PetAction[] = [
+    { name: "随机播放", icon: Music2, action: playRandomTrack },
     { name: "返回首页", icon: House, href: "/#home-main" },
     { name: "最新文章", icon: Newspaper, href: latestPostHref },
     { name: "关于我", icon: UserRound, href: "/about/" },
   ]
   const actions = articleMode ? articleActions : siteActions
+  const currentTrack: HomeTrack | null = trackIndex === null ? null : homeDashboard.tracks[trackIndex]
 
   return (
-    <div ref={root} className={`article-actions ${open ? "is-open" : ""} ${position ? "is-positioned" : ""} ${labelsRight ? "labels-right" : "labels-left"}`}
+    <div ref={root} className={`article-actions ${open ? "is-open" : ""} ${currentTrack ? "has-music" : ""} ${musicStatus === "playing" ? "is-playing" : ""} ${position ? "is-positioned" : ""} ${labelsRight ? "labels-right" : "labels-left"}`}
       style={position ? { left: position.x, top: position.y } : undefined} role="group" aria-label={articleMode ? "文章快捷操作" : "网站快捷导航"}
       onBlur={(event) => { if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget)) { setOpen(false); setPose("idle") } }}>
       <div className="article-actions__menu">
@@ -158,6 +227,21 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
         onPointerCancel={() => { drag.current = null; setPose("idle") }} onClick={onToggleClick}>
         <img src={petSource(pose)} alt="" draggable="false" width="88" height="94" />
       </button>
+      {currentTrack ? (
+        <div className="article-actions__music" aria-live="polite">
+          <a className="article-actions__music-copy" href={currentTrack.href} target="_blank" rel="noreferrer" title="在网易云音乐打开">
+            <span className="article-actions__music-title"><Music2 aria-hidden="true" />{currentTrack.title}</span>
+            <span className="article-actions__music-artist">{musicStatus === "error" ? "暂时无法播放 · 去网易云" : currentTrack.artist}</span>
+          </a>
+          <button className="article-actions__music-toggle" type="button" onClick={() => void toggleMusic()}
+            aria-label={musicStatus === "playing" || musicStatus === "loading" ? "暂停音乐" : "继续播放"}>
+            {musicStatus === "playing" || musicStatus === "loading" ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
+          </button>
+        </div>
+      ) : null}
+      <audio ref={audioRef} preload="none" playsInline crossOrigin="anonymous"
+        onEnded={() => setMusicStatus("idle")}
+        onError={() => { if (audioRef.current?.getAttribute("src")) setMusicStatus("error") }} />
       <span className="sr-only" role="status">{printing ? "正在打开打印窗口，请选择另存为 PDF" : ""}</span>
     </div>
   )
