@@ -1,0 +1,82 @@
+---
+import "@/styles/site-bento-motion.css"
+---
+
+<script is:inline data-astro-rerun>
+  ;(() => {
+    const runtimeWindow = window
+    runtimeWindow.__siteBentoMotionCleanup?.()
+
+    const selector = [
+      ".site-panel",
+      ".article-preview",
+      ".project-folder-hero",
+      ".project-file",
+      ".friend-bento-card",
+      ".friends-info-card",
+      ".thoughts-entry-card",
+      ".article-item > a",
+      ".guestbook-note",
+      ".pure-twikoo .tk-submit",
+      ".pure-twikoo .tk-comment",
+      "[data-bento-motion]",
+    ].join(",")
+    const controller = new AbortController()
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)")
+    let activeSurface = null
+    let ready = false
+    let pointerFrame = 0
+    let pendingPointer = null
+
+    const markReady = () => window.requestAnimationFrame(() => { ready = true })
+    document.addEventListener("astro:page-load", markReady, { once: true, signal: controller.signal })
+    window.addEventListener("load", markReady, { once: true, signal: controller.signal })
+    window.setTimeout(markReady, 160)
+
+    const clearActive = () => {
+      activeSurface?.classList.remove("is-site-bento-hovered")
+      activeSurface = null
+    }
+
+    const paintPointer = () => {
+      pointerFrame = 0
+      const pointer = pendingPointer
+      if (!pointer) return
+      const next = pointer.target.closest(selector)
+      if (!(next instanceof HTMLElement)) {
+        clearActive()
+        return
+      }
+      if (activeSurface !== next) {
+        clearActive()
+        activeSurface = next
+        activeSurface.classList.add("is-site-bento-hovered")
+      }
+      const bounds = next.getBoundingClientRect()
+      const x = pointer.clientX - bounds.left
+      const y = pointer.clientY - bounds.top
+      next.style.setProperty("--site-bento-x", `${x}px`)
+      next.style.setProperty("--site-bento-y", `${y}px`)
+      next.style.setProperty("--site-bento-rotate-x", `${((y / bounds.height) - 0.5) * -1.1}deg`)
+      next.style.setProperty("--site-bento-rotate-y", `${((x / bounds.width) - 0.5) * 1.1}deg`)
+    }
+
+    const trackPointer = (event) => {
+      if (!ready || !finePointer.matches || !(event.target instanceof Element)) return
+      pendingPointer = { target: event.target, clientX: event.clientX, clientY: event.clientY }
+      if (!pointerFrame) pointerFrame = window.requestAnimationFrame(paintPointer)
+    }
+
+    document.addEventListener("pointermove", trackPointer, { passive: true, signal: controller.signal })
+    window.addEventListener("blur", clearActive, { signal: controller.signal })
+
+    const cleanup = () => {
+      clearActive()
+      pendingPointer = null
+      if (pointerFrame) window.cancelAnimationFrame(pointerFrame)
+      controller.abort()
+    }
+    runtimeWindow.__siteBentoMotionCleanup = cleanup
+    document.addEventListener("astro:before-swap", cleanup, { once: true, signal: controller.signal })
+  })()
+</script>

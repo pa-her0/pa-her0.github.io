@@ -51,6 +51,7 @@ async function request(url, options = {}) {
   if (!response.ok) {
     const error = new Error(data.error || `请求失败（${response.status}）`)
     error.output = data.output || ""
+    error.diagnostics = Array.isArray(data.diagnostics) ? data.diagnostics : []
     throw error
   }
   return data
@@ -62,6 +63,21 @@ function toast(message) {
   node.classList.add("show")
   clearTimeout(toast.timer)
   toast.timer = setTimeout(() => node.classList.remove("show"), 2600)
+}
+
+function friendlyError(error) {
+  if (/spawn pnpm ENOENT/i.test(error.message || "")) {
+    return "工作台没有找到 pnpm。请关闭工作台后，使用“启动博客工作台.cmd”重新启动。"
+  }
+  return error.message || "操作没有完成，请稍后再试。"
+}
+
+function setButtonBusy(button, busy, busyLabel) {
+  if (!button) return
+  if (!button.dataset.label) button.dataset.label = button.innerHTML
+  button.disabled = busy
+  button.toggleAttribute("aria-busy", busy)
+  button.innerHTML = busy ? `<span class="spinner" aria-hidden="true"></span>${busyLabel}` : button.dataset.label
 }
 
 function localDateTime(value) {
@@ -89,6 +105,7 @@ function confirmDiscard() {
 function setDirty(value) {
   state.dirty = value
   elements.saveState.textContent = value ? "有未保存的修改" : "已保存"
+  elements.saveState.classList.toggle("dirty", value)
 }
 
 function escapeHtml(value) {
@@ -191,7 +208,7 @@ async function save() {
     await refreshGit()
   } catch (error) {
     elements.saveState.textContent = "保存失败"
-    toast(error.message)
+    toast(friendlyError(error))
   } finally { button.disabled = false }
 }
 
@@ -229,7 +246,7 @@ async function upload(file, kind) {
     else insertAtCursor(`![图片说明](${data.path})`)
     setDirty(true)
     toast(`图片已保存：${data.path}`)
-  } catch (error) { toast(error.message) }
+  } catch (error) { toast(friendlyError(error)) }
 }
 
 function insertAtCursor(value) {
@@ -248,50 +265,98 @@ async function refreshGit() {
     const count = data.changes ? data.changes.split("\n").length : 0
     $("#gitSummary").textContent = count ? `${count} 项本地改动等待处理` : "本地内容已全部保存"
     return data
-  } catch (error) { $("#gitSummary").textContent = error.message; throw error }
+  } catch (error) { $("#gitSummary").textContent = friendlyError(error); throw error }
 }
 
-function showLog(title, eyebrow = "运行结果") {
+function showLog(title, eyebrow = "运行结果", hint = "工作台正在执行任务，完成后会显示结果。") {
   $("#logEyebrow").textContent = eyebrow
   $("#logTitle").textContent = title
-  $("#logOutput").textContent = "请稍候，这可能需要一两分钟…"
+  $("#logHint").textContent = hint
+  $("#logDialog").dataset.state = "working"
+  renderDiagnostics([])
+  $("#logOutput").textContent = "正在准备运行环境…"
   $("#logDialog").showModal()
 }
 
+function renderDiagnostics(diagnostics = []) {
+  const list = $("#diagnosticList")
+  list.replaceChildren()
+  list.hidden = diagnostics.length === 0
+  for (const diagnostic of diagnostics) {
+    const item = document.createElement(diagnostic.contentPath ? "button" : "div")
+    item.className = "diagnostic-item"
+    if (diagnostic.contentPath) {
+      item.type = "button"
+      item.dataset.diagnosticPath = diagnostic.contentPath
+    }
+    const heading = document.createElement("span")
+    heading.className = "diagnostic-heading"
+    const title = document.createElement("strong")
+    title.textContent = diagnostic.title || "未命名内容"
+    const location = document.createElement("em")
+    location.textContent = diagnostic.location || "文件级问题"
+    heading.append(title, location)
+    const message = document.createElement("span")
+    message.className = "diagnostic-message"
+    message.textContent = diagnostic.message || "请查看完整检查信息。"
+    const path = document.createElement("code")
+    path.textContent = diagnostic.file || "项目配置或运行环境"
+    item.append(heading, message, path)
+    if (diagnostic.contentPath) {
+      const action = document.createElement("span")
+      action.className = "diagnostic-action"
+      action.textContent = "打开修改 →"
+      item.append(action)
+    }
+    list.append(item)
+  }
+}
+
+function finishLog(state, title, output, hint, diagnostics = []) {
+  $("#logDialog").dataset.state = state
+  $("#logTitle").textContent = title
+  $("#logHint").textContent = hint
+  renderDiagnostics(diagnostics)
+  $("#logOutput").textContent = output || "任务完成，没有额外输出。"
+}
+
 async function runCheck() {
-  showLog("正在检查博客", "发布前检查")
+  const button = $("#checkButton")
+  setButtonBusy(button, true, "检查中")
+  showLog("正在检查博客", "发布前检查", "正在核对内容结构、Astro 与 TypeScript。")
   try {
     const data = await request("/api/check", { method: "POST", body: JSON.stringify({ task: "check" }) })
-    $("#logTitle").textContent = "检查通过"
-    $("#logOutput").textContent = data.output
+    finishLog("success", "检查通过", data.output, "博客状态正常，可以继续构建或发布。")
   } catch (error) {
-    $("#logTitle").textContent = "检查未通过"
-    $("#logOutput").textContent = [error.message, error.output].filter(Boolean).join("\n\n")
+    finishLog("error", "检查未通过", [friendlyError(error), error.output].filter(Boolean).join("\n\n"), "已整理出问题位置，点击对应项目即可打开修改。", error.diagnostics)
+  } finally {
+    setButtonBusy(button, false)
   }
 }
 
 async function openPublish() {
   if (state.dirty) return toast("请先保存正在编辑的内容")
+  const button = $("#publishButton")
+  setButtonBusy(button, true, "读取状态")
   try {
     const data = await refreshGit()
     $("#publishChanges").textContent = data.changes || "没有未提交改动；将同步当前本地版本。"
     $("#publishDialog").showModal()
-  } catch (error) { toast(error.message) }
+  } catch (error) { toast(friendlyError(error)) }
+  finally { setButtonBusy(button, false) }
 }
 
 async function publish(event) {
   event.preventDefault()
   $("#publishDialog").close()
-  showLog("正在发布到 GitHub", "请不要关闭工作台")
+  showLog("正在发布到 GitHub", "安全发布", "将依次检查、构建、提交并推送；失败时不会覆盖远程内容。")
   try {
     const data = await request("/api/publish", { method: "POST", body: JSON.stringify({ message: $("#commitMessage").value }) })
-    $("#logTitle").textContent = "发布完成"
-    $("#logOutput").textContent = data.log
+    finishLog("success", "发布完成", data.log, `版本 ${data.commit} 已安全推送到 GitHub。`)
     toast("博客已经成功发布")
     await refreshGit()
   } catch (error) {
-    $("#logTitle").textContent = "发布已停止"
-    $("#logOutput").textContent = [error.message, error.output].filter(Boolean).join("\n\n")
+    finishLog("error", "发布已安全停止", [friendlyError(error), error.output].filter(Boolean).join("\n\n"), "远程内容没有被强制覆盖，请查看并修正下方问题。", error.diagnostics)
   }
 }
 
@@ -315,6 +380,14 @@ $$("[data-insert]").forEach((button) => button.addEventListener("click", () => i
 $("#cancelPublish").addEventListener("click", () => $("#publishDialog").close())
 $("#publishForm").addEventListener("submit", publish)
 $("#closeLog").addEventListener("click", () => $("#logDialog").close())
+$("#diagnosticList").addEventListener("click", async (event) => {
+  const item = event.target.closest("[data-diagnostic-path]")
+  if (!item) return
+  $("#logDialog").close()
+  await loadEntry(item.dataset.diagnosticPath)
+  elements.title.focus()
+  toast("已打开存在问题的内容")
+})
 
 for (const input of [elements.title, elements.slug, elements.published, elements.description, elements.category, elements.tags, elements.image, elements.body, elements.draft, elements.pinned]) {
   input.addEventListener("input", () => { setDirty(true); if (input === elements.body) { updateWordCount(); refreshPreview() } })

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <title>鲸落博客工作台</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="/vendor/katex/katex.min.css" />
@@ -18,14 +18,15 @@
             <span class="sr-only">收起文章列表</span>
           </button>
           <div class="brand">
-            <span class="brand-mark">鲸</span>
-            <div><strong>鲸落博客工作台</strong><small>仅在你的电脑上运行</small></div>
+            <span class="brand-mark" aria-hidden="true">🐋</span>
+            <div><strong>鲸落博客工作台</strong><small>专注写作，安全发布</small></div>
           </div>
         </div>
         <div class="top-actions">
+          <span class="local-status"><span aria-hidden="true"></span>本地运行</span>
           <span id="saveState" class="save-state">已就绪</span>
-          <button id="checkButton" class="button secondary">检查</button>
-          <button id="publishButton" class="button primary">发布到 GitHub</button>
+          <button id="checkButton" class="button secondary"><span aria-hidden="true">✓</span> 检查博客</button>
+          <button id="publishButton" class="button primary"><span aria-hidden="true">↗</span> 发布 GitHub</button>
         </div>
       </header>
 
@@ -94,7 +95,7 @@
             </div>
 
             <aside class="preview-pane">
-              <div class="preview-head"><span>实时预览</span><button id="refreshPreview" class="link-button">刷新</button></div>
+              <div class="preview-head"><span><i aria-hidden="true"></i>实时预览</span><button id="refreshPreview" class="link-button">刷新</button></div>
               <article id="preview" class="preview prose"><p class="preview-empty">正文会在这里显示。</p></article>
             </aside>
           </div>
@@ -132,6 +133,8 @@
       <div class="dialog-card log-card">
         <span id="logEyebrow" class="eyebrow">运行结果</span>
         <h2 id="logTitle">处理中…</h2>
+        <p id="logHint" class="log-hint">工作台正在执行任务，完成后会显示结果。</p>
+        <section id="diagnosticList" class="diagnostic-list" aria-label="问题定位" hidden></section>
         <pre id="logOutput" class="log-output">请稍候</pre>
         <button id="closeLog" class="button secondary">关闭</button>
       </div>

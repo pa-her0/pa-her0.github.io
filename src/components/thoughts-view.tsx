@@ -366,7 +366,7 @@ function TimelineMode({
                     <div
                       key={t.slug}
                       id={`thought-${t.slug}`}
-                      className="relative mb-7 -ml-3 rounded-md px-3 pb-2 pt-1 scroll-mt-28"
+                      className="thoughts-entry-card relative mb-7 -ml-3 rounded-md px-3 pb-2 pt-1 scroll-mt-28"
                     >
                       <div className="relative mb-1.5 flex items-center gap-3">
                         <span

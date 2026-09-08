@@ -2,6 +2,7 @@
 import "@/styles/global.css"
 import { ClientRouter } from "astro:transitions"
 import CursorTrail from "@/components/CursorTrail.astro"
+import SiteBentoMotion from "@/components/SiteBentoMotion.astro"
 import { ArticleActions } from "@/components/article-actions"
 import { getSortedPosts } from "@/lib/posts"
 
@@ -188,6 +189,7 @@ const resolvedTwitterDescription = twitterDescription || description
     <slot />
     <ArticleActions articleMode={showArticleActions} latestPostHref={latestPostHref} client:load />
     <CursorTrail />
+    <SiteBentoMotion />
     <script is:inline>
       // View Transitions 页面切换后重应用主题
       (function() {

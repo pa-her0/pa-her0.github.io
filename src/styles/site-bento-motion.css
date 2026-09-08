@@ -1,0 +1,147 @@
+/* Shared pointer-aware motion for card-like modules outside the homepage grid. */
+.site-page :where(
+  .site-panel,
+  .article-preview,
+  .project-folder-hero,
+  .project-file,
+  .friend-bento-card,
+  .friends-info-card,
+  .thoughts-entry-card,
+  .article-item > a,
+  .guestbook-note,
+  .pure-twikoo .tk-submit,
+  .pure-twikoo .tk-comment,
+  [data-bento-motion]
+) {
+  --site-bento-x: 50%;
+  --site-bento-y: 50%;
+  --site-bento-rotate-x: 0deg;
+  --site-bento-rotate-y: 0deg;
+  position: relative;
+  isolation: isolate;
+  animation: site-bento-reveal .42s both ease-out;
+  transition: translate .28s cubic-bezier(.22, .8, .3, 1), scale .28s cubic-bezier(.22, .8, .3, 1), transform .32s cubic-bezier(.22, .8, .3, 1), border-color .24s ease, box-shadow .28s ease, background-color .24s ease !important;
+}
+
+.site-page :where(
+  .site-panel,
+  .article-preview,
+  .project-file,
+  .friend-bento-card,
+  .friends-info-card,
+  .thoughts-entry-card,
+  .article-item > a,
+  .guestbook-note,
+  .pure-twikoo .tk-submit,
+  .pure-twikoo .tk-comment,
+  [data-bento-motion]
+)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: block;
+  border-radius: inherit;
+  background:
+    radial-gradient(340px circle at var(--site-bento-x) var(--site-bento-y), color-mix(in srgb, var(--primary) 11%, transparent), transparent 64%),
+    linear-gradient(135deg, color-mix(in srgb, white 7%, transparent), transparent 38%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .24s ease;
+}
+
+.site-page :where(
+  .site-panel,
+  .article-preview,
+  .project-file,
+  .friend-bento-card,
+  .friends-info-card,
+  .thoughts-entry-card,
+  .article-item > a,
+  .guestbook-note,
+  .pure-twikoo .tk-submit,
+  .pure-twikoo .tk-comment,
+  [data-bento-motion]
+):is(.is-site-bento-hovered, :focus-within)::before {
+  opacity: 1;
+}
+
+@keyframes site-bento-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-page :where(
+    .site-panel,
+    .article-preview,
+    .project-folder-hero,
+    .project-file,
+    .friend-bento-card,
+    .friends-info-card,
+    .thoughts-entry-card,
+    .article-item > a,
+    .guestbook-note,
+    .pure-twikoo .tk-submit,
+    .pure-twikoo .tk-comment,
+    [data-bento-motion]
+  ):is(:hover, :focus-within) {
+    z-index: 2;
+    translate: 0 -3px;
+    scale: 1.004;
+    border-color: color-mix(in srgb, var(--primary) 36%, var(--border));
+    box-shadow: 0 16px 36px color-mix(in srgb, var(--foreground) 10%, transparent), 0 3px 10px color-mix(in srgb, var(--primary) 8%, transparent);
+    transform: perspective(1000px) rotateX(var(--site-bento-rotate-x)) rotateY(var(--site-bento-rotate-y));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-page :where(
+    .site-panel,
+    .article-preview,
+    .project-folder-hero,
+    .project-file,
+    .friend-bento-card,
+    .friends-info-card,
+    .thoughts-entry-card,
+    .article-item > a,
+    .guestbook-note,
+    .pure-twikoo .tk-submit,
+    .pure-twikoo .tk-comment,
+    [data-bento-motion]
+  ) {
+    animation: none;
+    transition: border-color .18s ease, box-shadow .18s ease !important;
+  }
+  .site-page :where(
+    .site-panel,
+    .article-preview,
+    .project-folder-hero,
+    .project-file,
+    .friend-bento-card,
+    .friends-info-card,
+    .thoughts-entry-card,
+    .article-item > a,
+    .guestbook-note,
+    .pure-twikoo .tk-submit,
+    .pure-twikoo .tk-comment,
+    [data-bento-motion]
+  ):is(:hover, :focus-within) {
+    translate: none;
+    scale: none;
+    transform: none;
+  }
+  .site-page :where(
+    .site-panel,
+    .article-preview,
+    .project-file,
+    .friend-bento-card,
+    .friends-info-card,
+    .thoughts-entry-card,
+    .article-item > a,
+    .guestbook-note,
+    .pure-twikoo .tk-submit,
+    .pure-twikoo .tk-comment,
+    [data-bento-motion]
+  )::before { transition: none; }
+}

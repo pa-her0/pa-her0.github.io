@@ -1,7 +1,7 @@
 "use client"
 
 import { ChevronUp, ChevronDown, MapPin, Pause, Play, Radio, Zap } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react"
 import { homeDashboard, type HomeTrack } from "@/data/home-dashboard"
 import { HomeGlobe } from "@/components/home-globe"
 import { useHomeWakatime } from "@/components/use-home-wakatime"
@@ -170,6 +170,39 @@ function MusicCard() {
 
 export function Hero({ latestPost, activity, categories }: HeroProps) {
   const stackTrack = useRef<HTMLDivElement>(null)
+  const bentoGrid = useRef<HTMLDivElement>(null)
+  const bentoPointerFrame = useRef(0)
+  const pendingBentoPointer = useRef<{ card: HTMLElement; clientX: number; clientY: number } | null>(null)
+
+  function moveBentoSpotlight(event: ReactPointerEvent<HTMLDivElement>) {
+    const card = (event.target as HTMLElement).closest<HTMLElement>(".bento-card")
+    if (!card || !event.currentTarget.contains(card)) return
+    pendingBentoPointer.current = { card, clientX: event.clientX, clientY: event.clientY }
+    if (bentoPointerFrame.current) return
+    bentoPointerFrame.current = window.requestAnimationFrame(() => {
+      bentoPointerFrame.current = 0
+      const pointer = pendingBentoPointer.current
+      if (!pointer) return
+      const bounds = pointer.card.getBoundingClientRect()
+      const x = pointer.clientX - bounds.left
+      const y = pointer.clientY - bounds.top
+      pointer.card.style.setProperty("--bento-pointer-x", `${x}px`)
+      pointer.card.style.setProperty("--bento-pointer-y", `${y}px`)
+      pointer.card.style.setProperty("--bento-tilt-x", `${((x / bounds.width) - 0.5) * 1.4}deg`)
+      pointer.card.style.setProperty("--bento-tilt-y", `${((y / bounds.height) - 0.5) * -1.4}deg`)
+    })
+  }
+
+  function resetBentoSpotlight() {
+    pendingBentoPointer.current = null
+    if (bentoPointerFrame.current) window.cancelAnimationFrame(bentoPointerFrame.current)
+    bentoPointerFrame.current = 0
+    bentoGrid.current?.querySelectorAll<HTMLElement>(".bento-card").forEach((card) => {
+      card.style.removeProperty("--bento-tilt-x")
+      card.style.removeProperty("--bento-tilt-y")
+    })
+  }
+
   useEffect(() => {
     const track = stackTrack.current
     if (!track) return
@@ -179,7 +212,11 @@ export function Hero({ latestPost, activity, categories }: HeroProps) {
     observer.observe(track)
     document.addEventListener("visibilitychange", sync)
     sync()
-    return () => { observer.disconnect(); document.removeEventListener("visibilitychange", sync) }
+    return () => {
+      observer.disconnect()
+      document.removeEventListener("visibilitychange", sync)
+      if (bentoPointerFrame.current) window.cancelAnimationFrame(bentoPointerFrame.current)
+    }
   }, [])
   const { languages, calendar, error: statsError } = useHomeWakatime()
   const topics = languages ?? categories
@@ -190,7 +227,7 @@ export function Hero({ latestPost, activity, categories }: HeroProps) {
   }) : activity.days
   return (
     <section id="home-main" className="bento-home" aria-label="个人首页">
-      <div className="bento-grid">
+      <div className="bento-grid" ref={bentoGrid} onPointerMove={moveBentoSpotlight} onPointerLeave={resetBentoSpotlight}>
         <article className="bento-card bento-intro">
           <h1>{homeDashboard.intro.title}</h1>
           <div>{homeDashboard.intro.lines.map((line) => <p key={line}>{line}</p>)}</div>

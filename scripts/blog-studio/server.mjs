@@ -1,4 +1,5 @@
 import { execFile, spawn } from "node:child_process"
+import { existsSync } from "node:fs"
 import { access, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises"
 import http from "node:http"
 import path from "node:path"
@@ -19,6 +20,38 @@ const host = "127.0.0.1"
 const port = Number(process.env.BLOG_STUDIO_PORT || 4322)
 const maxBodyBytes = 25 * 1024 * 1024
 const markdown = new MarkdownIt({ html: false, linkify: true, typographer: true })
+
+function resolvePnpmScript() {
+  const candidates = [
+    process.env.npm_execpath,
+    process.env.APPDATA && path.join(process.env.APPDATA, "npm", "node_modules", "pnpm", "bin", "pnpm.mjs"),
+    process.env.PNPM_HOME && path.join(process.env.PNPM_HOME, "node_modules", "pnpm", "bin", "pnpm.mjs"),
+    process.env.LOCALAPPDATA && path.join(process.env.LOCALAPPDATA, "pnpm", "node_modules", "pnpm", "bin", "pnpm.mjs"),
+  ].filter(Boolean)
+
+  for (const directory of String(process.env.PATH || "").split(path.delimiter)) {
+    if (!directory) continue
+    candidates.push(path.join(directory, "node_modules", "pnpm", "bin", "pnpm.mjs"))
+    candidates.push(path.join(directory, "node_modules", "pnpm", "bin", "pnpm.cjs"))
+  }
+
+  return candidates.find((candidate) =>
+    /pnpm\.(?:mjs|cjs|js)$/i.test(candidate) && existsSync(candidate),
+  ) || ""
+}
+
+const pnpmScript = resolvePnpmScript()
+
+function resolveCommand(command, args) {
+  if (command !== "pnpm") return { command, args }
+  if (pnpmScript) return { command: process.execPath, args: [pnpmScript, ...args] }
+
+  return {
+    command,
+    args,
+    error: "工作台没有找到 pnpm。请从“启动博客工作台.cmd”重新启动，或确认 pnpm 已正确安装。",
+  }
+}
 
 function installMathRenderer(md) {
   md.inline.ruler.after("escape", "math_inline", (state, silent) => {
@@ -225,6 +258,12 @@ function cleanSlug(value, fallback = "new-post") {
   return slug || fallback
 }
 
+function normalizeDate(value, fallback) {
+  const date = value instanceof Date ? value : new Date(value || fallback)
+  if (Number.isNaN(date.getTime())) throw new Error("发布日期格式不正确，请重新选择日期和时间。")
+  return date
+}
+
 async function exists(filePath) {
   try {
     await access(filePath)
@@ -245,7 +284,7 @@ function normalizeMeta(type, input, existing = {}) {
   const tags = Array.isArray(input.tags)
     ? input.tags.map((tag) => String(tag).trim()).filter(Boolean)
     : String(input.tags || "").split(/[,，]/).map((tag) => tag.trim()).filter(Boolean)
-  const published = input.published || existing.published || timestamp
+  const published = normalizeDate(input.published || existing.published, timestamp)
   if (type === "thought") {
     const result = {
       ...existing,
@@ -264,7 +303,7 @@ function normalizeMeta(type, input, existing = {}) {
     title: String(input.title || existing.title || "未命名文章").trim(),
     commentSlug: input.commentSlug || existing.commentSlug || slug,
     published,
-    updated: timestamp,
+    updated: normalizeDate(timestamp),
     draft: input.draft !== false,
     description: String(input.description || ""),
     image: String(input.image || ""),
@@ -296,7 +335,7 @@ async function saveEntry(payload) {
   }
   const meta = normalizeMeta(type, payload.meta || {}, existing)
   if (type === "thought" && !meta.slug) meta.slug = path.basename(targetRelative, path.extname(targetRelative))
-  const output = matter.stringify(String(payload.body || "").trimStart(), meta)
+  const output = matter.stringify(String(payload.body || "").trim(), meta)
   const target = contentPath(targetRelative)
   await mkdir(path.dirname(target), { recursive: true })
   await writeFile(target, output, "utf8")
@@ -327,7 +366,12 @@ async function uploadImage(payload) {
 
 function run(command, args, options = {}) {
   return new Promise((resolve, reject) => {
-    execFile(command, args, {
+    const invocation = resolveCommand(command, args)
+    if (invocation.error) {
+      reject(new Error(invocation.error))
+      return
+    }
+    execFile(invocation.command, invocation.args, {
       cwd: repoRoot,
       encoding: "utf8",
       timeout: options.timeout || 5 * 60 * 1000,
@@ -341,6 +385,95 @@ function run(command, args, options = {}) {
       } else resolve(output)
     })
   })
+}
+
+async function collectDiagnostics(error) {
+  const output = [error?.message, error?.output].filter(Boolean).join("\n")
+  const lines = output.split(/\r?\n/)
+  const typeError = output.match(/([\w-]+)\*{0,2}:\s*\*{0,2}\1:\s*Expected type `(?:\\?"?)([^`"\\]+)(?:\\?"?)`, received `(?:\\?"?)([^`"\\]+)(?:\\?"?)`/i)
+  const detail = typeError
+    ? `字段“${typeError[1]}”类型错误：需要 ${typeError[2]}，当前是 ${typeError[3]}。`
+    : /new blank line at EOF/i.test(output)
+      ? "文件末尾存在多余空白行。"
+      : /trailing whitespace/i.test(output)
+        ? "该行末尾存在多余空格。"
+        : lines.map((line) => line.trim()).find((line) => /error ts\(|does not match collection schema/i.test(line))
+          || "请查看完整检查信息。"
+  const diagnostics = []
+  const seen = new Set()
+  const filePattern = /(src[\\/][^:\r\n]+?\.(?:md|mdx|astro|ts|tsx|js|jsx|css|mjs))(?::(\d+)(?::(\d+))?)?/i
+
+  for (const line of lines) {
+    const match = line.match(filePattern)
+    if (!match) continue
+    const file = match[1].replaceAll("\\", "/")
+    const lineNumber = Number(match[2] || 0)
+    const column = Number(match[3] || 0)
+    const key = `${file}:${lineNumber}:${column}`
+    if (seen.has(key)) continue
+    seen.add(key)
+
+    const contentRelative = file.startsWith("src/content/") ? file.slice("src/content/".length) : ""
+    let title = path.basename(file, path.extname(file))
+    if (contentRelative && /^(posts|thoughts)\//.test(contentRelative)) {
+      try {
+        const parsed = matter(await readFile(contentPath(contentRelative), "utf8"))
+        title = parsed.data.title || (contentRelative.startsWith("thoughts/") ? parsed.content.trim().slice(0, 36) : title)
+      } catch { /* 文件内容本身损坏时仍显示路径 */ }
+    }
+
+    diagnostics.push({
+      file,
+      contentPath: contentRelative,
+      title,
+      line: lineNumber,
+      column,
+      location: lineNumber > 0 ? `第 ${lineNumber} 行${column > 0 ? `，第 ${column} 列` : ""}` : contentRelative ? "文章头部信息" : "文件级问题",
+      message: /does not match collection schema|Expected type/i.test(output)
+        ? `文章属性格式不符合要求：${detail}`
+        : detail,
+    })
+  }
+
+  if (!diagnostics.length) {
+    diagnostics.push({
+      file: "",
+      contentPath: "",
+      title: "检查未通过",
+      line: 0,
+      column: 0,
+      location: "项目级问题",
+      message: detail,
+    })
+  }
+  return diagnostics.slice(0, 12)
+}
+
+async function checkChangedMarkdownFormatting() {
+  const [tracked, untracked] = await Promise.all([
+    run("git", ["diff", "--name-only", "HEAD"]),
+    run("git", ["ls-files", "--others", "--exclude-standard"]),
+  ])
+  const files = [...new Set(`${tracked}\n${untracked}`.split(/\r?\n/).map((file) => file.trim()).filter(Boolean))]
+    .filter((file) => /^src[\\/]content[\\/].*\.mdx?$/i.test(file))
+  const issues = []
+
+  for (const file of files) {
+    const source = (await readFile(resolveInside(repoRoot, file), "utf8")).replaceAll("\r\n", "\n")
+    const lines = source.split("\n")
+    lines.forEach((line, index) => {
+      if (/[\t ]+$/.test(line)) issues.push(`${file}:${index + 1}: trailing whitespace.`)
+    })
+    if (/\n[\t ]*\n$/.test(source)) {
+      issues.push(`${file}:${Math.max(1, lines.length - 1)}: new blank line at EOF.`)
+    }
+  }
+
+  if (issues.length) {
+    const error = new Error("发现 Markdown 空白格式问题。")
+    error.output = issues.join("\n")
+    throw error
+  }
 }
 
 async function gitStatus() {
@@ -383,11 +516,13 @@ async function publish(message) {
   const changes = await run("git", ["status", "--porcelain"])
   if (changes) {
     await step("检查内容和代码", "pnpm", ["check"], { timeout: 10 * 60 * 1000 })
+    await step("构建正式博客", "pnpm", ["build"], { timeout: 15 * 60 * 1000 })
     await step("暂存本次改动", "git", ["add", "-A"])
     await step("检查待提交内容", "git", ["diff", "--cached", "--check"])
     await step("保存版本", "git", ["commit", "-m", String(message || "content: update blog").trim()])
+  } else {
+    await step("构建正式博客", "pnpm", ["build"], { timeout: 15 * 60 * 1000 })
   }
-  await step("构建正式博客", "pnpm", ["build"], { timeout: 15 * 60 * 1000 })
   await step("发布源码", "git", ["push", "origin", "HEAD:main"], { timeout: 10 * 60 * 1000 })
   await step("发布博客", "git", ["push", "blog", "HEAD:main"], { timeout: 10 * 60 * 1000 })
   const commit = await run("git", ["rev-parse", "--short", "HEAD"])
@@ -428,8 +563,17 @@ async function api(req, res, url) {
   if (req.method === "POST" && url.pathname === "/api/check") {
     const body = await readJson(req)
     const task = body.task === "build" ? "build" : "check"
-    const output = await run("pnpm", [task], { timeout: task === "build" ? 15 * 60 * 1000 : 10 * 60 * 1000 })
-    return json(res, 200, { output: output || `${task} 完成，没有发现问题。` })
+    try {
+      const output = await run("pnpm", [task], { timeout: task === "build" ? 15 * 60 * 1000 : 10 * 60 * 1000 })
+      if (task === "check") await checkChangedMarkdownFormatting()
+      return json(res, 200, {
+        output: [output, task === "check" ? "Markdown 空白格式检查通过。" : ""].filter(Boolean).join("\n\n") || `${task} 完成，没有发现问题。`,
+        diagnostics: [],
+      })
+    } catch (error) {
+      error.diagnostics = await collectDiagnostics(error)
+      throw error
+    }
   }
   if (req.method === "POST" && url.pathname === "/api/publish") return json(res, 200, await publish((await readJson(req)).message))
   return json(res, 404, { error: "接口不存在。" })
@@ -468,22 +612,37 @@ const server = http.createServer(async (req, res) => {
     else await serveStatic(res, url)
   } catch (error) {
     console.error(error)
-    json(res, 500, { error: error.message || "操作失败。", output: error.output || "" })
+    if (!error.diagnostics && error.output) error.diagnostics = await collectDiagnostics(error)
+    json(res, 500, { error: error.message || "操作失败。", output: error.output || "", diagnostics: error.diagnostics || [] })
   }
+})
+
+function openWorkbench(url) {
+  const [command, args] = process.platform === "darwin"
+    ? ["open", [url]]
+    : process.platform === "win32"
+      ? [process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", "start", "", url]]
+      : ["xdg-open", [url]]
+  spawn(command, args, { detached: true, stdio: "ignore" }).unref()
+}
+
+server.on("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    const url = `http://${host}:${port}`
+    console.log(`\n鲸落博客工作台已经在运行：${url}`)
+    if (!process.argv.includes("--no-open")) openWorkbench(url)
+    process.exit(0)
+  }
+  console.error("博客工作台启动失败：", error)
+  process.exit(1)
 })
 
 server.listen(port, host, () => {
   const url = `http://${host}:${port}`
   console.log(`\n鲸落博客工作台已启动：${url}`)
+  console.log(`pnpm：${pnpmScript || "未找到"}`)
   console.log("关闭此窗口即可停止工作台。\n")
-  if (!process.argv.includes("--no-open")) {
-    const [command, args] = process.platform === "darwin"
-      ? ["open", [url]]
-      : process.platform === "win32"
-        ? ["cmd", ["/c", "start", "", url]]
-        : ["xdg-open", [url]]
-    spawn(command, args, { detached: true, stdio: "ignore" }).unref()
-  }
+  if (!process.argv.includes("--no-open")) openWorkbench(url)
 })
 
 process.on("SIGINT", () => server.close(() => process.exit(0)))

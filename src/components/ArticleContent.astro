@@ -101,7 +101,7 @@ const primaryTagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#hom
     </div>
 
     {data.image && (
-      <div class="mb-10 overflow-hidden rounded-2xl border border-border/50 bg-surface-subtle max-w-4xl mx-auto aspect-[16/9]">
+      <div class="mb-10 overflow-hidden rounded-2xl border border-border/50 bg-surface-subtle max-w-4xl mx-auto aspect-[16/9]" data-bento-motion>
         <img
           src={data.image}
           alt={data.title}
@@ -113,7 +113,7 @@ const primaryTagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#hom
     )}
 
     <div class="xl:hidden max-w-[44rem] mx-auto mb-4">
-      <details open class="group border border-border/60 bg-card/60 rounded-xl">
+      <details open class="group border border-border/60 bg-card/60 rounded-xl" data-bento-motion>
         <summary class="list-none cursor-pointer px-4 py-3 flex items-center justify-between text-sm text-foreground">
           <span class="inline-flex items-center gap-2">
             <span class="w-1 h-4 bg-primary rounded-full"></span>
@@ -152,7 +152,7 @@ const primaryTagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#hom
 
       <aside class="hidden xl:block absolute top-0 left-full pl-12 w-72 h-full">
         <div class="sticky top-24">
-          <div class="toc-scroll-container max-h-[calc(100dvh-8rem)] overflow-y-auto overscroll-contain toc-scrollbar border border-border/60 bg-card/60 rounded-xl p-4">
+          <div class="toc-scroll-container max-h-[calc(100dvh-8rem)] overflow-y-auto overscroll-contain toc-scrollbar border border-border/60 bg-card/60 rounded-xl p-4" data-bento-motion>
             <TableOfContents client:only="react" />
           </div>
         </div>
@@ -187,7 +187,7 @@ const primaryTagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#hom
       <div class="grid sm:grid-cols-2 gap-4">
         <a
           href={data.prevSlug ? `/posts/${data.prevSlug}/` : "/"}
-          class="group p-4 border border-border rounded-xl hover:border-primary/30 transition-colors"
+          class="group p-4 border border-border rounded-xl hover:border-primary/30 transition-colors" data-bento-motion
         >
           <span class="text-xs text-muted-foreground mb-1 block">上一篇</span>
           <span class="text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
@@ -196,7 +196,7 @@ const primaryTagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#hom
         </a>
         <a
           href={data.nextSlug ? `/posts/${data.nextSlug}/` : "/"}
-          class="group p-4 border border-border rounded-xl hover:border-primary/30 transition-colors text-right"
+          class="group p-4 border border-border rounded-xl hover:border-primary/30 transition-colors text-right" data-bento-motion
         >
           <span class="text-xs text-muted-foreground mb-1 block">下一篇</span>
           <span class="text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
