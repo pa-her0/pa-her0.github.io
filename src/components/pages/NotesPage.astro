@@ -1,0 +1,85 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import SiteHeader from "@/components/site-header.astro"
+import { Footer } from "@/components/footer"
+import { buildNoteGroups, notePostHref } from "@/lib/content-sections"
+import { getSortedPosts, toPostMeta } from "@/lib/posts"
+import "@/styles/content-hub.css"
+
+interface Props { selectedSeries?: string }
+
+const { selectedSeries } = Astro.props as Props
+const posts = await getSortedPosts(true)
+const groups = buildNoteGroups(posts)
+const activeGroup = selectedSeries ? groups.find((group) => group.slug === selectedSeries) : undefined
+const visibleGroups = activeGroup ? [activeGroup] : groups
+const title = activeGroup ? `${activeGroup.name}笔记 | Jiely 的博客` : "笔记 | Jiely 的博客"
+const description = activeGroup?.description ?? "按专题整理的学习、算法、科研与开发笔记"
+---
+
+<BaseLayout {title} {description} fontProfile="interface">
+  <div class="site-page">
+    <SiteHeader />
+    <main class="content-hub">
+      <div class="content-hub__shell">
+        <div class="content-hub__top">
+          <header class="content-hub__heading">
+            <p class="content-hub__eyebrow">Notes / Collections</p>
+            <h1 class="content-hub__title">{activeGroup?.name ?? "笔记"}</h1>
+          </header>
+          <nav class="content-hub__tabs" aria-label="博客栏目">
+            <a href="/articles/">全部</a>
+            <a href="/notes/" aria-current="page">笔记</a>
+            <a href="/life/">生活</a>
+          </nav>
+        </div>
+
+        <div class="content-hub__layout">
+          <aside class="content-hub__sidebar" aria-label="笔记专题">
+            <h2 class="content-hub__sidebar-title">专题</h2>
+            <nav class="content-hub__nav">
+              <a href="/notes/" aria-current={!activeGroup ? "page" : undefined}>
+                <span>全部笔记</span><small>{groups.reduce((sum, group) => sum + group.posts.length, 0)}</small>
+              </a>
+              {groups.map((group) => (
+                <a href={`/notes/${group.slug}/`} aria-current={activeGroup?.slug === group.slug ? "page" : undefined}>
+                  <span>{group.name}</span><small>{group.posts.length}</small>
+                </a>
+              ))}
+            </nav>
+          </aside>
+
+          <div class="content-hub__main">
+            {visibleGroups.map((group) => (
+              <section class="content-hub__section" aria-labelledby={`series-${group.slug}`}>
+                <div class="content-hub__section-head">
+                  <div>
+                    <h2 id={`series-${group.slug}`}>{group.name}</h2>
+                    <p>{group.description}</p>
+                  </div>
+                  {!activeGroup && <a class="content-hub__section-link" href={`/notes/${group.slug}/`}>查看专题 →</a>}
+                </div>
+                <div class="content-hub__entries">
+                  {group.posts.map((post) => {
+                    const meta = toPostMeta(post)
+                    return (
+                      <a class="content-entry" href={notePostHref(group, post)} data-astro-prefetch="hover">
+                        <time class="content-entry__date" datetime={meta.updated || meta.date}>{meta.updated || meta.date}</time>
+                        <div>
+                          <h3 class="content-entry__title">{post.data.title}</h3>
+                          <p class="content-entry__description">{meta.excerpt}</p>
+                        </div>
+                        <span class="content-entry__arrow" aria-hidden="true">↗</span>
+                      </a>
+                    )
+                  })}
+                </div>
+              </section>
+            ))}
+          </div>
+        </div>
+      </div>
+    </main>
+    <Footer />
+  </div>
+</BaseLayout>

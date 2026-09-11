@@ -9,6 +9,8 @@ image: /post-covers/2025-04-15-yolo-orangepi5.jpg
 tags:
   - 热爱
 category: 开发
+series: 开发
+seriesOrder: 5
 lang: zh-CN
 ---
 # YOLO的 pt 模型 转化为 onnx

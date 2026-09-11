@@ -1,0 +1,76 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import SiteHeader from "@/components/site-header.astro"
+import { Footer } from "@/components/footer"
+import { getLifePosts, lifePostHref } from "@/lib/content-sections"
+import { getSortedPosts, toPostMeta } from "@/lib/posts"
+import "@/styles/content-hub.css"
+
+const allPosts = await getSortedPosts(true)
+const posts = getLifePosts(allPosts)
+const years = [...new Set(posts.map((post) => toPostMeta(post).updated.slice(0, 4)))].sort().reverse()
+---
+
+<BaseLayout title="生活 | Jiely 的博客" description="生活、阅读、思考与日常记录" fontProfile="interface">
+  <div class="site-page">
+    <SiteHeader />
+    <main class="content-hub">
+      <div class="content-hub__shell">
+        <div class="content-hub__top">
+          <header class="content-hub__heading">
+            <p class="content-hub__eyebrow">Life / Moments</p>
+            <h1 class="content-hub__title">生活</h1>
+            <p class="content-hub__lead">技术之外的阅读、思考与日常。按最后更新时间排列，留下生活里值得记住的片段。</p>
+          </header>
+          <nav class="content-hub__tabs" aria-label="博客栏目">
+            <a href="/articles/">全部</a>
+            <a href="/notes/">笔记</a>
+            <a href="/life/" aria-current="page">生活</a>
+          </nav>
+        </div>
+
+        <div class="content-hub__layout">
+          <aside class="content-hub__sidebar" aria-label="生活栏目">
+            <h2 class="content-hub__sidebar-title">栏目</h2>
+            <nav class="content-hub__nav">
+              <a href="/life/" aria-current="page"><span>生活文章</span><small>{posts.length}</small></a>
+              <a href="/thoughts/"><span>碎碎念</span><small>短句</small></a>
+              <a href="/timeline/"><span>时间线</span><small>归档</small></a>
+              <a href="/about/"><span>关于我</span><small>Jiely</small></a>
+            </nav>
+          </aside>
+
+          <div class="content-hub__main">
+            {years.map((year) => (
+              <section class="content-hub__section" aria-labelledby={`life-${year}`}>
+                <div class="content-hub__section-head">
+                  <div><h2 id={`life-${year}`}>{year}</h2></div>
+                </div>
+                <div class="life-grid">
+                  {posts.filter((post) => toPostMeta(post).updated.startsWith(year)).map((post) => {
+                    const meta = toPostMeta(post)
+                    return (
+                      <article class="life-card">
+                        {meta.image && (
+                          <a class="life-card__image" href={lifePostHref(post)} tabindex="-1" aria-hidden="true">
+                            <img src={meta.image} alt="" loading="lazy" decoding="async" />
+                          </a>
+                        )}
+                        <div class="life-card__body">
+                          <time class="life-card__meta" datetime={meta.updated}>更新于 {meta.updated}</time>
+                          <h3 class="life-card__title"><a href={lifePostHref(post)}>{post.data.title}</a></h3>
+                          <p class="life-card__description">{meta.excerpt}</p>
+                        </div>
+                      </article>
+                    )
+                  })}
+                </div>
+              </section>
+            ))}
+          </div>
+        </div>
+      </div>
+    </main>
+    <Footer />
+  </div>
+</BaseLayout>

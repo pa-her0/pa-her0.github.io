@@ -39,8 +39,12 @@ const {
   fontProfile = "reading",
 } = Astro.props as Props
 
-const useHarmonySans = fontProfile === "interface"
-const showArticleActions = Astro.url.pathname.startsWith("/posts/") || Astro.url.pathname.startsWith("/articles") || /^\/\d+\/?$/.test(Astro.url.pathname)
+const useInterfaceProfile = fontProfile === "interface"
+const pathSegments = Astro.url.pathname.split("/").filter(Boolean)
+const showArticleActions =
+  pathSegments[0] === "posts" ||
+  (pathSegments[0] === "notes" && pathSegments.length >= 3) ||
+  (pathSegments[0] === "life" && pathSegments.length >= 2)
 const latestPost = (await getSortedPosts(true)).find((post) => post.data.draft !== true)
 const latestPostHref = latestPost ? `/posts/${latestPost.slug}/` : "/articles/"
 const canonicalUrl = canonical || Astro.url.toString()
@@ -71,27 +75,6 @@ const resolvedTwitterDescription = twitterDescription || description
     <meta name="twitter:description" content={resolvedTwitterDescription} />
     <slot name="head" />
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    {useHarmonySans ? <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin /> : null}
-    {useHarmonySans ? (
-      <>
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/harmonyos-sans-sc-webfont-splitted@1.1.0/dist/Regular.css"
-        />
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/harmonyos-sans-sc-webfont-splitted@1.1.0/dist/Semibold.css"
-        />
-      </>
-    ) : null}
-    <link
-      rel="stylesheet"
-      href={useHarmonySans
-        ? "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Noto+Serif+SC:wght@400..900&display=swap"
-        : "https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Noto+Sans+SC:wght@400..700&family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Noto+Serif+SC:wght@400..900&display=swap"}
-    />
     <link rel="icon" href="/favicon-orange.png" type="image/png" />
     <link rel="apple-touch-icon" href="/favicon-orange.png" />
     <script is:inline>
@@ -185,7 +168,7 @@ const resolvedTwitterDescription = twitterDescription || description
     </script>
     <ClientRouter />
   </head>
-  <body class:list={["bg-background text-foreground", { "font-profile-interface": useHarmonySans }]}>
+  <body class:list={["bg-background text-foreground", { "font-profile-interface": useInterfaceProfile }]}>
     <slot />
     <ArticleActions articleMode={showArticleActions} latestPostHref={latestPostHref} client:load />
     <CursorTrail />

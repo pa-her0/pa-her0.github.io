@@ -10,6 +10,8 @@ tags:
   - 算法
   - 热爱
 category: 算法
+series: 算法
+seriesOrder: 5
 lang: zh-CN
 ---
 ## 相关学习方向思考

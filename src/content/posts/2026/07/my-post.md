@@ -9,6 +9,8 @@ image: /post-covers/2026-07-28-my-post.jpg
 tags:
   - 科研
 category: 科研
+series: 科研
+seriesOrder: 7
 lang: zh-CN
 ---
 > 根据我在跑实验和写论文的过程中，我总结了一些自己犯的错误，以及一些小细节，能够让整体的科研质量变高，让整个科研的流程更为轻松愉快.

@@ -8,7 +8,9 @@ description: '由于有时候本地服务器难以连接一下国外网站的情
 image: /post-covers/2025-08-27-connect-error.jpg
 tags:
   - 日常学习
-category: 暑假
+category: 科研
+series: 科研
+seriesOrder: 8
 lang: zh-CN
 ---
 ## 准备工具

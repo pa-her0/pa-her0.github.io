@@ -9,6 +9,8 @@ image: /post-covers/2025-06-19-operation-system.jpg
 tags:
   - 课程学习
 category: 学习
+series: 学习
+seriesOrder: 7
 lang: zh-CN
 ---
 > 来自 **王道考研2024--操作系统**做的笔记，结合了B站的一个评论的笔记，但是这个里面的图片因为链接问题找不到啦😭。

@@ -9,6 +9,8 @@ image: /post-covers/2025-06-14-yolo-basic.jpg
 tags:
   - 日常学习
 category: 学习
+series: 开发
+seriesOrder: 4
 lang: zh-CN
 ---
 # Abstract

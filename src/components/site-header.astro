@@ -2,21 +2,20 @@
 import { ThemeToggle } from "@/components/theme-toggle"
 import { AccentToggle } from "@/components/accent-toggle"
 
-const blogItems = [
-  { name: "文章", href: "/articles/" },
-  { name: "时间线", href: "/timeline/" },
-  { name: "碎碎念", href: "/thoughts/" },
+const primaryItems = [
+  { name: "博客", href: "/articles/" },
   { name: "项目", href: "/projects/" },
-]
-
-const navItems = [
-  { name: "首页", href: "/#home-main" },
   { name: "友链", href: "/friends/" },
   { name: "留言板", href: "/messages/" },
   { name: "关于", href: "/about/" },
 ]
 
-const mobileItems = [navItems[0], ...blogItems, ...navItems.slice(1)]
+const mobileItems = [
+  { name: "首页", href: "/#home-main" },
+  ...primaryItems,
+  { name: "碎碎念", href: "/thoughts/" },
+  { name: "时间线", href: "/timeline/" },
+]
 ---
 
 <header class="site-header fixed top-0 left-0 right-0 z-50 bg-background/88 backdrop-blur-xl border-b border-border/40 py-3">
@@ -35,16 +34,8 @@ const mobileItems = [navItems[0], ...blogItems, ...navItems.slice(1)]
       <span class="hidden font-serif text-lg font-semibold tracking-tight text-[#0874c9] sm:block">Whalefall</span>
     </a>
 
-    <nav class="hidden md:flex items-center gap-7 ml-auto">
-      <details class="blog-menu relative">
-        <summary class="cursor-pointer list-none text-sm text-muted-foreground transition-colors hover:text-foreground">博客</summary>
-        <div class="blog-menu__panel absolute right-1/2 top-[calc(100%+0.8rem)] grid min-w-36 translate-x-1/2 gap-1 rounded-2xl border border-[var(--panel-border)] bg-background/96 p-2 shadow-xl backdrop-blur-xl">
-          {blogItems.map((item) => (
-            <a href={item.href} data-astro-prefetch class="rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-primary/8 hover:text-foreground">{item.name}</a>
-          ))}
-        </div>
-      </details>
-      {navItems.slice(1).map((item) => (
+    <nav class="hidden lg:flex items-center gap-6 ml-auto">
+      {primaryItems.map((item) => (
         <a
           href={item.href}
           data-astro-prefetch
@@ -56,12 +47,12 @@ const mobileItems = [navItems[0], ...blogItems, ...navItems.slice(1)]
       ))}
     </nav>
 
-    <div class="hidden md:flex items-center gap-3 ml-7">
+    <div class="hidden lg:flex items-center gap-3 ml-6">
       <AccentToggle />
       <ThemeToggle />
     </div>
 
-    <div class="flex items-center gap-1 md:hidden ml-auto">
+    <div class="flex items-center gap-1 lg:hidden ml-auto">
       <AccentToggle />
       <ThemeToggle />
       <button
@@ -82,7 +73,7 @@ const mobileItems = [navItems[0], ...blogItems, ...navItems.slice(1)]
 
 <div
   id="mobile-menu"
-  class="mobile-menu md:hidden fixed inset-0 z-[60] opacity-0 pointer-events-none transition-opacity duration-300 ease-out"
+  class="mobile-menu lg:hidden fixed inset-0 z-[60] opacity-0 pointer-events-none transition-opacity duration-300 ease-out"
   aria-hidden="true"
 >
   <div
@@ -106,12 +97,12 @@ const mobileItems = [navItems[0], ...blogItems, ...navItems.slice(1)]
       </button>
     </div>
 
-    <nav class="flex-1 flex flex-col items-center justify-center gap-7 px-8">
+    <nav class="flex-1 flex flex-col items-center justify-center gap-4 px-8 py-8 overflow-y-auto">
       {mobileItems.map((item, i) => (
         <a
           href={item.href}
           data-astro-prefetch
-          class="mobile-nav-item group text-3xl font-medium tracking-tight text-foreground"
+          class="mobile-nav-item group text-2xl font-medium tracking-tight text-foreground"
           style={`--stagger: ${60 + i * 40}ms`}
         >
           <span class="relative inline-block">
@@ -130,10 +121,6 @@ const mobileItems = [navItems[0], ...blogItems, ...navItems.slice(1)]
     opacity: 1;
     pointer-events: auto;
   }
-
-  .blog-menu > summary::-webkit-details-marker { display: none; }
-  .blog-menu:not([open]) .blog-menu__panel { pointer-events: none; opacity: 0; transform: translate(50%, -5px); }
-  .blog-menu__panel { transform: translate(50%, 0); transition: opacity 160ms ease, transform 160ms ease; }
 
   .mobile-menu .mobile-nav-item {
     opacity: 0;
@@ -160,7 +147,7 @@ const mobileItems = [navItems[0], ...blogItems, ...navItems.slice(1)]
   /* Drop the heavy backdrop-filter on small viewports. The fixed header keeps
      blurring everything underneath while scrolling, which makes mobile compositing
      expensive. Use a slightly more opaque background instead. */
-  @media (max-width: 767px) {
+  @media (max-width: 1023px) {
     .site-header {
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;

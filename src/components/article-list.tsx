@@ -281,30 +281,43 @@ export function ArticleList({
             <a href="/articles/">{title}</a><span aria-hidden="true">›</span>
             <span aria-current="page">第 {currentPage} 页</span>
           </nav>
-          <details className="article-index__filter-toggle">
-            <summary>{isFiltering ? "正在筛选" : "筛选"}</summary>
-        <div className="article-index__filters">
-          <span className="article-index__count">共 {filteredArticles.length} 篇</span>
-          <label>
-            <span className="sr-only">按分类筛选</span>
-            <select value={activeCategory} onChange={(event) => handleCategoryChange(event.target.value)}>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>{category.id === "all" ? "全部分类" : category.name}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span className="sr-only">按标签筛选</span>
-            <select value={activeTag ?? ""} onChange={(event) => handleTagChange(event.target.value || null)}>
-              <option value="">全部标签</option>
-              {tags.map((tag) => <option key={tag} value={tag}>{tag}</option>)}
-            </select>
-          </label>
+          <div className="article-index__actions">
+            <nav className="article-index__section-tabs" aria-label="博客栏目">
+              <a href="/articles/" aria-current="page">全部</a>
+              <a href="/notes/">笔记</a>
+              <a href="/life/">生活</a>
+            </nav>
+            <details className="article-index__filter-toggle">
+              <summary>{isFiltering ? "正在筛选" : "筛选"}</summary>
+              <div className="article-index__filters">
+                <span className="article-index__count">共 {filteredArticles.length} 篇</span>
+                <label>
+                  <span className="sr-only">按分类筛选</span>
+                  <select value={activeCategory} onChange={(event) => handleCategoryChange(event.target.value)}>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>{category.id === "all" ? "全部分类" : category.name}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span className="sr-only">按标签筛选</span>
+                  <select value={activeTag ?? ""} onChange={(event) => handleTagChange(event.target.value || null)}>
+                    <option value="">全部标签</option>
+                    {tags.map((tag) => <option key={tag} value={tag}>{tag}</option>)}
+                  </select>
+                </label>
+              </div>
+            </details>
+          </div>
         </div>
 
-          </details>
-        </div>
-        <div>
+        <header className="article-index__intro">
+          <p>Jiely / Blog</p>
+          <h1>博客</h1>
+        </header>
+
+        <div className="article-index__layout">
+          <div className="article-index__main">
           <div className="space-y-6">
             {pagedArticles.length > 0 ? (
               [...new Set(pagedArticles.map((article) => articleDisplayDate(article).slice(0, 4)))].sort().reverse().map((year) => (
@@ -395,6 +408,30 @@ export function ArticleList({
               </div>
             )}
           </div>
+          </div>
+
+          <aside className="article-index__sidebar" aria-label="博客导航">
+            <section>
+              <h2>更多</h2>
+              <nav className="article-index__side-links">
+                <a href="/thoughts/"><span>碎碎念</span><small>短句随想</small></a>
+                <a href="/timeline/"><span>时间线</span><small>更新归档</small></a>
+                <a href="/projects/"><span>项目</span><small>实践作品</small></a>
+              </nav>
+            </section>
+
+            <section>
+              <h2>分类</h2>
+              <div className="article-index__side-chips">
+                {categories.filter((category) => category.id !== "all").map((category) => (
+                  <a key={category.id} href={`/articles/?category=${encodeURIComponent(category.id)}`}>
+                    {category.name}<small>{category.count}</small>
+                  </a>
+                ))}
+              </div>
+            </section>
+
+          </aside>
         </div>
       </div>
     </section>

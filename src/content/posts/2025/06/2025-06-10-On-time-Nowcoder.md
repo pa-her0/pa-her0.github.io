@@ -10,6 +10,8 @@ tags:
   - 学习
   - 热爱
 category: 算法
+series: 算法
+seriesOrder: 4
 lang: zh-CN
 ---
 **状态: 牛客周赛111,史上最有意思的结论场**

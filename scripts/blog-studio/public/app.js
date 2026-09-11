@@ -4,11 +4,12 @@ const $$ = (selector) => [...document.querySelectorAll(selector)]
 const elements = {
   list: $("#entryList"), search: $("#searchInput"), title: $("#titleInput"), slug: $("#slugInput"),
   published: $("#publishedInput"), description: $("#descriptionInput"), category: $("#categoryInput"),
+  section: $("#sectionInput"), series: $("#seriesInput"),
   tags: $("#tagsInput"), image: $("#imageInput"), body: $("#bodyInput"), draft: $("#draftInput"),
   pinned: $("#pinnedInput"), preview: $("#preview"), wordCount: $("#wordCount"), saveState: $("#saveState"),
 }
 
-const state = { entries: [], filter: "post", selectedPath: "", type: "post", originalMeta: {}, dirty: false, previewTimer: null }
+const state = { entries: [], filter: "post", selectedPath: "", type: "post", originalMeta: {}, dirty: false, previewTimer: null, imageStorage: "local", dragDepth: 0 }
 
 function readPreference(key) {
   try { return localStorage.getItem(key) === "true" } catch { return false }
@@ -133,6 +134,8 @@ function setForm(type, meta = {}, body = "") {
   elements.slug.value = meta.slug || ""
   elements.published.value = localDateTime(meta.published || new Date())
   elements.description.value = meta.description || ""
+  elements.section.value = meta.section || (["生活", "日常", "思考", "随笔", "阅读", "记忆", "旅行"].includes(meta.category) ? "life" : "note")
+  elements.series.value = meta.series || ""
   elements.category.value = meta.category || "学习"
   elements.tags.value = Array.isArray(meta.tags) ? meta.tags.join(", ") : ""
   elements.image.value = meta.image || ""
@@ -171,7 +174,7 @@ function newEntry(type) {
   state.selectedPath = ""
   state.filter = type
   syncFilterButtons()
-  setForm(type, type === "post" ? { draft: true, category: "学习", tags: ["学习"] } : { tags: ["日常"] }, "")
+  setForm(type, type === "post" ? { draft: true, section: "note", category: "学习", tags: ["学习"] } : { tags: ["日常"] }, "")
   elements.title.focus()
   renderList()
 }
@@ -184,7 +187,7 @@ function formPayload() {
   const meta = {
     ...state.originalMeta,
     title: elements.title.value.trim(), slug: elements.slug.value.trim(), published: isoWithOffset(elements.published.value),
-    description: elements.description.value.trim(), category: elements.category.value.trim(),
+    description: elements.description.value.trim(), section: elements.section.value, series: elements.series.value.trim(), category: elements.category.value.trim(),
     tags: elements.tags.value.split(/[,，]/).map((tag) => tag.trim()).filter(Boolean), image: elements.image.value.trim(),
     draft: elements.draft.checked, pinned: elements.pinned.checked,
   }
@@ -240,13 +243,35 @@ async function fileToDataUrl(file) {
 
 async function upload(file, kind) {
   if (!file) return
+  if (!file.type.startsWith("image/")) return toast("请选择 PNG、JPEG、WebP 或 GIF 图片")
+  const button = kind === "body" ? $("#imageButton") : $("#coverButton")
+  setButtonBusy(button, true, "上传中")
   try {
-    const data = await request("/api/upload", { method: "POST", body: JSON.stringify({ name: file.name, data: await fileToDataUrl(file), kind, slug: elements.slug.value || elements.title.value }) })
+    const data = await request("/api/upload", { method: "POST", body: JSON.stringify({ name: file.name, data: await fileToDataUrl(file), kind, storage: "auto", slug: elements.slug.value || elements.title.value }) })
     if (kind === "cover") elements.image.value = data.path
     else insertAtCursor(`![图片说明](${data.path})`)
     setDirty(true)
-    toast(`图片已保存：${data.path}`)
+    toast(`${data.storage === "cloud" ? "已上传图床并插入" : "图片已保存到博客"}：${data.path}`)
   } catch (error) { toast(friendlyError(error)) }
+  finally { setButtonBusy(button, false) }
+}
+
+async function refreshUploadStatus() {
+  try {
+    const data = await request("/api/upload/status")
+    state.imageStorage = data.storage
+    const status = $("#imageUploadStatus")
+    status.textContent = data.label
+    status.dataset.storage = data.storage
+    status.title = data.storage === "cloud" ? `图片将上传至 ${data.publicBaseUrl}` : "未配置云图床，图片会保存到博客 public 目录"
+  } catch {
+    $("#imageUploadStatus").textContent = "图片存储状态未知"
+  }
+}
+
+function imageFromTransfer(transfer) {
+  return [...(transfer?.files || [])].find((file) => file.type.startsWith("image/"))
+    || [...(transfer?.items || [])].find((item) => item.type.startsWith("image/"))?.getAsFile()
 }
 
 function insertAtCursor(value) {
@@ -376,6 +401,36 @@ $("#coverButton").addEventListener("click", () => $("#coverFile").click())
 $("#imageButton").addEventListener("click", () => $("#bodyFile").click())
 $("#coverFile").addEventListener("change", (event) => upload(event.target.files[0], "cover"))
 $("#bodyFile").addEventListener("change", (event) => upload(event.target.files[0], "body"))
+elements.body.addEventListener("paste", (event) => {
+  const file = imageFromTransfer(event.clipboardData)
+  if (!file) return
+  event.preventDefault()
+  upload(file, "body")
+})
+const dropZone = $("#editorDropZone")
+dropZone.addEventListener("dragenter", (event) => {
+  if (!imageFromTransfer(event.dataTransfer)) return
+  event.preventDefault()
+  state.dragDepth += 1
+  dropZone.classList.add("is-dragging")
+})
+dropZone.addEventListener("dragover", (event) => {
+  if (![...(event.dataTransfer?.items || [])].some((item) => item.type.startsWith("image/"))) return
+  event.preventDefault()
+  event.dataTransfer.dropEffect = "copy"
+})
+dropZone.addEventListener("dragleave", () => {
+  state.dragDepth = Math.max(0, state.dragDepth - 1)
+  if (state.dragDepth === 0) dropZone.classList.remove("is-dragging")
+})
+dropZone.addEventListener("drop", (event) => {
+  const file = imageFromTransfer(event.dataTransfer)
+  state.dragDepth = 0
+  dropZone.classList.remove("is-dragging")
+  if (!file) return
+  event.preventDefault()
+  upload(file, "body")
+})
 $$("[data-insert]").forEach((button) => button.addEventListener("click", () => insertAtCursor(button.dataset.insert)))
 $("#cancelPublish").addEventListener("click", () => $("#publishDialog").close())
 $("#publishForm").addEventListener("submit", publish)
@@ -389,7 +444,7 @@ $("#diagnosticList").addEventListener("click", async (event) => {
   toast("已打开存在问题的内容")
 })
 
-for (const input of [elements.title, elements.slug, elements.published, elements.description, elements.category, elements.tags, elements.image, elements.body, elements.draft, elements.pinned]) {
+for (const input of [elements.title, elements.slug, elements.published, elements.description, elements.section, elements.series, elements.category, elements.tags, elements.image, elements.body, elements.draft, elements.pinned]) {
   input.addEventListener("input", () => { setDirty(true); if (input === elements.body) { updateWordCount(); refreshPreview() } })
 }
 window.addEventListener("beforeunload", (event) => { if (state.dirty) event.preventDefault() })
@@ -401,4 +456,4 @@ window.addEventListener("keydown", (event) => {
   }
 })
 
-Promise.all([loadEntries(true), refreshGit()]).catch((error) => toast(error.message))
+Promise.all([loadEntries(true), refreshGit(), refreshUploadStatus()]).catch((error) => toast(error.message))

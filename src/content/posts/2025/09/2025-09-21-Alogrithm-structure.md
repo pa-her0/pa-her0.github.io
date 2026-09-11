@@ -10,6 +10,8 @@ tags:
   - 算法
   - 热爱
 category: 算法
+series: 算法
+seriesOrder: 3
 lang: zh-CN
 ---
 OK,数据结构第一舞

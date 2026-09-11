@@ -8,7 +8,9 @@ description: 关于 如何提高科研效率
 image: /post-covers/2026-07-19-how-to-deploy-cc.jpg
 tags:
   - 生活
-category: 生活
+category: 开发
+series: 开发
+seriesOrder: 7
 lang: zh-CN
 ---
 在这里开始写正文内容。

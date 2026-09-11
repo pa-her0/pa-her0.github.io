@@ -70,23 +70,28 @@
                   <label><span>Slug</span><input id="slugInput" placeholder="my-new-post" /></label>
                   <label><span>发布日期</span><input id="publishedInput" type="datetime-local" /></label>
                   <label class="wide post-only"><span>摘要</span><input id="descriptionInput" placeholder="在文章列表中显示的简短摘要" /></label>
+                  <label class="post-only"><span>栏目</span><select id="sectionInput"><option value="note">笔记</option><option value="life">生活</option><option value="article">仅博客</option></select></label>
+                  <label class="post-only"><span>专题</span><input id="seriesInput" placeholder="例如：算法、HPC、课程笔记" /></label>
                   <label class="post-only"><span>分类</span><input id="categoryInput" placeholder="学习" /></label>
                   <label><span>标签</span><input id="tagsInput" placeholder="人工智能, 学习" /></label>
                   <label class="wide cover-field post-only"><span>封面</span><input id="imageInput" placeholder="/post-covers/example.jpg" /><button id="coverButton" type="button">上传封面</button></label>
                 </div>
               </div>
               <div class="editor-toolbar">
-                <span>Markdown</span>
+                <span class="editor-label">Markdown <small id="imageUploadStatus">正在检测图片存储…</small></span>
                 <div>
                   <button type="button" data-insert="**粗体**" title="粗体"><b>B</b></button>
                   <button type="button" data-insert="## 小标题" title="标题">H₂</button>
                   <button type="button" data-insert="[链接文字](https://)" title="链接">↗</button>
                   <button type="button" data-insert="$E = mc^2$" title="行内公式">∑</button>
                   <button type="button" data-insert="$$&#10;f(x) = \\sum_{i=1}^{n} x_i&#10;$$" title="块级公式">∫</button>
-                  <button id="imageButton" type="button" title="上传正文图片">图片</button>
+                  <button id="imageButton" type="button" title="上传图片并插入到光标位置">☁ 图片</button>
                 </div>
               </div>
-              <textarea id="bodyInput" spellcheck="true" placeholder="从这里开始写作…"></textarea>
+              <div id="editorDropZone" class="editor-drop-zone">
+                <textarea id="bodyInput" spellcheck="true" placeholder="从这里开始写作…&#10;&#10;也可以直接粘贴截图，或把图片拖到这里。"></textarea>
+                <div class="drop-hint" aria-hidden="true"><strong>松开即可上传</strong><span>图片会自动上传并插入到当前光标位置</span></div>
+              </div>
               <div class="editor-options">
                 <label class="post-only"><input id="draftInput" type="checkbox" checked /> 保存为草稿</label>
                 <label class="post-only"><input id="pinnedInput" type="checkbox" /> 置顶文章</label>

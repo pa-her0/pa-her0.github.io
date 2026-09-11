@@ -1,0 +1,17 @@
+---
+import PostPage from "@/components/pages/PostPage.astro"
+import { buildNoteGroups } from "@/lib/content-sections"
+import { getPostsWithNav, type PostEntry } from "@/lib/posts"
+
+export async function getStaticPaths() {
+  const groups = buildNoteGroups(await getPostsWithNav())
+  return groups.flatMap((group) => group.posts.map((post) => ({
+    params: { series: group.slug, slug: post.slug },
+    props: { post, backHref: `/notes/${group.slug}/`, backLabel: `返回${group.name}笔记` },
+  })))
+}
+
+const { post, backHref, backLabel } = Astro.props as { post: PostEntry; backHref: string; backLabel: string }
+---
+
+<PostPage {post} {backHref} {backLabel} />

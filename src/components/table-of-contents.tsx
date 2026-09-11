@@ -291,7 +291,7 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
     <nav ref={navRef} aria-label="目录" className="toc-nav">
       {showHeader ? (
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-1 h-4 bg-primary rounded-full" />
+          <div className="size-1.5 bg-primary rounded-full" />
           <span className="text-xs font-medium text-foreground tracking-wide">目录</span>
         </div>
       ) : null}
@@ -302,11 +302,11 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
               href={`#${heading.id}`}
               onClick={(e) => handleClick(e, heading.id)}
               className={cn(
-                "block py-1 text-[13px] leading-relaxed border-l-2 transition-all duration-200",
-                heading.level === 2 ? "pl-3" : "pl-6",
+                "block rounded-md py-1.5 pr-2 text-[13px] leading-relaxed transition-all duration-200",
+                heading.level === 2 ? "pl-2.5" : "pl-5",
                 activeId === heading.id
-                  ? "border-l-primary text-primary font-medium"
-                  : "border-l-transparent text-muted-foreground hover:text-foreground hover:border-l-border",
+                  ? "bg-secondary/70 text-primary font-medium"
+                  : "text-muted-foreground hover:bg-secondary/40 hover:text-foreground",
               )}
             >
               <span className="line-clamp-2">{heading.text}</span>

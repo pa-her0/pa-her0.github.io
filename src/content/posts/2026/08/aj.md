@@ -11,6 +11,8 @@ tags:
   - 思考
   - 好奇
 category: 学习
+series: 学习
+seriesOrder: 3
 lang: zh-CN
 ---
 >[!NOTE]

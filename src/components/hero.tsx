@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronUp, ChevronDown, MapPin, Pause, Play, Radio, Zap } from "lucide-react"
+import { ArrowUpRight, ChevronUp, ChevronDown, Clock3, MapPin, Pause, Play, Radio, Zap } from "lucide-react"
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react"
 import { homeDashboard, type HomeTrack } from "@/data/home-dashboard"
 import { HomeGlobe } from "@/components/home-globe"
@@ -8,13 +8,11 @@ import { useHomeWakatime } from "@/components/use-home-wakatime"
 import type { ActivityDay } from "@/lib/home-activity"
 import { ActivitySnake } from "@/components/activity-snake"
 import { AboutSceneCard } from "@/components/about-scene-card"
-import { TopicCloud } from "@/components/topic-cloud"
 import { FlipDiskMatrix } from "@/components/ui/flip-disk-matrix"
 
 export interface HeroProps {
-  latestPost?: { title: string; description: string; href: string; image: string; date: string }
+  latestPost?: { title: string; description: string; href: string; image?: string; date: string; category: string }
   activity: { days: ActivityDay[]; months: { label: string; column: number }[]; total: number }
-  categories: { name: string; count: number }[]
 }
 
 function GalleryCard() {
@@ -168,7 +166,40 @@ function MusicCard() {
   )
 }
 
-export function Hero({ latestPost, activity, categories }: HeroProps) {
+function LatestUpdateCard({ post }: { post?: HeroProps["latestPost"] }) {
+  if (!post) {
+    return (
+      <article className="bento-card bento-recent bento-recent-empty">
+        <h2 className="bento-card-label"><Clock3 size={17} />最近更新</h2>
+        <p>文章正在路上。</p>
+      </article>
+    )
+  }
+
+  return (
+    <a className="bento-card bento-recent" href={post.href} aria-label={`阅读最近更新：${post.title}`}>
+      <div className="bento-recent-heading">
+        <h2 className="bento-card-label"><Clock3 size={17} />最近更新</h2>
+        <span>UPDATED</span>
+      </div>
+      <div className="bento-recent-main">
+        <div className="bento-recent-media">
+          {post.image ? <img src={post.image} alt="" width={320} height={320} loading="lazy" decoding="async" /> : <span className="bento-recent-placeholder" aria-hidden="true" />}
+        </div>
+        <div className="bento-recent-copy">
+          <h3>{post.title}</h3>
+          <p>{post.description}</p>
+        </div>
+      </div>
+      <div className="bento-recent-meta">
+        <time dateTime={post.date}>更新于 {post.date}</time>
+        <span aria-hidden="true"><ArrowUpRight size={16} /></span>
+      </div>
+    </a>
+  )
+}
+
+export function Hero({ latestPost, activity }: HeroProps) {
   const stackTrack = useRef<HTMLDivElement>(null)
   const bentoGrid = useRef<HTMLDivElement>(null)
   const bentoPointerFrame = useRef(0)
@@ -218,8 +249,7 @@ export function Hero({ latestPost, activity, categories }: HeroProps) {
       if (bentoPointerFrame.current) window.cancelAnimationFrame(bentoPointerFrame.current)
     }
   }, [])
-  const { languages, calendar, error: statsError } = useHomeWakatime()
-  const topics = languages ?? categories
+  const { calendar } = useHomeWakatime()
   const secondsByDate = new Map(calendar?.map((day) => [day.date, day.seconds]))
   const days = calendar ? activity.days.map((day) => {
     const seconds = day.future ? 0 : (secondsByDate.get(day.date) ?? 0)
@@ -255,11 +285,7 @@ export function Hero({ latestPost, activity, categories }: HeroProps) {
           <FlipDiskMatrix latestPost={latestPost} />
         </article>
         <MusicCard />
-        <article className="bento-card bento-usage">
-          <h2 className="bento-card-label">{languages ? "Weekly tools" : "Writing topics"}</h2>
-          <TopicCloud topics={topics} coding={!!languages} />
-          {statsError ? <p className="bento-data-caption">外部统计暂不可用</p> : null}
-        </article>
+        <LatestUpdateCard post={latestPost} />
         <ActivitySnake days={days} coding={!!calendar} />
         <AboutSceneCard />
       </div>

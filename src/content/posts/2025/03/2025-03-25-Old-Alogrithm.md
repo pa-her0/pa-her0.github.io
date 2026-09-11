@@ -10,6 +10,8 @@ tags:
   - 热爱
   - 日常学习
 category: 算法
+series: 算法
+seriesOrder: 6
 lang: zh-CN
 ---
 # 左神课程笔记

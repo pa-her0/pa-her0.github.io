@@ -8,7 +8,9 @@ description: 本文是学习清华计算机科协的暑期课程--基础技能�
 image: /post-covers/2025-08-03-basical-knowledge.jpg
 tags:
   - 学习
-category: 暑假
+category: 学习
+series: 学习
+seriesOrder: 10
 lang: zh-CN
 ---
 ## 神经网络与pytorch入门

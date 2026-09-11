@@ -12,6 +12,8 @@ tags:
   - 多模态
   - 综述
 category: 学习
+series: LLM
+seriesOrder: 2
 lang: zh-CN
 ---
 > 作者：刘勇杰（42311102）

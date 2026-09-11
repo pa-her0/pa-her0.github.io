@@ -9,6 +9,8 @@ image: /post-covers/2025-11-12-knn-bayesi.jpg
 tags:
   - 日常学习
 category: 学习
+series: 学习
+seriesOrder: 5
 lang: zh-CN
 ---
 ## 贝叶斯网络

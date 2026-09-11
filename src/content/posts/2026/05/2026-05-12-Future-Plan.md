@@ -9,7 +9,9 @@ image: /post-covers/2026-05-12-future-plan.jpg
 tags:
   - 规划
   - 思考
-category: 生活
+category: 计划
+series: 计划
+seriesOrder: 2
 lang: zh-CN
 ---
 ## 英语

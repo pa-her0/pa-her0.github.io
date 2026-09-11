@@ -1,0 +1,14 @@
+---
+import NotesPage from "@/components/pages/NotesPage.astro"
+import { buildNoteGroups } from "@/lib/content-sections"
+import { getSortedPosts } from "@/lib/posts"
+
+export async function getStaticPaths() {
+  const groups = buildNoteGroups(await getSortedPosts(true))
+  return groups.map((group) => ({ params: { series: group.slug }, props: { selectedSeries: group.slug } }))
+}
+
+const { selectedSeries } = Astro.props
+---
+
+<NotesPage {selectedSeries} />

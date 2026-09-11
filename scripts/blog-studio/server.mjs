@@ -1,5 +1,6 @@
 import { execFile, spawn } from "node:child_process"
-import { existsSync } from "node:fs"
+import { createHmac } from "node:crypto"
+import { existsSync, readFileSync } from "node:fs"
 import { access, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises"
 import http from "node:http"
 import path from "node:path"
@@ -16,6 +17,30 @@ const katexDistDir = path.join(repoRoot, "node_modules", "katex", "dist")
 const contentRoot = path.join(repoRoot, "src", "content")
 const postsRoot = path.join(contentRoot, "posts")
 const thoughtsRoot = path.join(contentRoot, "thoughts")
+
+function loadProjectEnvironment() {
+  const envFile = path.join(repoRoot, ".env")
+  if (!existsSync(envFile)) return
+  if (typeof process.loadEnvFile === "function") {
+    process.loadEnvFile(envFile)
+    return
+  }
+
+  for (const rawLine of readFileSync(envFile, "utf8").split(/\r?\n/)) {
+    const line = rawLine.trim()
+    if (!line || line.startsWith("#")) continue
+    const match = line.match(/^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/)
+    if (!match || process.env[match[1]] !== undefined) continue
+    let value = match[2].trim()
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1)
+    }
+    process.env[match[1]] = value
+  }
+}
+
+loadProjectEnvironment()
+
 const host = "127.0.0.1"
 const port = Number(process.env.BLOG_STUDIO_PORT || 4322)
 const maxBodyBytes = 25 * 1024 * 1024
@@ -227,6 +252,8 @@ async function listEntries() {
       published: toJsonSafe(parsed.data.published || ""),
       draft: Boolean(parsed.data.draft),
       tags: Array.isArray(parsed.data.tags) ? parsed.data.tags : [],
+      section: parsed.data.section || "",
+      series: parsed.data.series || "",
       modified: info.mtime.toISOString(),
     }
   }))
@@ -309,6 +336,8 @@ function normalizeMeta(type, input, existing = {}) {
     image: String(input.image || ""),
     tags: [...new Set(tags)],
     category: String(input.category || "学习"),
+    section: ["article", "note", "life"].includes(input.section) ? input.section : (existing.section || "note"),
+    series: String(input.series || "").trim(),
     lang: String(input.lang || "zh-CN"),
     pinned: Boolean(input.pinned),
   }
@@ -348,6 +377,15 @@ async function uploadImage(payload) {
   const bytes = Buffer.from(match[2], "base64")
   if (bytes.length > 20 * 1024 * 1024) throw new Error("单张图片不能超过 20 MB。")
   const extension = { "image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp", "image/gif": ".gif" }[match[1]]
+  const requestedStorage = ["cloud", "local"].includes(payload.storage) ? payload.storage : "auto"
+  const cloud = cloudImageConfig()
+  if (requestedStorage === "cloud" && !cloud.configured) {
+    throw new Error("图床尚未配置。请在项目 .env 中填写 QINIU_ACCESS_KEY、QINIU_SECRET_KEY 和 QINIU_BUCKET，然后重启工作台。")
+  }
+  if (requestedStorage !== "local" && cloud.configured) {
+    return uploadCloudImage({ payload, bytes, mimeType: match[1], extension, cloud })
+  }
+
   const base = cleanSlug(path.basename(String(payload.name || "image"), path.extname(String(payload.name || ""))), "image")
   const fileName = `${base}${extension}`
   const isCover = payload.kind === "cover"
@@ -361,7 +399,103 @@ async function uploadImage(payload) {
     counter += 1
   }
   await writeFile(path.join(directory, finalName), bytes, { flag: "wx" })
-  return { path: `/${folder}/${finalName}` }
+  return { path: `/${folder}/${finalName}`, storage: "local" }
+}
+
+function cloudImageConfig() {
+  const region = process.env.QINIU_REGION || "z0"
+  const accessKey = process.env.QINIU_ACCESS_KEY || ""
+  const secretKey = process.env.QINIU_SECRET_KEY || ""
+  const bucket = process.env.QINIU_BUCKET || ""
+  const regionUploadUrls = {
+    z0: "https://up-z0.qiniup.com",
+    "cn-east-2": "https://up-cn-east-2.qiniup.com",
+    z1: "https://up-z1.qiniup.com",
+    z2: "https://up-z2.qiniup.com",
+    na0: "https://up-na0.qiniup.com",
+    as0: "https://up-as0.qiniup.com",
+    "ap-southeast-2": "https://up-ap-southeast-2.qiniup.com",
+    "ap-southeast-3": "https://up-ap-southeast-3.qiniup.com",
+  }
+  const uploadUrl = process.env.QINIU_UPLOAD_URL || regionUploadUrls[region] || ""
+  const publicBaseUrl = String(process.env.IMAGE_CDN_BASE_URL || "https://dns.whalefall.top").replace(/\/+$/, "")
+  const prefix = String(process.env.QINIU_PREFIX || "").replace(/^\/+|\/+$/g, "")
+  return {
+    accessKey,
+    secretKey,
+    bucket,
+    region,
+    uploadUrl,
+    publicBaseUrl,
+    prefix,
+    configured: Boolean(accessKey && secretKey && bucket && uploadUrl),
+  }
+}
+
+function cleanImageBase(value, fallback) {
+  const base = String(value || "").normalize("NFKC")
+    .replace(/[\\/:*?"<>|#%&{}$!'@+=`]/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^[-.]+|[-.]+$/g, "")
+  return base || fallback
+}
+
+function encodeObjectUrl(baseUrl, key) {
+  return `${baseUrl}/${key.split("/").map(encodeURIComponent).join("/")}`
+}
+
+function qiniuBase64(value) {
+  const bytes = Buffer.isBuffer(value) ? value : Buffer.from(value)
+  return bytes.toString("base64").replaceAll("+", "-").replaceAll("/", "_")
+}
+
+function qiniuUploadToken({ accessKey, secretKey, bucket }, key) {
+  const policy = qiniuBase64(JSON.stringify({
+    scope: `${bucket}:${key}`,
+    deadline: Math.floor(Date.now() / 1000) + 3600,
+    insertOnly: 1,
+    returnBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"mimeType":"$(mimeType)"}',
+  }))
+  const signature = qiniuBase64(createHmac("sha1", secretKey).update(policy).digest())
+  return `${accessKey}:${signature}:${policy}`
+}
+
+async function uploadCloudImage({ payload, bytes, mimeType, extension, cloud }) {
+  const originalBase = path.basename(String(payload.name || "image"), path.extname(String(payload.name || "")))
+  const articleBase = cleanSlug(payload.slug, "article")
+  const genericName = /^(?:image|clipboard|pasted-image|screenshot|blob)$/i.test(originalBase.trim())
+  const fallback = `${articleBase}-${Date.now()}`
+  const base = cleanImageBase(genericName ? fallback : originalBase, fallback)
+  let counter = 1
+  while (counter <= 100) {
+    const suffix = counter === 1 ? "" : `-${counter}`
+    const fileName = `${base}${suffix}${extension}`
+    const key = cloud.prefix ? `${cloud.prefix}/${fileName}` : fileName
+    const form = new FormData()
+    form.set("token", qiniuUploadToken(cloud, key))
+    form.set("key", key)
+    form.set("file", new Blob([bytes], { type: mimeType }), fileName)
+
+    let response
+    let result
+    try {
+      response = await fetch(cloud.uploadUrl, { method: "POST", body: form })
+      result = await response.json().catch(() => ({}))
+    } catch (error) {
+      throw new Error(`连接七牛云失败：${error?.message || "请检查网络和上传域名"}`)
+    }
+
+    if (response.ok) {
+      return { path: encodeObjectUrl(cloud.publicBaseUrl, key), storage: "cloud", key }
+    }
+    if (response.status === 614 || /file exists/i.test(result?.error || "")) {
+      counter += 1
+      continue
+    }
+    throw new Error(`上传七牛图床失败（${response.status}）：${result?.error || "请检查 AccessKey、SecretKey、空间名称和区域"}`)
+  }
+  throw new Error("同名图片过多，请修改图片文件名后重试。")
 }
 
 function run(command, args, options = {}) {
@@ -549,6 +683,14 @@ function previewMarkdown(source) {
 }
 
 async function api(req, res, url) {
+  if (req.method === "GET" && url.pathname === "/api/upload/status") {
+    const cloud = cloudImageConfig()
+    return json(res, 200, {
+      storage: cloud.configured ? "cloud" : "local",
+      label: cloud.configured ? "七牛图床已连接" : "本地图片模式",
+      publicBaseUrl: cloud.configured ? cloud.publicBaseUrl : "",
+    })
+  }
   if (req.method === "GET" && url.pathname === "/api/entries") return json(res, 200, { entries: await listEntries() })
   if (req.method === "GET" && url.pathname === "/api/content") {
     const relative = normalizeRelative(url.searchParams.get("path"))

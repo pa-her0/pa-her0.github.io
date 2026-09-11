@@ -8,7 +8,9 @@ description: '查找学习关于\"人工网络中的情绪传播机制\"，以�
 image: /post-covers/2025-07-05-emotion-article.jpg
 tags:
   - 科研
-category: 暑假
+category: 科研
+series: 科研
+seriesOrder: 5
 lang: zh-CN
 ---
 # An agent-based model for emotion contagion and competition in online social media

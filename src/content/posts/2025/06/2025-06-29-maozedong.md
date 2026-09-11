@@ -9,6 +9,8 @@ image: /post-covers/2025-06-29-maozedong.jpg
 tags:
   - 课程学习
 category: 学习
+series: 学习
+seriesOrder: 6
 lang: zh-CN
 ---
 # 导论

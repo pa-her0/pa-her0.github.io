@@ -15,10 +15,18 @@ const HORIZONTAL_GAP = 66
 const TOP_GAP = 64
 const BOTTOM_GAP = 8
 const petSource = (pose: PetPose) => `/pet-tools/savage-codex-hacker-${pose}.gif`
-const clampPosition = (point: Point): Point => ({
-  x: Math.min(Math.max(HORIZONTAL_GAP, point.x), Math.max(HORIZONTAL_GAP, window.innerWidth - PET_WIDTH - HORIZONTAL_GAP)),
-  y: Math.min(Math.max(TOP_GAP, point.y), Math.max(TOP_GAP, window.innerHeight - PET_HEIGHT - BOTTOM_GAP)),
-})
+const isMobileViewport = () => window.innerWidth <= 600
+const positionStorageKey = () => `${STORAGE_KEY}:${isMobileViewport() ? "mobile" : "desktop"}`
+const clampPosition = (point: Point): Point => {
+  const mobile = isMobileViewport()
+  const width = mobile ? 76 : PET_WIDTH
+  const height = mobile ? 82 : PET_HEIGHT
+  const horizontalGap = mobile ? 8 : HORIZONTAL_GAP
+  return {
+    x: Math.min(Math.max(horizontalGap, point.x), Math.max(horizontalGap, window.innerWidth - width - horizontalGap)),
+    y: Math.min(Math.max(TOP_GAP, point.y), Math.max(TOP_GAP, window.innerHeight - height - BOTTOM_GAP)),
+  }
+}
 
 export function ArticleActions({ articleMode = false, latestPostHref = "/articles/" }: ArticleActionsProps) {
   const [open, setOpen] = useState(false)
@@ -42,22 +50,34 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)")
     const syncMotion = () => setReducedMotion(media.matches)
+    let mobileViewport = isMobileViewport()
     const restorePosition = () => {
       try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") as Point | null
+        const saved = JSON.parse(localStorage.getItem(positionStorageKey()) || "null") as Point | null
         if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) {
           const next = clampPosition(saved)
           setPosition(next)
           updateDirections(next)
+        } else {
+          setPosition(null)
+          setLabelsRight(false)
         }
-      } catch { localStorage.removeItem(STORAGE_KEY) }
+      } catch { localStorage.removeItem(positionStorageKey()) }
     }
-    const keepOnScreen = () => setPosition((current) => {
-      if (!current) return current
-      const next = clampPosition(current)
-      updateDirections(next)
-      return next
-    })
+    const keepOnScreen = () => {
+      const nextMobileViewport = isMobileViewport()
+      if (nextMobileViewport !== mobileViewport) {
+        mobileViewport = nextMobileViewport
+        restorePosition()
+        return
+      }
+      setPosition((current) => {
+        if (!current) return current
+        const next = clampPosition(current)
+        updateDirections(next)
+        return next
+      })
+    }
     syncMotion()
     restorePosition()
     media.addEventListener("change", syncMotion)
@@ -180,7 +200,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     const current = drag.current
     if (!current || current.pointerId !== event.pointerId) return
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
-    if (current.moved) { const next = position || { x: current.originX, y: current.originY }; localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); setPose("idle") }
+    if (current.moved) { const next = position || { x: current.originX, y: current.originY }; localStorage.setItem(positionStorageKey(), JSON.stringify(next)); setPose("idle") }
   }
   const onToggleClick = () => {
     if (drag.current?.moved) { drag.current = null; return }

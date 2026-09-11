@@ -11,6 +11,8 @@ tags:
   - 多智能体
   - Hermes-EM
 category: 学习
+series: 开发
+seriesOrder: 1
 lang: zh-CN
 ---
 西南财经大学计算机与人工智能学院\

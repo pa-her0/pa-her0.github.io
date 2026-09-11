@@ -1,0 +1,186 @@
+---
+import type { PostEntry } from "@/lib/posts"
+import { getSortedPosts } from "@/lib/posts"
+import {
+  buildNoteGroups,
+  getLifePosts,
+  getPostSection,
+  lifePostHref,
+  notePostHref,
+} from "@/lib/content-sections"
+
+interface Props {
+  post: PostEntry
+}
+
+type NavigationGroup = {
+  name: string
+  posts: PostEntry[]
+  hrefFor: (entry: PostEntry) => string
+}
+
+const { post } = Astro.props as Props
+const allPosts = await getSortedPosts(true)
+const section = getPostSection(post)
+
+let title = "博客文章"
+let hubHref = "/articles/"
+let groups: NavigationGroup[] = []
+
+if (section === "note") {
+  title = "个人学习笔记"
+  hubHref = "/notes/"
+  groups = buildNoteGroups(allPosts).map((group) => ({
+    name: group.name,
+    posts: group.posts,
+    hrefFor: (entry) => notePostHref(group, entry),
+  }))
+} else if (section === "life") {
+  title = "生活记录"
+  hubHref = "/life/"
+  const grouped = new Map<string, PostEntry[]>()
+  getLifePosts(allPosts).forEach((entry) => {
+    const name = entry.data.category?.toString().trim() || "生活"
+    grouped.set(name, [...(grouped.get(name) ?? []), entry])
+  })
+  groups = Array.from(grouped, ([name, posts]) => ({
+    name,
+    posts,
+    hrefFor: lifePostHref,
+  }))
+} else {
+  const articlePosts = allPosts.filter((entry) => getPostSection(entry) === "article")
+  const grouped = new Map<string, PostEntry[]>()
+  articlePosts.forEach((entry) => {
+    const name = entry.data.category?.toString().trim() || "未分类"
+    grouped.set(name, [...(grouped.get(name) ?? []), entry])
+  })
+  groups = Array.from(grouped, ([name, posts]) => ({
+    name,
+    posts,
+    hrefFor: (entry) => `/posts/${entry.slug}/`,
+  }))
+}
+
+const total = groups.reduce((sum, group) => sum + group.posts.length, 0)
+---
+
+<aside class="article-library" aria-label={`${title}文章导航`} data-article-library>
+  <div class="article-library__desktop">
+    <div class="article-library__scroll" id="article-library-panel">
+      <header class="article-library__header">
+        <a href={hubHref}>{title}</a>
+        <span>{total} 篇</span>
+      </header>
+
+      <nav class="article-library__groups">
+        {groups.map((group) => {
+          const isCurrentGroup = group.posts.some((entry) => entry.slug === post.slug)
+          return (
+            <details open={isCurrentGroup}>
+              <summary>
+                <span>{group.name}</span>
+                <small>{group.posts.length}</small>
+                <svg aria-hidden="true" viewBox="0 0 20 20"><path d="m7 5 5 5-5 5" /></svg>
+              </summary>
+              <div class="article-library__articles">
+                {group.posts.map((entry) => (
+                  <a
+                    href={group.hrefFor(entry)}
+                    aria-current={entry.slug === post.slug ? "page" : undefined}
+                    title={entry.data.title}
+                  >
+                    {entry.data.title}
+                  </a>
+                ))}
+              </div>
+            </details>
+          )
+        })}
+      </nav>
+    </div>
+
+    <button
+      class="article-library__toggle"
+      type="button"
+      aria-expanded="true"
+      aria-controls="article-library-panel"
+      title="收起左侧文章栏"
+      data-article-library-toggle
+    >
+      <svg aria-hidden="true" viewBox="0 0 20 20">
+        <path d="m10 4-6 6 6 6M16 4l-6 6 6 6" />
+      </svg>
+      <span class="sr-only" data-article-library-label>收起左侧文章栏</span>
+    </button>
+  </div>
+
+  <details class="article-library__mobile">
+    <summary>
+      <span>本栏目文章</span>
+      <b>{total} 篇</b>
+    </summary>
+    <div class="article-library__mobile-list">
+      {groups.map((group) => (
+        <section>
+          <h2>{group.name}</h2>
+          {group.posts.map((entry) => (
+            <a href={group.hrefFor(entry)} aria-current={entry.slug === post.slug ? "page" : undefined}>
+              {entry.data.title}
+            </a>
+          ))}
+        </section>
+      ))}
+    </div>
+  </details>
+</aside>
+
+<script>
+  const ARTICLE_LIBRARY_STORAGE_KEY = "article-library-collapsed"
+
+  const initArticleLibraryToggle = () => {
+    document.querySelectorAll<HTMLElement>("[data-article-library]").forEach((library) => {
+      const button = library.querySelector<HTMLButtonElement>("[data-article-library-toggle]")
+      const label = library.querySelector<HTMLElement>("[data-article-library-label]")
+      const panel = library.querySelector<HTMLElement>("#article-library-panel")
+      const page = library.closest<HTMLElement>(".site-page")
+      if (!button || !panel || !page || button.dataset.bound === "true") return
+
+      button.dataset.bound = "true"
+
+      const applyState = (collapsed: boolean) => {
+        page.classList.toggle("article-library-is-collapsed", collapsed)
+        button.setAttribute("aria-expanded", String(!collapsed))
+        button.title = collapsed ? "展开左侧文章栏" : "收起左侧文章栏"
+        panel.setAttribute("aria-hidden", String(collapsed))
+        panel.toggleAttribute("inert", collapsed)
+        if (label) label.textContent = button.title
+      }
+
+      let collapsed = false
+      try {
+        collapsed = localStorage.getItem(ARTICLE_LIBRARY_STORAGE_KEY) === "true"
+      } catch {
+        collapsed = false
+      }
+      applyState(collapsed)
+
+      button.addEventListener("click", () => {
+        button.classList.remove("is-animating")
+        void button.offsetWidth
+        button.classList.add("is-animating")
+        collapsed = !page.classList.contains("article-library-is-collapsed")
+        applyState(collapsed)
+        window.setTimeout(() => button.classList.remove("is-animating"), 560)
+        try {
+          localStorage.setItem(ARTICLE_LIBRARY_STORAGE_KEY, String(collapsed))
+        } catch {
+          // Private browsing may disable storage; the control still works for this page.
+        }
+      })
+    })
+  }
+
+  initArticleLibraryToggle()
+  document.addEventListener("astro:page-load", initArticleLibraryToggle)
+</script>

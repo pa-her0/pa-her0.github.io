@@ -78,6 +78,26 @@ http://127.0.0.1:4322/
 新建碎碎念、上传封面或正文图片、查看 Markdown 预览、运行发布前检查，并在确认后
 提交和推送到 GitHub。关闭启动工作台时出现的窗口即可停止本地服务。
 
+#### 在工作台中直接使用云图床
+
+正文编辑区支持三种图片操作：点击“☁ 图片”、将图片拖入编辑区，或直接粘贴截图。
+上传成功后，工作台会自动在光标处插入 Markdown 图片链接，无需先去图床后台复制地址。
+
+首次使用时，将项目根目录的 `.env.example` 复制为 `.env`，并填写：
+
+```text
+QINIU_ACCESS_KEY=七牛云 AccessKey
+QINIU_SECRET_KEY=七牛云 SecretKey
+QINIU_BUCKET=七牛云空间名称
+QINIU_REGION=z0
+IMAGE_CDN_BASE_URL=https://dns.whalefall.top
+QINIU_PREFIX=
+```
+
+`.env` 已被 Git 忽略，密钥不会上传到 GitHub。填写后重启工作台，编辑器会显示
+“七牛图床已连接”；未配置时则自动沿用原来的本地图片保存方式。`QINIU_REGION`
+需要与空间所在区域一致，例如华东浙江为 `z0`、华北为 `z1`、华南为 `z2`。
+
 第一次使用时仍需完成第 1 节的环境和依赖安装。
 
 ### 使用开发服务器预览公开博客
@@ -168,6 +188,9 @@ tags:
   - 学习
   - 人工智能
 category: 学习
+section: note
+series: 算法
+seriesOrder: 1
 lang: zh-CN
 pinned: false
 commentSlug: 2026-08-13-my-new-post
@@ -201,6 +224,9 @@ $$
 | `image` | 文章封面路径 |
 | `tags` | 标签列表 |
 | `category` | 文章分类 |
+| `section` | 内容栏目：`note` 为笔记、`life` 为生活、`article` 为仅在博客列表展示 |
+| `series` | 笔记专题名；相同专题的多篇文章会归入同一路径 |
+| `seriesOrder` | 专题内排序序号，可选；从 `1` 开始填写 |
 | `lang` | 推荐填写 `zh-CN` |
 | `pinned` | 是否置顶 |
 | `commentSlug` | 评论区唯一标识；发布后不要随意修改，否则旧评论可能无法对应 |

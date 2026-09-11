@@ -10,6 +10,8 @@ tags:
   - 学习
   - 建议
 category: 学习
+series: 学习
+seriesOrder: 1
 lang: zh-CN
 ---
 > [!NOTE]

@@ -182,11 +182,11 @@
 }
 
 @theme inline {
-  --font-sans: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-  --font-display-sans: "HarmonyOS Sans SC", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-serif: "Noto Serif SC", "Source Han Serif SC", "Playfair Display", "Georgia", serif;
-  --font-serif-cn: "Noto Serif SC", "Source Han Serif SC", "Georgia", serif;
-  --font-display-serif: "Playfair Display", "Georgia", serif;
+  --font-sans: "Comic Sans MS", "Helvetica Neue", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --font-display-sans: "Comic Sans MS", "Helvetica Neue", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --font-serif: "Comic Sans MS", "Helvetica Neue", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --font-serif-cn: "Comic Sans MS", "Helvetica Neue", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --font-display-serif: "Comic Sans MS", "Helvetica Neue", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback";
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -240,25 +240,12 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-size: 16px;
+    line-height: 1.65;
   }
-  /* 衬线字体在 macOS 上需要 subpixel 抗锯齿才显厚实，
-     Tailwind 默认的 antialiased（灰度）会让 Noto Serif SC 之类的衬线笔画发虚 */
-  .font-serif,
-  .font-serif-cn,
-  [class*="font-serif"] {
-    -webkit-font-smoothing: subpixel-antialiased;
-    -moz-osx-font-smoothing: auto;
-  }
-  /* 深色模式下增加字重，补偿光晕效应 */
+  /* 深色模式下略微增加字重，避免细笔画发虚。 */
   .dark body {
     font-weight: 450;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  /* 暗色模式下衬线也要保留 antialiased（暗背景上 subpixel 的彩边会很明显） */
-  .dark .font-serif,
-  .dark .font-serif-cn,
-  .dark [class*="font-serif"] {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -266,7 +253,7 @@
 
 body.font-profile-interface,
 body.font-profile-interface .font-sans {
-  font-family: "HarmonyOS Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  font-family: "Comic Sans MS", "Helvetica Neue", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
 }
 
 /* Custom smooth scrolling (avoid hash navigation animation) */

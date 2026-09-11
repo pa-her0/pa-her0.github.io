@@ -10,6 +10,8 @@ tags:
   - 学习
   - 好奇
 category: 学习
+series: 学习
+seriesOrder: 2
 lang: zh-CN
 ---
 # 介绍

@@ -9,7 +9,9 @@ image: /post-covers/2025-07-25-alogrithm-note.jpg
 tags:
   - 算法
   - 生活
-category: 生活
+category: 算法
+series: 算法
+seriesOrder: 9
 lang: zh-CN
 ---
 ## 做题问题

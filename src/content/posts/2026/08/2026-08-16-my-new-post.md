@@ -11,6 +11,8 @@ tags:
   - "学习"
   - "计划"
 category: "学习"
+series: "计划"
+seriesOrder: 1
 lang: zh-CN
 pinned: false
 ---
