@@ -282,7 +282,7 @@ export function ArticleList({
             <span aria-current="page">第 {currentPage} 页</span>
           </nav>
           <div className="article-index__actions">
-            <nav className="article-index__section-tabs" aria-label="博客栏目">
+            <nav className="article-index__section-tabs" aria-label="文章栏目">
               <a href="/articles/" aria-current="page">全部</a>
               <a href="/notes/">笔记</a>
               <a href="/life/">生活</a>
@@ -312,8 +312,8 @@ export function ArticleList({
         </div>
 
         <header className="article-index__intro">
-          <p>Jiely / Blog</p>
-          <h1>博客</h1>
+          <p>Jiely / Articles</p>
+          <h1>文章</h1>
         </header>
 
         <div className="article-index__layout">
@@ -410,7 +410,7 @@ export function ArticleList({
           </div>
           </div>
 
-          <aside className="article-index__sidebar" aria-label="博客导航">
+          <aside className="article-index__sidebar" aria-label="文章导航">
             <section>
               <h2>更多</h2>
               <nav className="article-index__side-links">

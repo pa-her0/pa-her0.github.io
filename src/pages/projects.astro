@@ -28,7 +28,6 @@ import { projects } from '@/data/projects'
               target="_blank"
               rel="noreferrer"
               class="project-file"
-              style={`--project-accent:${project.accent}`}
             >
               <figure class="project-file__visual">
                 <img
@@ -71,7 +70,6 @@ import { projects } from '@/data/projects'
     gap: 3rem;
     margin-bottom: 2rem;
     padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--border);
   }
 
   .project-directory__header > div > p,
@@ -89,7 +87,7 @@ import { projects } from '@/data/projects'
 
   .project-directory__header h2 {
     margin: 0;
-    font-family: var(--font-serif-cn);
+    font-family: var(--font-sans);
     font-size: clamp(2rem, 4vw, 3.5rem);
     font-weight: 650;
     letter-spacing: -0.05em;
@@ -107,6 +105,7 @@ import { projects } from '@/data/projects'
   }
 
   .project-file {
+    --project-accent: var(--primary);
     position: relative;
     display: grid;
     min-width: 0;
@@ -141,7 +140,6 @@ import { projects } from '@/data/projects'
     min-height: 15.5rem;
     margin: 0;
     overflow: hidden;
-    border-right: 1px solid var(--border);
     background: radial-gradient(circle at 72% 24%, color-mix(in oklab, var(--project-accent) 26%, transparent), transparent 42%), color-mix(in oklab, var(--project-accent) 8%, var(--muted));
   }
 
@@ -200,7 +198,7 @@ import { projects } from '@/data/projects'
 
   .project-file h3 {
     margin: auto 0 .85rem;
-    font-family: var(--font-serif-cn);
+    font-family: var(--font-sans);
     font-size: clamp(1.25rem, 2.2vw, 1.85rem);
     font-weight: 650;
     line-height: 1.18;

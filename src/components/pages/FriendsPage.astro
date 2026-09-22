@@ -20,15 +20,7 @@ type FriendCategory = {
 const friends = friendsData as FriendCategory[]
 const allFriends = friends.flatMap((category) => category.links)
 
-const friendTintVars = ["var(--primary)", "var(--chart-2)", "var(--chart-4)", "var(--chart-5)", "var(--chart-3)"]
-
 const getInitial = (name: string) => name.trim().charAt(0).toUpperCase() || "?"
-
-const getTint = (name: string) => {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0
-  return friendTintVars[hash % friendTintVars.length]
-}
 
 const siteInfo = {
   name: "Jiely 的博客",
@@ -52,12 +44,10 @@ const siteInfoText = [
   <SiteHeader />
   <main class="pt-24 sm:pt-32 pb-8">
     <div class="max-w-6xl mx-auto px-6">
-      <section class="mb-3">
-        <h1 class="text-3xl sm:text-4xl font-bold text-foreground mb-3 flex items-center gap-3">
-          <span class="w-1 h-8 bg-primary rounded-full" />
-          友情链接
-        </h1>
-        <p class="text-base sm:text-lg text-muted-foreground">
+      <section class="mb-10 max-w-2xl">
+        <p class="mb-2 font-mono text-xs uppercase tracking-[0.18em] text-primary">Jiely / Friends</p>
+        <h1 class="mb-3 text-3xl font-bold tracking-[-0.035em] text-foreground sm:text-4xl">友情链接</h1>
+        <p class="text-base leading-7 text-muted-foreground sm:text-lg">
           这些是我欣赏的创作者们，他们在各自的领域持续输出优质内容。
         </p>
       </section>
@@ -72,7 +62,7 @@ const siteInfoText = [
                 class="friend-bento-card"
                 data-friend-card
                 data-index={index}
-                style={`--friend-tint: ${getTint(friend.title)}`}
+                style="--friend-tint: var(--primary)"
               >
                 <a
                   href={friend.siteurl}
@@ -204,7 +194,7 @@ const siteInfoText = [
     .friend-bento-card:focus-within {
       z-index: 2;
       transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 16px 32px -14px rgb(0 0 0 / 34%);
+      box-shadow: 0 20px 42px -18px rgba(108, 99, 255, 0.24);
     }
 
     .friend-card-surface {

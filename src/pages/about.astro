@@ -1,19 +1,27 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro"
 import AboutPage from "@/components/pages/AboutPage"
-import Comments from "@/components/Comments.astro"
 import { Footer } from "@/components/footer"
 import SiteHeader from "@/components/site-header.astro"
+import { buildHomeActivity } from "@/lib/home-activity"
+import { getSortedPosts } from "@/lib/posts"
+import { getSortedThoughts } from "@/lib/thoughts"
+import "@/styles/about-page.css"
 
 const title = "关于 | Jiely 的博客"
-const description = "Jiely 的学习、研究与博客介绍"
+const description = "Jiely 的兴趣、技术栈、日常与持续更新的个人档案"
+const [allPosts, thoughts] = await Promise.all([getSortedPosts(true), getSortedThoughts()])
+const posts = allPosts.filter((post) => !post.data.draft && post.data.published <= new Date())
+const activity = buildHomeActivity([
+  ...posts.map((post) => post.data.published.toISOString().slice(0, 10)),
+  ...thoughts.map((thought) => thought.data.published.toISOString().slice(0, 10)),
+])
 ---
 
 <BaseLayout {title} {description} fontProfile="interface">
   <div class="site-page">
-  <SiteHeader />
-  <AboutPage client:load />
-  <Comments />
-  <Footer />
+    <SiteHeader />
+    <AboutPage client:load {activity} />
+    <Footer />
   </div>
 </BaseLayout>

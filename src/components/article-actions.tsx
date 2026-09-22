@@ -1,9 +1,18 @@
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react"
-import { ArrowUp, FileDown, House, Music2, Newspaper, Pause, Play, UserRound, type LucideIcon } from "lucide-react"
+import { useGSAP } from "@gsap/react"
+import gsap from "gsap"
+import {
+  ArrowUp, ChevronDown, Disc3, ExternalLink, FileDown, House, ListMusic, LoaderCircle,
+  Music2, Newspaper, Pause, Play, Shuffle, SkipBack, SkipForward, UserRound, X,
+  type LucideIcon,
+} from "lucide-react"
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react"
 import { homeDashboard, type HomeTrack } from "@/data/home-dashboard"
 import "@/styles/article-actions.css"
 
+gsap.registerPlugin(useGSAP)
+
 type PetPose = "idle" | "waving" | "jumping" | "running-left" | "running-right" | "review" | "failed"
+type MusicStatus = "idle" | "loading" | "playing" | "paused" | "error"
 type Point = { x: number; y: number }
 interface ArticleActionsProps { articleMode?: boolean; latestPostHref?: string }
 interface PetAction { name: string; icon: LucideIcon; action?: () => void | Promise<void>; href?: string }
@@ -14,9 +23,14 @@ const PET_HEIGHT = 94
 const HORIZONTAL_GAP = 66
 const TOP_GAP = 64
 const BOTTOM_GAP = 8
+const fallbackCover = "/home-gallery/hero-avatar.webp"
 const petSource = (pose: PetPose) => `/pet-tools/savage-codex-hacker-${pose}.gif`
 const isMobileViewport = () => window.innerWidth <= 600
 const positionStorageKey = () => `${STORAGE_KEY}:${isMobileViewport() ? "mobile" : "desktop"}`
+const musicStatusText: Record<MusicStatus, string> = {
+  idle: "准备播放", loading: "正在加载", playing: "正在播放", paused: "已暂停", error: "播放失败",
+}
+
 const clampPosition = (point: Point): Point => {
   const mobile = isMobileViewport()
   const width = mobile ? 76 : PET_WIDTH
@@ -28,23 +42,39 @@ const clampPosition = (point: Point): Point => {
   }
 }
 
+const formatTime = (seconds: number) => {
+  if (!Number.isFinite(seconds) || seconds < 0) return "0:00"
+  const minutes = Math.floor(seconds / 60)
+  const rest = Math.floor(seconds % 60).toString().padStart(2, "0")
+  return `${minutes}:${rest}`
+}
+
 export function ArticleActions({ articleMode = false, latestPostHref = "/articles/" }: ArticleActionsProps) {
   const [open, setOpen] = useState(false)
+  const [playerOpen, setPlayerOpen] = useState(false)
+  const [playlistOpen, setPlaylistOpen] = useState(false)
+  const [panelBelow, setPanelBelow] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
   const [printing, setPrinting] = useState(false)
   const [pose, setPose] = useState<PetPose>("idle")
   const [position, setPosition] = useState<Point | null>(null)
   const [labelsRight, setLabelsRight] = useState(false)
-  const [musicStatus, setMusicStatus] = useState<"idle" | "loading" | "playing" | "paused" | "error">("idle")
-  const [trackIndex, setTrackIndex] = useState<number | null>(null)
+  const [musicStatus, setMusicStatus] = useState<MusicStatus>("idle")
+  const [trackIndex, setTrackIndex] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [duration, setDuration] = useState(0)
   const root = useRef<HTMLDivElement>(null)
   const toggle = useRef<HTMLButtonElement>(null)
+  const playerRef = useRef<HTMLDivElement>(null)
+  const playlistRef = useRef<HTMLDivElement>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
   const drag = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number; moved: boolean } | null>(null)
   const poseTimer = useRef<number | null>(null)
+  const currentTrack: HomeTrack = homeDashboard.tracks[trackIndex]
 
   const updateDirections = (point: Point) => {
     setLabelsRight(point.x < window.innerWidth / 2)
+    setPanelBelow(point.y < Math.min(window.innerHeight * 0.42, 340))
   }
 
   useEffect(() => {
@@ -61,6 +91,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
         } else {
           setPosition(null)
           setLabelsRight(false)
+          setPanelBelow(false)
         }
       } catch { localStorage.removeItem(positionStorageKey()) }
     }
@@ -90,17 +121,23 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
   }, [])
 
   useEffect(() => {
-    if (!open) return
+    if (!open && !playerOpen) return
     const closeOutside = (event: PointerEvent) => {
-      if (event.target instanceof Node && !root.current?.contains(event.target)) { setOpen(false); setPose("idle") }
+      if (event.target instanceof Node && !root.current?.contains(event.target)) {
+        setOpen(false); setPlayerOpen(false); setPlaylistOpen(false); setPose("idle")
+      }
     }
     const escape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") { setOpen(false); setPose("idle"); toggle.current?.focus() }
+      if (event.key !== "Escape") return
+      setOpen(false); setPlayerOpen(false); setPlaylistOpen(false); setPose("idle"); toggle.current?.focus()
     }
     document.addEventListener("pointerdown", closeOutside)
     document.addEventListener("keydown", escape)
-    return () => { document.removeEventListener("pointerdown", closeOutside); document.removeEventListener("keydown", escape) }
-  }, [open])
+    return () => {
+      document.removeEventListener("pointerdown", closeOutside)
+      document.removeEventListener("keydown", escape)
+    }
+  }, [open, playerOpen])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -121,55 +158,96 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     }
   }, [])
 
-  const flashPose = (nextPose: PetPose, duration = 650) => {
-    if (poseTimer.current) window.clearTimeout(poseTimer.current)
-    setPose(reducedMotion ? "idle" : nextPose)
-    poseTimer.current = window.setTimeout(() => setPose("idle"), duration)
-  }
-  const closeWithJump = () => { setOpen(false); flashPose("jumping") }
-  const playRandomTrack = async () => {
-    const audio = audioRef.current
-    if (!audio || homeDashboard.tracks.length === 0) return
-    const available = homeDashboard.tracks.length
-    let nextIndex = Math.floor(Math.random() * available)
-    if (available > 1 && nextIndex === trackIndex) nextIndex = (nextIndex + 1) % available
-    const nextTrack: HomeTrack = homeDashboard.tracks[nextIndex]
-    setTrackIndex(nextIndex)
-    setOpen(false)
-    flashPose("waving", 900)
-    document.querySelectorAll("audio").forEach((item) => { if (item !== audio) item.pause() })
-    window.dispatchEvent(new CustomEvent("jiely:audio-play", { detail: audio }))
-    setMusicStatus("loading")
-    try {
-      audio.src = nextTrack.src
-      audio.load()
-      await audio.play()
-      setMusicStatus("playing")
-    } catch {
-      setMusicStatus("error")
-      flashPose("failed", 1100)
-    }
-  }
-  const toggleMusic = async () => {
-    const audio = audioRef.current
-    if (!audio || !currentTrack) return
-    if (musicStatus === "playing" || musicStatus === "loading") {
-      audio.pause()
-      setMusicStatus("paused")
+  useGSAP(() => {
+    const panel = playerRef.current
+    if (!panel) return
+    gsap.killTweensOf(panel)
+    if (reducedMotion) {
+      gsap.set(panel, { autoAlpha: playerOpen ? 1 : 0, y: 0, scale: 1 })
       return
     }
+    gsap.to(panel, {
+      autoAlpha: playerOpen ? 1 : 0,
+      y: playerOpen ? 0 : panelBelow ? -10 : 10,
+      scale: playerOpen ? 1 : 0.965,
+      duration: playerOpen ? 0.34 : 0.2,
+      ease: playerOpen ? "back.out(1.35)" : "power2.in",
+      overwrite: "auto",
+    })
+  }, { scope: root, dependencies: [playerOpen, panelBelow, reducedMotion] })
+
+  useGSAP(() => {
+    const list = playlistRef.current
+    if (!playlistOpen || !list || reducedMotion) return
+    const items = list.querySelectorAll(".article-actions__track")
+    gsap.fromTo(list, { autoAlpha: 0, y: -6 }, { autoAlpha: 1, y: 0, duration: 0.24, ease: "power2.out" })
+    gsap.fromTo(items, { autoAlpha: 0, x: 8 }, { autoAlpha: 1, x: 0, duration: 0.24, stagger: 0.025, ease: "power2.out" })
+  }, { scope: root, dependencies: [playlistOpen, reducedMotion], revertOnUpdate: true })
+
+  useGSAP(() => {
+    if (!playerOpen || reducedMotion) return
+    gsap.fromTo(".article-actions__artwork", { scale: 0.96, rotation: -1 }, { scale: 1, rotation: 0, duration: 0.36, ease: "back.out(1.5)" })
+  }, { scope: root, dependencies: [trackIndex, playerOpen, reducedMotion], revertOnUpdate: true })
+
+  const flashPose = (nextPose: PetPose, timeout = 650) => {
+    if (poseTimer.current) window.clearTimeout(poseTimer.current)
+    setPose(reducedMotion ? "idle" : nextPose)
+    poseTimer.current = window.setTimeout(() => setPose("idle"), timeout)
+  }
+
+  const openMusicPlayer = () => {
+    const rect = root.current?.getBoundingClientRect()
+    if (rect) setPanelBelow(rect.top < Math.min(window.innerHeight * 0.42, 340))
+    setOpen(false); setPlayerOpen(true); flashPose("waving", 780)
+  }
+
+  const playTrack = async (index: number) => {
+    const audio = audioRef.current
+    if (!audio || homeDashboard.tracks.length === 0) return
+    const nextIndex = (index + homeDashboard.tracks.length) % homeDashboard.tracks.length
+    const nextTrack: HomeTrack = homeDashboard.tracks[nextIndex]
+    setTrackIndex(nextIndex); setPlayerOpen(true); setOpen(false); setPlaylistOpen(false)
     document.querySelectorAll("audio").forEach((item) => { if (item !== audio) item.pause() })
     window.dispatchEvent(new CustomEvent("jiely:audio-play", { detail: audio }))
     setMusicStatus("loading")
+    if (audio.getAttribute("src") !== nextTrack.src) {
+      audio.src = nextTrack.src; audio.load(); setProgress(0); setDuration(0)
+    }
     try {
-      await audio.play()
-      setMusicStatus("playing")
-      flashPose("waving", 700)
+      await audio.play(); setMusicStatus("playing"); flashPose("waving", 720)
     } catch {
-      setMusicStatus("error")
-      flashPose("failed", 1100)
+      setMusicStatus("error"); flashPose("failed", 1100)
     }
   }
+
+  const shuffleTrack = async () => {
+    const total = homeDashboard.tracks.length
+    let nextIndex = Math.floor(Math.random() * total)
+    if (total > 1 && nextIndex === trackIndex) nextIndex = (nextIndex + 1) % total
+    await playTrack(nextIndex)
+  }
+
+  const changeTrack = async (direction: number) => playTrack(trackIndex + direction)
+
+  const toggleMusic = async () => {
+    const audio = audioRef.current
+    if (!audio) return
+    if (musicStatus === "playing" || musicStatus === "loading") {
+      audio.pause(); setMusicStatus("paused"); return
+    }
+    document.querySelectorAll("audio").forEach((item) => { if (item !== audio) item.pause() })
+    window.dispatchEvent(new CustomEvent("jiely:audio-play", { detail: audio }))
+    setMusicStatus("loading")
+    if (audio.getAttribute("src") !== currentTrack.src || musicStatus === "error") {
+      audio.src = currentTrack.src; audio.load()
+    }
+    try {
+      await audio.play(); setMusicStatus("playing"); flashPose("waving", 700)
+    } catch {
+      setMusicStatus("error"); flashPose("failed", 1100)
+    }
+  }
+
   const printPage = async () => {
     if (printing) return
     setPrinting(true); setOpen(false); flashPose("review", 900); toggle.current?.focus()
@@ -179,6 +257,8 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     } catch { flashPose("failed", 1100) } finally { setPrinting(false) }
   }
 
+  const closeWithJump = () => { setOpen(false); flashPose("jumping") }
+
   const onPointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (event.button !== 0 && event.pointerType === "mouse") return
     const rect = root.current?.getBoundingClientRect()
@@ -186,47 +266,64 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     drag.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, originX: rect.left, originY: rect.top, moved: false }
     event.currentTarget.setPointerCapture(event.pointerId)
   }
+
   const onPointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
     const current = drag.current
     if (!current || current.pointerId !== event.pointerId) return
     const dx = event.clientX - current.startX
     const dy = event.clientY - current.startY
     if (!current.moved && Math.hypot(dx, dy) < 5) return
-    current.moved = true; setOpen(false); setPose(reducedMotion ? "idle" : dx < 0 ? "running-left" : "running-right")
+    current.moved = true
+    setOpen(false); setPlayerOpen(false); setPlaylistOpen(false)
+    setPose(reducedMotion ? "idle" : dx < 0 ? "running-left" : "running-right")
     const next = clampPosition({ x: current.originX + dx, y: current.originY + dy })
     setPosition(next); updateDirections(next)
   }
+
   const onPointerUp = (event: ReactPointerEvent<HTMLButtonElement>) => {
     const current = drag.current
     if (!current || current.pointerId !== event.pointerId) return
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
-    if (current.moved) { const next = position || { x: current.originX, y: current.originY }; localStorage.setItem(positionStorageKey(), JSON.stringify(next)); setPose("idle") }
+    if (current.moved) {
+      const next = position || { x: current.originX, y: current.originY }
+      localStorage.setItem(positionStorageKey(), JSON.stringify(next)); setPose("idle")
+    }
   }
+
   const onToggleClick = () => {
     if (drag.current?.moved) { drag.current = null; return }
     drag.current = null
-    setOpen((value) => { const next = !value; setPose(reducedMotion ? "idle" : next ? "waving" : "idle"); return next })
+    if (playerOpen) { setPlayerOpen(false); setPlaylistOpen(false); setPose("idle"); return }
+    setOpen((value) => {
+      const next = !value; setPose(reducedMotion ? "idle" : next ? "waving" : "idle"); return next
+    })
   }
 
   const articleActions: PetAction[] = [
-    { name: "随机播放", icon: Music2, action: playRandomTrack },
+    { name: "音乐", icon: Music2, action: openMusicPlayer },
     { name: "导出 PDF", icon: FileDown, action: printPage },
     { name: "回到顶部", icon: ArrowUp, action: () => { window.scrollTo({ top: 0, behavior: reducedMotion ? "instant" : "smooth" }); closeWithJump(); toggle.current?.focus() } },
     { name: "返回首页", icon: House, href: "/#home-main" },
   ]
   const siteActions: PetAction[] = [
-    { name: "随机播放", icon: Music2, action: playRandomTrack },
+    { name: "音乐", icon: Music2, action: openMusicPlayer },
     { name: "返回首页", icon: House, href: "/#home-main" },
     { name: "最新文章", icon: Newspaper, href: latestPostHref },
     { name: "关于我", icon: UserRound, href: "/about/" },
   ]
   const actions = articleMode ? articleActions : siteActions
-  const currentTrack: HomeTrack | null = trackIndex === null ? null : homeDashboard.tracks[trackIndex]
+  const progressPercent = duration > 0 ? Math.min(100, Math.max(0, progress / duration * 100)) : 0
+  const hasCollapsedPlayer = musicStatus !== "idle" && !playerOpen
 
   return (
-    <div ref={root} className={`article-actions ${open ? "is-open" : ""} ${currentTrack ? "has-music" : ""} ${musicStatus === "playing" ? "is-playing" : ""} ${position ? "is-positioned" : ""} ${labelsRight ? "labels-right" : "labels-left"}`}
-      style={position ? { left: position.x, top: position.y } : undefined} role="group" aria-label={articleMode ? "文章快捷操作" : "网站快捷导航"}
-      onBlur={(event) => { if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget)) { setOpen(false); setPose("idle") } }}>
+    <div
+      ref={root}
+      className={`article-actions ${open ? "is-open" : ""} ${playerOpen ? "is-player-open" : ""} ${playlistOpen ? "is-playlist-open" : ""} ${hasCollapsedPlayer ? "has-now-playing" : ""} ${panelBelow ? "panel-below" : "panel-above"} ${musicStatus === "playing" ? "is-playing" : ""} ${position ? "is-positioned" : ""} ${labelsRight ? "labels-right" : "labels-left"}`}
+      style={position ? { left: position.x, top: position.y } : undefined}
+      role="group"
+      aria-label={articleMode ? "文章快捷操作" : "网站快捷导航"}
+      onBlur={(event) => { if (!(event.relatedTarget instanceof Node && event.currentTarget.contains(event.relatedTarget))) setOpen(false) }}
+    >
       <div className="article-actions__menu">
         {actions.map(({ name, icon: Icon, action, href }) => (
           <div className="article-actions__satellite" key={name} aria-hidden={!open} inert={!open ? true : undefined}>
@@ -242,25 +339,87 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
           </div>
         ))}
       </div>
-      <button ref={toggle} type="button" className="article-actions__pet" aria-expanded={open} aria-label={open ? "收起宠物工具" : "展开宠物工具；也可以拖动它"}
+
+      <button ref={toggle} type="button" className="article-actions__pet" aria-expanded={open || playerOpen}
+        aria-label={playerOpen ? "收起音乐播放器" : open ? "收起宠物工具" : "展开宠物工具，也可以拖动它"}
         onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
         onPointerCancel={() => { drag.current = null; setPose("idle") }} onClick={onToggleClick}>
         <img src={petSource(pose)} alt="" draggable="false" width="88" height="94" />
       </button>
-      {currentTrack ? (
-        <div className="article-actions__music" aria-live="polite">
-          <a className="article-actions__music-copy" href={currentTrack.href} target="_blank" rel="noreferrer" title="在网易云音乐打开">
-            <span className="article-actions__music-title"><Music2 aria-hidden="true" />{currentTrack.title}</span>
-            <span className="article-actions__music-artist">{musicStatus === "error" ? "暂时无法播放 · 去网易云" : currentTrack.artist}</span>
-          </a>
-          <button className="article-actions__music-toggle" type="button" onClick={() => void toggleMusic()}
-            aria-label={musicStatus === "playing" || musicStatus === "loading" ? "暂停音乐" : "继续播放"}>
-            {musicStatus === "playing" || musicStatus === "loading" ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
+
+      {hasCollapsedPlayer ? (
+        <div className="article-actions__now-playing">
+          <button type="button" className="article-actions__now-copy" onClick={openMusicPlayer} aria-label={`打开播放器，当前歌曲 ${currentTrack.title}`}>
+            <span className="article-actions__mini-bars" aria-hidden="true"><i /><i /><i /></span>
+            <span><strong>{currentTrack.title}</strong><small>{currentTrack.artist}</small></span>
+          </button>
+          <button type="button" className="article-actions__now-toggle" onClick={() => void toggleMusic()} aria-label={musicStatus === "playing" || musicStatus === "loading" ? "暂停音乐" : "继续播放"}>
+            {musicStatus === "loading" ? <LoaderCircle className="is-loading" aria-hidden="true" /> : musicStatus === "playing" ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
           </button>
         </div>
       ) : null}
-      <audio ref={audioRef} preload="none" playsInline crossOrigin="anonymous"
-        onEnded={() => setMusicStatus("idle")}
+
+      <div ref={playerRef} className="article-actions__player" role="region" aria-label="音乐播放器" aria-hidden={!playerOpen} inert={!playerOpen ? true : undefined}>
+        <div className="article-actions__player-head">
+          <span className="article-actions__player-state" aria-live="polite"><Disc3 aria-hidden="true" />{musicStatusText[musicStatus]}</span>
+          <button type="button" className="article-actions__icon-button" onClick={() => { setPlayerOpen(false); setPlaylistOpen(false); toggle.current?.focus() }} aria-label="收起播放器"><X aria-hidden="true" /></button>
+        </div>
+
+        <div className="article-actions__current">
+          <div className="article-actions__artwork">
+            <img src={currentTrack.cover} alt={currentTrack.album} width="88" height="88" onError={(event) => { event.currentTarget.src = fallbackCover }} />
+            <span className="article-actions__equalizer" aria-hidden="true"><i /><i /><i /></span>
+          </div>
+          <div className="article-actions__track-copy"><h2>{currentTrack.title}</h2><p>{currentTrack.artist}</p><span title={currentTrack.album}>{currentTrack.album}</span></div>
+        </div>
+
+        <div className="article-actions__timeline">
+          <input type="range" min={0} max={Math.max(duration, 1)} step={0.1} value={Math.min(progress, Math.max(duration, 1))}
+            aria-label="播放进度" disabled={duration <= 0} style={{ "--pet-player-progress": `${progressPercent}%` } as CSSProperties}
+            onChange={(event) => {
+              const audio = audioRef.current
+              if (!audio || !Number.isFinite(audio.duration)) return
+              const value = Number(event.target.value); audio.currentTime = value; setProgress(value)
+            }} />
+          <div><span>{formatTime(progress)}</span><span>{formatTime(duration)}</span></div>
+        </div>
+
+        <div className="article-actions__controls" aria-label="播放控制">
+          <button type="button" onClick={() => void shuffleTrack()} aria-label="随机播放"><Shuffle aria-hidden="true" /></button>
+          <button type="button" onClick={() => void changeTrack(-1)} aria-label="上一首"><SkipBack aria-hidden="true" /></button>
+          <button type="button" className="article-actions__play" onClick={() => void toggleMusic()} aria-label={musicStatus === "playing" || musicStatus === "loading" ? "暂停" : "播放"}>
+            {musicStatus === "loading" ? <LoaderCircle className="is-loading" aria-hidden="true" /> : musicStatus === "playing" ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
+          </button>
+          <button type="button" onClick={() => void changeTrack(1)} aria-label="下一首"><SkipForward aria-hidden="true" /></button>
+        </div>
+
+        <div className="article-actions__player-nav">
+          <button type="button" className={playlistOpen ? "is-active" : ""} aria-expanded={playlistOpen} aria-controls="pet-music-playlist" onClick={() => setPlaylistOpen((value) => !value)}>
+            <ListMusic aria-hidden="true" /><span>歌单</span><small>{homeDashboard.tracks.length} 首</small><ChevronDown aria-hidden="true" />
+          </button>
+          <a href={homeDashboard.playlist.href} target="_blank" rel="noreferrer" aria-label="在网易云音乐打开完整歌单">网易云 <ExternalLink aria-hidden="true" /></a>
+        </div>
+
+        {playlistOpen ? (
+          <div ref={playlistRef} id="pet-music-playlist" className="article-actions__playlist" aria-label="歌曲列表">
+            {homeDashboard.tracks.map((track, index) => (
+              <button type="button" key={`${track.title}-${track.artist}`} className={`article-actions__track ${index === trackIndex ? "is-current" : ""}`}
+                aria-current={index === trackIndex ? "true" : undefined} onClick={() => void playTrack(index)}>
+                <img src={track.cover} alt="" width="42" height="42" loading="lazy" onError={(event) => { event.currentTarget.src = fallbackCover }} />
+                <span><strong>{track.title}</strong><small>{track.artist}</small></span>
+                {index === trackIndex && musicStatus === "playing" ? <span className="article-actions__track-bars" aria-label="正在播放"><i /><i /><i /></span> : <Play aria-hidden="true" />}
+              </button>
+            ))}
+          </div>
+        ) : null}
+
+        {musicStatus === "error" ? <p className="article-actions__error">当前音源暂时无法播放，可在网易云音乐继续收听。</p> : null}
+      </div>
+
+      <audio ref={audioRef} preload="metadata" playsInline crossOrigin="anonymous"
+        onTimeUpdate={() => setProgress(audioRef.current?.currentTime || 0)}
+        onDurationChange={() => setDuration(Number.isFinite(audioRef.current?.duration) ? audioRef.current?.duration || 0 : 0)}
+        onEnded={() => void changeTrack(1)}
         onError={() => { if (audioRef.current?.getAttribute("src")) setMusicStatus("error") }} />
       <span className="sr-only" role="status">{printing ? "正在打开打印窗口，请选择另存为 PDF" : ""}</span>
     </div>

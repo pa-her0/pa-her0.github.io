@@ -64,7 +64,7 @@ export function Header() {
             <div className="relative h-8 w-9 overflow-hidden transition-transform duration-300 group-hover:scale-105" aria-hidden="true">
               <img src="/brand/whalefall-logo.png" alt="" className="absolute left-1/2 top-0 h-[47px] w-[47px] max-w-none -translate-x-1/2" />
             </div>
-            <span className="hidden font-serif text-lg font-semibold tracking-tight text-[#0874c9] sm:block">Whalefall</span>
+            <span className="hidden font-serif text-lg font-semibold tracking-tight text-primary sm:block">Whalefall</span>
           </a>
 
           {/* Center: Navigation */}

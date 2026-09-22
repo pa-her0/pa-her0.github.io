@@ -214,7 +214,17 @@
 
   function setupCursorTrail() {
     const canvas = document.querySelector<HTMLCanvasElement>('#cursor-trail')
-    if (!canvas || window.__cursorTrailRuntime?.canvas === canvas) return
+    if (!canvas) return
+
+    if (document.querySelector('[data-binary-home]')) {
+      window.__cursorTrailRuntime?.destroy()
+      delete window.__cursorTrailRuntime
+      canvas.hidden = true
+      return
+    }
+
+    canvas.hidden = false
+    if (window.__cursorTrailRuntime?.canvas === canvas) return
 
     window.__cursorTrailRuntime?.destroy()
     const runtime = createCursorTrail(canvas)

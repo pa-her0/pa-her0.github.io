@@ -34,7 +34,7 @@ export function HomeGlobe() {
           phi: 2.75, theta: 0, dark: 1, diffuse: 3,
           mapSamples: 12000, mapBrightness: 3,
           baseColor: [0.8, 0.8, 0.8], markerColor: [1, 1, 1],
-          glowColor: [0.09, 0.30, 0.52],
+          glowColor: [0.42, 0.39, 1],
           markers: [{ location: homeDashboard.coordinates, size: 0.08 }],
           scale: 1.05,
           onRender(state) {
@@ -45,7 +45,7 @@ export function HomeGlobe() {
             state.height = width * dpr
             state.diffuse = dark ? 2 : 3
             state.mapBrightness = dark ? 2 : 3
-            state.glowColor = dark ? [0.5, 0.5, 0.5] : [0.09, 0.30, 0.52]
+            state.glowColor = dark ? [0.42, 0.39, 1] : [0.42, 0.39, 1]
           },
         })
         destroy = () => globe.destroy()

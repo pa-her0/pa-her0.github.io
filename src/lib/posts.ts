@@ -40,6 +40,13 @@ export async function getSortedPosts(ignorePinned = false): Promise<PostEntry[]>
   return sorted
 }
 
+export async function getLatestPublishedPostHref() {
+  const latest = (await getSortedPosts(true))
+    .filter((post) => post.data.draft !== true)
+    .sort((a, b) => (b.data.published?.getTime() ?? 0) - (a.data.published?.getTime() ?? 0))[0]
+  return latest ? `/posts/${latest.slug}/` : "/articles/"
+}
+
 export async function getPostsWithNav(): Promise<PostEntry[]> {
   const sorted = await getSortedPosts()
   for (let i = 1; i < sorted.length; i += 1) {

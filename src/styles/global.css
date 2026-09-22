@@ -182,11 +182,11 @@
 }
 
 @theme inline {
-  --font-sans: "Comic Sans MS", "Helvetica Neue", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
-  --font-display-sans: "Comic Sans MS", "Helvetica Neue", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
-  --font-serif: "Comic Sans MS", "Helvetica Neue", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
-  --font-serif-cn: "Comic Sans MS", "Helvetica Neue", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
-  --font-display-serif: "Comic Sans MS", "Helvetica Neue", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --font-sans: "Geist", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-display-sans: "Geist", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-serif: "Geist", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-serif-cn: "Geist", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-display-serif: "Geist", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback";
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -253,7 +253,7 @@
 
 body.font-profile-interface,
 body.font-profile-interface .font-sans {
-  font-family: "Comic Sans MS", "Helvetica Neue", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  font-family: "Geist", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
 }
 
 /* Custom smooth scrolling (avoid hash navigation animation) */

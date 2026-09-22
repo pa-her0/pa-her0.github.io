@@ -104,7 +104,7 @@ const folderProjects = projects.slice(0, layouts.length).map((project, index) =>
               target="_blank"
               rel="noreferrer"
               aria-label={`打开项目：${project.name}`}
-              style={`--open-x:${project.openX};--mobile-open-x:${project.mobileX};--open-y:${project.openY};--open-r:${project.openR};--peek-x:${project.peekX};--peek-y:${project.peekY};--peek-r:${project.peekR};--card-width:${project.width};--card-height:${project.height};--card-delay:${project.delay};--card-accent:${project.accent};--card-z:${project.index};`}
+              style={`--open-x:${project.openX};--mobile-open-x:${project.mobileX};--open-y:${project.openY};--open-r:${project.openR};--peek-x:${project.peekX};--peek-y:${project.peekY};--peek-r:${project.peekR};--card-width:${project.width};--card-height:${project.height};--card-delay:${project.delay};--card-accent:var(--primary);--card-z:${project.index};`}
             >
               <span class="folder-project-card__surface">
                 <span class="folder-project-card__topline">
@@ -216,7 +216,6 @@ const folderProjects = projects.slice(0, layouts.length).map((project, index) =>
     position: relative;
     min-height: min(760px, calc(100svh - 4.5rem));
     overflow: hidden;
-    border-bottom: 1px solid var(--border);
     color: var(--foreground);
     isolation: isolate;
   }
@@ -277,7 +276,7 @@ const folderProjects = projects.slice(0, layouts.length).map((project, index) =>
 
   .project-folder-hero__copy h1 {
     margin: 0;
-    font-family: var(--font-serif-cn);
+    font-family: var(--font-sans);
     font-size: clamp(2.2rem, 5vw, 4.5rem);
     font-weight: 650;
     line-height: 0.95;
@@ -581,7 +580,7 @@ const folderProjects = projects.slice(0, layouts.length).map((project, index) =>
   }
 
   .project-folder__label strong {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 2.05rem;
     font-weight: 650;
     line-height: 1;

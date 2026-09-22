@@ -1,10 +1,11 @@
 ---
 import "@/styles/global.css"
+import "@/styles/site-interior.css"
 import { ClientRouter } from "astro:transitions"
 import CursorTrail from "@/components/CursorTrail.astro"
 import SiteBentoMotion from "@/components/SiteBentoMotion.astro"
 import { ArticleActions } from "@/components/article-actions"
-import { getSortedPosts } from "@/lib/posts"
+import { getLatestPublishedPostHref } from "@/lib/posts"
 
 interface Props {
   title?: string
@@ -45,8 +46,7 @@ const showArticleActions =
   pathSegments[0] === "posts" ||
   (pathSegments[0] === "notes" && pathSegments.length >= 3) ||
   (pathSegments[0] === "life" && pathSegments.length >= 2)
-const latestPost = (await getSortedPosts(true)).find((post) => post.data.draft !== true)
-const latestPostHref = latestPost ? `/posts/${latestPost.slug}/` : "/articles/"
+const latestPostHref = await getLatestPublishedPostHref()
 const canonicalUrl = canonical || Astro.url.toString()
 const resolvedOgTitle = ogTitle || title
 const resolvedOgDescription = ogDescription || description

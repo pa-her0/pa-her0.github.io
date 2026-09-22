@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content"
 import { TableOfContents } from "./table-of-contents"
 import ArticleCollectionSidebar from "./ArticleCollectionSidebar.astro"
 import { getGitModifiedDate } from "@/lib/git-dates"
+import { getLatestPublishedPostHref } from "@/lib/posts"
 import "@/styles/article-reading.css"
 
 interface Props {
@@ -10,29 +11,22 @@ interface Props {
   Content?: any
   words?: number
   minutes?: number
-  backHref?: string
-  backLabel?: string
 }
 
-const {
-  post,
-  Content,
-  words,
-  minutes,
-  backHref = "/articles/",
-  backLabel = "返回博客",
-} = Astro.props as Props
+const { post, Content, words, minutes } = Astro.props as Props
 const hasSlot = Astro.slots.has("default")
 const data = post.data
 const formattedDate = data.published?.toISOString().slice(0, 10)
+const weekdayLabel = data.published
+  ? new Intl.DateTimeFormat("zh-CN", { weekday: "long" }).format(data.published)
+  : ""
 const effectiveUpdated = getGitModifiedDate(post.id) ?? data.updated ?? undefined
 const formattedUpdated = effectiveUpdated?.toISOString().slice(0, 10)
 const showUpdated = formattedUpdated && formattedUpdated !== formattedDate
 const tags = data.tags ?? []
 const categoryLabel = data.category?.toString().trim() || "未分类"
-const categoryHref = `/articles/?category=${encodeURIComponent(categoryLabel)}`
-const primaryTag = tags[0]
-const primaryTagHref = primaryTag ? `/articles/?tag=${encodeURIComponent(primaryTag)}` : null
+const groupLabel = data.series?.toString().trim() || categoryLabel
+const articleHref = await getLatestPublishedPostHref()
 ---
 
 <main class="article-reading" data-pagefind-body>
@@ -41,42 +35,30 @@ const primaryTagHref = primaryTag ? `/articles/?tag=${encodeURIComponent(primary
       <ArticleCollectionSidebar post={post} />
 
       <div class="article-reading__main">
-        <a href={backHref} class="article-reading__back">
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-          {backLabel}
-        </a>
-
         <header class="article-reading__header">
           <h1 data-pagefind-meta="title">
             <span>{data.title}</span>
           </h1>
 
           <div class="article-reading__meta">
-            <span>
-              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 7h8M8 11h8m-6 4h6m2-9a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2z" /></svg>
-              发布于 {formattedDate}
+            <span class="article-reading__meta-date">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8.5"></circle>
+                <path d="M12 7.5v5l3 1.8"></path>
+              </svg>
+              <time datetime={formattedDate}>{formattedDate}</time>
             </span>
+            {weekdayLabel ? <span>{weekdayLabel}</span> : null}
+            <i aria-hidden="true">|</i>
             {showUpdated && (
               <span>
-                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" /></svg>
-                更新于 {formattedUpdated}
+                更新
+                <time datetime={formattedUpdated}>{formattedUpdated}</time>
               </span>
             )}
-            <a href={categoryHref}>
-              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h10" /></svg>
-              {categoryLabel}
-            </a>
-            {primaryTagHref && (
-              <a href={primaryTagHref}>
-                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 7h.01M7 3a4 4 0 0 0-4 4v10a4 4 0 0 0 4 4h10a4 4 0 0 0 4-4V7a4 4 0 0 0-4-4H7z" /></svg>
-                {primaryTag}
-              </a>
-            )}
-          </div>
-
-          <div class="article-reading__stats">
+            {showUpdated ? <i aria-hidden="true">|</i> : null}
+            <span>{groupLabel}</span>
+            <i aria-hidden="true">|</i>
             <span>{words ? `${words} 字` : "字数统计中"}</span>
             <span>{minutes ? `${minutes} 分钟阅读` : "阅读时间统计中"}</span>
           </div>
@@ -94,28 +76,13 @@ const primaryTagHref = primaryTag ? `/articles/?tag=${encodeURIComponent(primary
               <span>目录</span>
               <b aria-hidden="true">⌄</b>
             </summary>
-            <div class="toc-scroll-container toc-scrollbar">
+            <div class="toc-panel">
               <TableOfContents showHeader={false} client:only="react" />
             </div>
           </details>
         </div>
 
-        <article
-          class="article-reading__prose prose prose-neutral dark:prose-invert
-          prose-headings:font-sans prose-headings:font-bold prose-headings:leading-tight
-          prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:flex prose-h2:items-center prose-h2:gap-3
-          prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3 prose-h4:text-base
-          prose-p:text-base prose-p:leading-[1.65] prose-p:my-4 prose-p:text-foreground/90
-          prose-a:text-primary prose-a:no-underline prose-a:hover:underline
-          prose-blockquote:border-l-0 prose-blockquote:rounded-xl prose-blockquote:bg-secondary/40 prose-blockquote:px-5 prose-blockquote:py-3 prose-blockquote:italic prose-blockquote:text-base prose-blockquote:leading-[1.65] prose-blockquote:text-content-secondary prose-blockquote:font-normal
-          prose-strong:text-foreground prose-strong:font-semibold
-          prose-code:text-primary prose-code:bg-secondary prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
-          prose-pre:bg-secondary prose-pre:border-0
-          prose-ol:text-base prose-ul:text-base prose-ol:text-foreground/90 prose-ul:text-foreground/90 prose-ol:my-4 prose-ul:my-4
-          prose-li:marker:text-primary prose-li:my-1 prose-li:leading-[1.65]
-          prose-table:text-sm prose-th:bg-secondary prose-th:px-4 prose-th:py-2 prose-th:text-left prose-th:font-medium
-          prose-td:px-4 prose-td:py-2 prose-td:border-t prose-td:border-border prose-hr:border-border prose-hr:my-8"
-        >
+        <article class="article-reading__prose prose" data-reference-style="bluelanm">
           {hasSlot ? <slot /> : Content ? <Content /> : null}
         </article>
 
@@ -123,17 +90,17 @@ const primaryTagHref = primaryTag ? `/articles/?tag=${encodeURIComponent(primary
           <div class="article-reading__tags">
             <span>标签</span>
             {tags.length > 0 ? tags.map((tag: string) => (
-              <a href={`/articles/?tag=${encodeURIComponent(tag)}`}>#{tag}</a>
+              <span>#{tag}</span>
             )) : <span>未标签</span>}
-            <a href={categoryHref}>{categoryLabel}</a>
+            <span>{categoryLabel}</span>
           </div>
 
           <div class="article-reading__pager">
-            <a href={data.prevSlug ? `/posts/${data.prevSlug}/` : "/articles/"}>
+            <a href={data.prevSlug ? `/posts/${data.prevSlug}/` : articleHref}>
               <small>上一篇</small>
               <span>{data.prevTitle || "浏览更多文章"}</span>
             </a>
-            <a href={data.nextSlug ? `/posts/${data.nextSlug}/` : "/articles/"}>
+            <a href={data.nextSlug ? `/posts/${data.nextSlug}/` : articleHref}>
               <small>下一篇</small>
               <span>{data.nextTitle || "浏览更多文章"}</span>
             </a>
@@ -142,7 +109,7 @@ const primaryTagHref = primaryTag ? `/articles/?tag=${encodeURIComponent(primary
       </div>
 
       <aside class="article-reading__aside" aria-label="文章目录">
-        <div class="toc-scroll-container toc-scrollbar">
+        <div class="toc-panel">
           <TableOfContents client:only="react" />
         </div>
       </aside>

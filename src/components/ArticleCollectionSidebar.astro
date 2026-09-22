@@ -1,13 +1,7 @@
 ---
 import type { PostEntry } from "@/lib/posts"
 import { getSortedPosts } from "@/lib/posts"
-import {
-  buildNoteGroups,
-  getLifePosts,
-  getPostSection,
-  lifePostHref,
-  notePostHref,
-} from "@/lib/content-sections"
+import { getPostSeries } from "@/lib/content-sections"
 
 interface Props {
   post: PostEntry
@@ -16,60 +10,37 @@ interface Props {
 type NavigationGroup = {
   name: string
   posts: PostEntry[]
-  hrefFor: (entry: PostEntry) => string
 }
 
 const { post } = Astro.props as Props
-const allPosts = await getSortedPosts(true)
-const section = getPostSection(post)
+const allPosts = (await getSortedPosts(true)).filter((entry) => entry.data.draft !== true)
+const grouped = new Map<string, PostEntry[]>()
 
-let title = "博客文章"
-let hubHref = "/articles/"
-let groups: NavigationGroup[] = []
+allPosts.forEach((entry) => {
+  const name = getPostSeries(entry)
+  grouped.set(name, [...(grouped.get(name) ?? []), entry])
+})
 
-if (section === "note") {
-  title = "个人学习笔记"
-  hubHref = "/notes/"
-  groups = buildNoteGroups(allPosts).map((group) => ({
-    name: group.name,
-    posts: group.posts,
-    hrefFor: (entry) => notePostHref(group, entry),
-  }))
-} else if (section === "life") {
-  title = "生活记录"
-  hubHref = "/life/"
-  const grouped = new Map<string, PostEntry[]>()
-  getLifePosts(allPosts).forEach((entry) => {
-    const name = entry.data.category?.toString().trim() || "生活"
-    grouped.set(name, [...(grouped.get(name) ?? []), entry])
-  })
-  groups = Array.from(grouped, ([name, posts]) => ({
-    name,
-    posts,
-    hrefFor: lifePostHref,
-  }))
-} else {
-  const articlePosts = allPosts.filter((entry) => getPostSection(entry) === "article")
-  const grouped = new Map<string, PostEntry[]>()
-  articlePosts.forEach((entry) => {
-    const name = entry.data.category?.toString().trim() || "未分类"
-    grouped.set(name, [...(grouped.get(name) ?? []), entry])
-  })
-  groups = Array.from(grouped, ([name, posts]) => ({
-    name,
-    posts,
-    hrefFor: (entry) => `/posts/${entry.slug}/`,
-  }))
-}
+const preferredOrder = ["LLM", "开发", "学习", "科研", "算法", "计划", "思考", "生活", "日常", "杂项", "未分类"]
+const preferredRank = new Map(preferredOrder.map((name, index) => [name, index]))
+const groups: NavigationGroup[] = Array.from(grouped, ([name, posts]) => ({ name, posts })).sort((a, b) => {
+  const rankA = preferredRank.get(a.name) ?? preferredOrder.length
+  const rankB = preferredRank.get(b.name) ?? preferredOrder.length
+  return rankA - rankB || a.name.localeCompare(b.name, "zh-CN")
+})
 
 const total = groups.reduce((sum, group) => sum + group.posts.length, 0)
+const latestPost = [...allPosts].sort(
+  (a, b) => (b.data.published?.getTime() ?? 0) - (a.data.published?.getTime() ?? 0),
+)[0]
+const articleHref = latestPost ? `/posts/${latestPost.slug}/` : `/posts/${post.slug}/`
 ---
 
-<aside class="article-library" aria-label={`${title}文章导航`} data-article-library>
+<aside class="article-library" aria-label="文章分类导航" data-article-library>
   <div class="article-library__desktop">
     <div class="article-library__scroll" id="article-library-panel">
       <header class="article-library__header">
-        <a href={hubHref}>{title}</a>
+        <a href={articleHref}>文章</a>
         <span>{total} 篇</span>
       </header>
 
@@ -81,12 +52,12 @@ const total = groups.reduce((sum, group) => sum + group.posts.length, 0)
               <summary>
                 <span>{group.name}</span>
                 <small>{group.posts.length}</small>
-                <svg aria-hidden="true" viewBox="0 0 20 20"><path d="m7 5 5 5-5 5" /></svg>
+                <span class="article-library__chevron" aria-hidden="true">›</span>
               </summary>
               <div class="article-library__articles">
                 {group.posts.map((entry) => (
                   <a
-                    href={group.hrefFor(entry)}
+                    href={`/posts/${entry.slug}/`}
                     aria-current={entry.slug === post.slug ? "page" : undefined}
                     title={entry.data.title}
                   >
@@ -108,16 +79,14 @@ const total = groups.reduce((sum, group) => sum + group.posts.length, 0)
       title="收起左侧文章栏"
       data-article-library-toggle
     >
-      <svg aria-hidden="true" viewBox="0 0 20 20">
-        <path d="m10 4-6 6 6 6M16 4l-6 6 6 6" />
-      </svg>
+      <span class="article-library__toggle-icon" aria-hidden="true">‹</span>
       <span class="sr-only" data-article-library-label>收起左侧文章栏</span>
     </button>
   </div>
 
   <details class="article-library__mobile">
     <summary>
-      <span>本栏目文章</span>
+      <span>浏览文章</span>
       <b>{total} 篇</b>
     </summary>
     <div class="article-library__mobile-list">
@@ -125,7 +94,7 @@ const total = groups.reduce((sum, group) => sum + group.posts.length, 0)
         <section>
           <h2>{group.name}</h2>
           {group.posts.map((entry) => (
-            <a href={group.hrefFor(entry)} aria-current={entry.slug === post.slug ? "page" : undefined}>
+            <a href={`/posts/${entry.slug}/`} aria-current={entry.slug === post.slug ? "page" : undefined}>
               {entry.data.title}
             </a>
           ))}

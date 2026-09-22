@@ -16,6 +16,7 @@ interface TableOfContentsProps {
 export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
   const [headings, setHeadings] = useState<TocItem[]>([])
   const [activeId, setActiveId] = useState<string>("")
+  const [readPercent, setReadPercent] = useState(0)
   const navRef = useRef<HTMLElement | null>(null)
   const observerRef = useRef<IntersectionObserver | null>(null)
   const headingElementsRef = useRef<Map<string, IntersectionObserverEntry>>(new Map())
@@ -125,7 +126,8 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
               if (o.top <= scrollY + 100) closestId = o.id
               else break
             }
-            if (closestId) setActiveId(closestId)
+            const nextId = closestId || offsets[0]?.id || ""
+            if (nextId) setActiveId(nextId)
           }
         },
         {
@@ -225,13 +227,45 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
   }, [clearTocAutoScrollTimer, collectHeadings, measureOffsets, setupObserver, unlockProgrammaticLock])
 
   useEffect(() => {
+    let progressRaf = 0
+
+    const updateReadPercent = () => {
+      progressRaf = 0
+      const article = document.querySelector<HTMLElement>("article")
+      if (!article) return
+
+      const articleTop = article.getBoundingClientRect().top + window.scrollY
+      const readableDistance = Math.max(article.offsetHeight - window.innerHeight * 0.55, 1)
+      const progress = ((window.scrollY - articleTop + 96) / readableDistance) * 100
+      setReadPercent(Math.min(100, Math.max(0, Math.round(progress))))
+    }
+
+    const scheduleProgressUpdate = () => {
+      if (progressRaf) return
+      progressRaf = requestAnimationFrame(updateReadPercent)
+    }
+
+    updateReadPercent()
+    window.addEventListener("scroll", scheduleProgressUpdate, { passive: true })
+    window.addEventListener("resize", scheduleProgressUpdate, { passive: true })
+    document.addEventListener("astro:page-load", updateReadPercent)
+
+    return () => {
+      window.removeEventListener("scroll", scheduleProgressUpdate)
+      window.removeEventListener("resize", scheduleProgressUpdate)
+      document.removeEventListener("astro:page-load", updateReadPercent)
+      if (progressRaf) cancelAnimationFrame(progressRaf)
+    }
+  }, [])
+
+  useEffect(() => {
     if (!activeId || !navRef.current) return
 
     // Mobile renders the TOC inside a drawer that's usually closed; auto-scroll
     // there forces extra layout reads on every heading change while the user
     // scrolls the article. Desktop (sidebar) is the only place where keeping
     // the active link visible matters.
-    if (typeof window !== "undefined" && window.matchMedia("(max-width: 1279px)").matches) {
+    if (typeof window !== "undefined" && window.matchMedia("(max-width: 900px)").matches) {
       return
     }
 
@@ -243,7 +277,7 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
       const activeLink = nav.querySelector<HTMLAnchorElement>(`a[href="#${CSS.escape(activeId)}"]`)
       if (!activeLink) return
 
-      const scrollContainer = nav.closest<HTMLElement>(".toc-scroll-container")
+      const scrollContainer = nav.querySelector<HTMLElement>(".toc-nav__scroller")
       if (!scrollContainer) return
 
       const containerRect = scrollContainer.getBoundingClientRect()
@@ -252,13 +286,16 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
       if (!isContainerVisible) return
 
       const linkRect = activeLink.getBoundingClientRect()
-      const padding = 12
+      const padding = 16
       const isOutOfView =
         linkRect.top < containerRect.top + padding ||
         linkRect.bottom > containerRect.bottom - padding
 
       if (isOutOfView) {
-        activeLink.scrollIntoView({ block: "nearest", inline: "nearest" })
+        const linkCenter = activeLink.offsetTop + activeLink.offsetHeight / 2
+        const targetTop = Math.max(0, linkCenter - scrollContainer.clientHeight / 2)
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        scrollContainer.scrollTo({ top: targetTop, behavior: reduceMotion ? "auto" : "smooth" })
       }
     }, 90)
 
@@ -290,30 +327,31 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
   return (
     <nav ref={navRef} aria-label="目录" className="toc-nav">
       {showHeader ? (
-        <div className="flex items-center gap-2 mb-3">
-          <div className="size-1.5 bg-primary rounded-full" />
-          <span className="text-xs font-medium text-foreground tracking-wide">目录</span>
-        </div>
+        <div className="toc-nav__header">本页目录</div>
       ) : null}
-      <ul className="space-y-0.5">
-        {headings.map((heading) => (
-          <li key={heading.id}>
-            <a
-              href={`#${heading.id}`}
-              onClick={(e) => handleClick(e, heading.id)}
-              className={cn(
-                "block rounded-md py-1.5 pr-2 text-[13px] leading-relaxed transition-all duration-200",
-                heading.level === 2 ? "pl-2.5" : "pl-5",
-                activeId === heading.id
-                  ? "bg-secondary/70 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-secondary/40 hover:text-foreground",
-              )}
-            >
-              <span className="line-clamp-2">{heading.text}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
+      <div className="toc-nav__scroller toc-scrollbar">
+        <ul className="toc-nav__list">
+          {headings.map((heading) => (
+            <li key={heading.id}>
+              <a
+                href={`#${heading.id}`}
+                onClick={(e) => handleClick(e, heading.id)}
+                className={cn(
+                  "toc-nav__link",
+                  heading.level === 3 && "toc-nav__link--nested",
+                  activeId === heading.id && "is-active",
+                )}
+              >
+                <span>{heading.text}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="toc-nav__progress" aria-label={`已阅读 ${readPercent}%`}>
+        <span>阅读进度</span>
+        <strong>{readPercent}%</strong>
+      </div>
     </nav>
   )
 }

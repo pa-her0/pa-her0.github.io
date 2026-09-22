@@ -1,5 +1,23 @@
 ---
-import ArticlesPage from "@/components/pages/ArticlesPage.astro"
+import { getLatestPublishedPostHref } from "@/lib/posts"
+
+const redirectHref = await getLatestPublishedPostHref()
 ---
 
-<ArticlesPage />
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content={`0;url=${redirectHref}`} />
+    <link rel="canonical" href={redirectHref} />
+    <title>正在打开文章</title>
+    <script is:inline define:vars={{ redirectHref }}>
+      window.location.replace(redirectHref)
+    </script>
+  </head>
+  <body>
+    <a href={redirectHref}>打开文章</a>
+  </body>
+</html>

@@ -1,14 +1,24 @@
 ---
 import { ThemeToggle } from "@/components/theme-toggle"
 import { AccentToggle } from "@/components/accent-toggle"
+import { getLatestPublishedPostHref } from "@/lib/posts"
+
+interface Props {
+  minimal?: boolean
+  reading?: boolean
+}
+
+const { minimal = true, reading = false } = Astro.props as Props
+const articleHref = await getLatestPublishedPostHref()
 
 const primaryItems = [
-  { name: "博客", href: "/articles/" },
+  { name: "文章", href: articleHref },
   { name: "项目", href: "/projects/" },
   { name: "友链", href: "/friends/" },
   { name: "留言板", href: "/messages/" },
   { name: "关于", href: "/about/" },
 ]
+const desktopItems = reading ? primaryItems.filter((item) => item.name !== "文章") : primaryItems
 
 const mobileItems = [
   { name: "首页", href: "/#home-main" },
@@ -18,24 +28,40 @@ const mobileItems = [
 ]
 ---
 
-<header class="site-header fixed top-0 left-0 right-0 z-50 bg-background/88 backdrop-blur-xl border-b border-border/40 py-3">
+<header class:list={["site-header fixed top-0 left-0 right-0 z-50 bg-background/88 backdrop-blur-xl border-b border-border/40 py-3", { "site-header--minimal": minimal, "site-header--reading": reading }]}>
   <div class="site-header__inner mx-auto flex max-w-[78rem] items-center justify-between px-6">
-    <a href="/#home-main" data-astro-prefetch class="group flex items-center gap-2.5 justify-self-start" aria-label="Whalefall 首页">
-      <div class="relative h-8 w-9 overflow-hidden transition-transform duration-300 group-hover:scale-105" aria-hidden="true">
-        <img
-          src="/brand/whalefall-logo.png"
-          alt=""
-          width="47"
-          height="47"
-          decoding="async"
-          class="absolute left-1/2 top-0 h-[47px] w-[47px] max-w-none -translate-x-1/2"
-        />
+    {reading ? (
+      <div class="site-header__reading-brand" aria-label="Jiely 文章">
+        <a href="/#home-main" data-astro-prefetch aria-label="Jiely 首页">
+          <span data-site-wordmark>Jiely</span>
+        </a>
+        <span class="site-header__reading-separator" aria-hidden="true">/</span>
+        <a href={articleHref} data-astro-prefetch aria-current="page">文章</a>
       </div>
-      <span class="hidden font-serif text-lg font-semibold tracking-tight text-[#0874c9] sm:block">Whalefall</span>
-    </a>
+    ) : (
+      <a href="/#home-main" data-astro-prefetch class="group flex items-center gap-2.5 justify-self-start" aria-label={minimal ? "Jiely 首页" : "Whalefall 首页"}>
+        {minimal ? (
+        <span data-site-wordmark>Jiely</span>
+        ) : (
+          <>
+            <div class="relative h-8 w-9 overflow-hidden transition-transform duration-300 group-hover:scale-105" aria-hidden="true">
+              <img
+                src="/brand/whalefall-logo.png"
+                alt=""
+                width="47"
+                height="47"
+                decoding="async"
+                class="absolute left-1/2 top-0 h-[47px] w-[47px] max-w-none -translate-x-1/2"
+              />
+            </div>
+            <span class="hidden font-serif text-lg font-semibold tracking-tight text-primary sm:block">Whalefall</span>
+          </>
+        )}
+      </a>
+    )}
 
     <nav class="hidden lg:flex items-center gap-6 ml-auto">
-      {primaryItems.map((item) => (
+      {desktopItems.map((item) => (
         <a
           href={item.href}
           data-astro-prefetch
@@ -47,14 +73,16 @@ const mobileItems = [
       ))}
     </nav>
 
-    <div class="hidden lg:flex items-center gap-3 ml-6">
-      <AccentToggle />
-      <ThemeToggle />
-    </div>
+    {!minimal && !reading ? (
+      <div class="hidden lg:flex items-center gap-3 ml-6">
+        <AccentToggle />
+        <ThemeToggle />
+      </div>
+    ) : null}
 
     <div class="flex items-center gap-1 lg:hidden ml-auto">
-      <AccentToggle />
-      <ThemeToggle />
+      {!minimal && !reading ? <AccentToggle /> : null}
+      {!minimal && !reading ? <ThemeToggle /> : null}
       <button
         id="mobile-menu-toggle"
         type="button"
@@ -117,6 +145,32 @@ const mobileItems = [
 </div>
 
 <style>
+  [data-site-wordmark] {
+    display: block;
+    width: 4.5rem;
+    height: 2.25rem;
+    overflow: hidden;
+    color: transparent;
+    font-size: 0;
+    line-height: 0;
+    background: url("/brand/jiely-brush-wordmark.png") center / contain no-repeat;
+    transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .site-header a:hover [data-site-wordmark] {
+    transform: rotate(-2deg) scale(1.045);
+  }
+
+  .site-header__reading-brand > a:first-child {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .site-header__reading-brand [data-site-wordmark] {
+    width: 4.1rem;
+    height: 2rem;
+  }
+
   .mobile-menu[data-open="true"] {
     opacity: 1;
     pointer-events: auto;
@@ -137,6 +191,14 @@ const mobileItems = [
   }
 
   @media (prefers-reduced-motion: reduce) {
+    [data-site-wordmark] {
+      transition: none;
+    }
+
+    .site-header a:hover [data-site-wordmark] {
+      transform: none;
+    }
+
     .mobile-menu,
     .mobile-menu .mobile-nav-item {
       transition-duration: 1ms !important;

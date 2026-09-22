@@ -1,0 +1,85 @@
+/* Shared interior-page language: the article palette, adapted for dense content. */
+.site-page,
+.dark .site-page {
+  --background: #fafbfc;
+  --foreground: #2b333e;
+  --surface-subtle: #fafbfc;
+  --paper-warm: #fff;
+  --card: rgba(255, 255, 255, 0.68);
+  --card-foreground: #2b333e;
+  --popover: #fff;
+  --popover-foreground: #2b333e;
+  --primary: #6c63ff;
+  --primary-foreground: #fff;
+  --secondary: #f0eeff;
+  --secondary-foreground: #5548e6;
+  --muted: #f1efff;
+  --muted-foreground: #716f80;
+  --content-secondary: #59566a;
+  --accent: #6c63ff;
+  --accent-foreground: #fff;
+  --border: #e5e2f0;
+  --input: #e5e2f0;
+  --ring: #6c63ff;
+  --panel-radius: 1.1rem;
+  --panel-background: rgba(255, 255, 255, 0.56);
+  --panel-border: rgba(220, 216, 235, 0.82);
+  --panel-shadow: none;
+  background:
+    radial-gradient(circle at 86% 3%, rgba(108, 99, 255, 0.045), transparent 26rem),
+    #fafbfc;
+  color: var(--foreground);
+  font-family: "Geist", "Helvetica Neue", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+.site-page .site-header:not(.site-header--reading) {
+  border: 0;
+  background: rgba(250, 251, 252, 0.9);
+  color: var(--foreground);
+  backdrop-filter: blur(14px);
+}
+
+.site-page .site-header:not(.site-header--reading) .site-header__inner {
+  max-width: 90rem;
+}
+
+.site-page .site-header:not(.site-header--reading) nav a,
+.site-page .site-header:not(.site-header--reading) #mobile-menu-toggle {
+  color: var(--muted-foreground);
+}
+
+.site-page .site-header:not(.site-header--reading) nav a:hover,
+.site-page .site-header:not(.site-header--reading) #mobile-menu-toggle:hover {
+  color: var(--foreground);
+}
+
+.site-page .mobile-menu-bg {
+  background: rgba(250, 251, 252, 0.97) !important;
+}
+
+.site-page .site-panel,
+.site-page .friends-info-card {
+  border-color: var(--panel-border);
+  background: var(--panel-background);
+  box-shadow: var(--panel-shadow);
+}
+
+.site-page .site-footer {
+  color: var(--foreground);
+  background: transparent;
+}
+
+.site-page .site-footer p,
+.site-page .site-footer a {
+  color: var(--muted-foreground);
+}
+
+.site-page .site-footer a:hover {
+  color: var(--primary);
+}
+
+@media (max-width: 1023px) {
+  .site-page .site-header:not(.site-header--reading) {
+    background: #fafbfc !important;
+  }
+}

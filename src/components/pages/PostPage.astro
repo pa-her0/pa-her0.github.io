@@ -18,7 +18,7 @@ interface Props {
   backLabel?: string
 }
 
-const { post, backHref = "/articles/", backLabel = "返回博客" } = Astro.props as Props
+const { post } = Astro.props as Props
 const { Content, remarkPluginFrontmatter } = await post.render()
 const words = remarkPluginFrontmatter?.words
 const minutes = remarkPluginFrontmatter?.minutes
@@ -85,9 +85,9 @@ if (post.data.encrypted && post.data.password) {
     {tags.map((tag: string) => <meta property="article:tag" content={tag} />)}
     <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
   </Fragment>
-  <div class="site-page bg-background dark:bg-surface-subtle">
-    <SiteHeader />
-    <ArticleContent post={post} {Content} {words} {minutes} {backHref} {backLabel}>
+  <div class="site-page article-reading-page">
+    <SiteHeader reading />
+    <ArticleContent post={post} {Content} {words} {minutes}>
       <div class="mb-8">
         <Disclaimer disclaimers={post.data.disclaimer} publishedDate={post.data.published} />
       </div>
@@ -114,8 +114,9 @@ if (post.data.encrypted && post.data.password) {
 <style>
   .article-comments-shell {
     display: grid;
-    grid-template-columns: minmax(12rem, 14rem) minmax(0, 1fr) minmax(11rem, 13rem);
-    gap: clamp(1.25rem, 2.4vw, 2.25rem);
+    grid-template-columns: minmax(13rem, 16rem) minmax(0, 50rem) minmax(11rem, 13rem);
+    justify-content: center;
+    gap: clamp(1.75rem, 2.8vw, 3rem);
     width: min(calc(100% - 2rem), 96rem);
     margin-inline: auto;
     padding-bottom: 3rem;
@@ -128,7 +129,7 @@ if (post.data.encrypted && post.data.password) {
 
   @media (max-width: 1239px) {
     .article-comments-shell {
-      grid-template-columns: minmax(0, 55rem) minmax(11rem, 13rem);
+      grid-template-columns: minmax(0, 50rem) minmax(11rem, 13rem);
       max-width: 76rem;
     }
     .article-comments-main { grid-column: 1; }
@@ -137,7 +138,13 @@ if (post.data.encrypted && post.data.password) {
   @media (max-width: 900px) {
     .article-comments-shell {
       display: block;
-      max-width: 55rem;
+      max-width: 50rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .article-comments-shell {
+      width: min(calc(100% - 1.5rem), 50rem);
     }
   }
 </style>

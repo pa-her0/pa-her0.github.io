@@ -1,25 +1,17 @@
 /* The reference blog uses the page itself as the card surface, not filled panels. */
-.article-page {
-  --background: #fff;
-  --foreground: #174d84;
-  --card: #fff;
-  --muted-foreground: #708ba3;
-  --content-secondary: #708ba3;
-  --border: #b0dcffb1;
-  --secondary: #e8f5ff;
-  --secondary-foreground: #397daf;
+.article-page,
+.dark .article-page {
+  --background: #fafbfc;
+  --foreground: #2b333e;
+  --card: rgba(255, 255, 255, 0.68);
+  --muted-foreground: #716f80;
+  --content-secondary: #59566a;
+  --border: #e5e2f0;
+  --secondary: #f0eeff;
+  --secondary-foreground: #5548e6;
+  --primary: #6c63ff;
   background: var(--background);
   color: var(--foreground);
-}
-.dark .article-page {
-  --background: #171717;
-  --foreground: #fafafa;
-  --card: #171717;
-  --muted-foreground: #b3b3b3;
-  --content-secondary: #b3b3b3;
-  --border: #ffffff1a;
-  --secondary: #262626;
-  --secondary-foreground: #dedede;
 }
 .article-index { padding-block: 0 64px; background: transparent; }
 .article-index__shell { width: min(100% - 32px, 1180px); margin-inline: auto; }
@@ -66,7 +58,7 @@
 .article-index__intro span { display: block; margin-top: 0.9rem; color: var(--content-secondary); font-size: 0.94rem; line-height: 1.75; }
 .article-index__layout { display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
 .article-index__main { min-width: 0; }
-.article-index__sidebar { position: sticky; top: 6rem; display: grid; gap: 2rem; padding-left: 1.1rem; border-left: 1px solid var(--border); }
+.article-index__sidebar { position: sticky; top: 6rem; display: grid; gap: 2rem; padding: 1rem; border: 1px solid rgba(220, 216, 235, .74); border-radius: .95rem; background: rgba(255, 255, 255, .42); }
 .article-index__sidebar h2 { margin: 0 0 0.75rem; color: var(--foreground); font-size: 0.76rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
 .article-index__side-links { display: grid; }
 .article-index__side-links a { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.48rem 0; color: var(--muted-foreground); font-size: 0.84rem; }
@@ -89,7 +81,7 @@
 
 @media (max-width: 880px) {
   .article-index__layout { grid-template-columns: 1fr; }
-  .article-index__sidebar { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 1.25rem 0 0; border-left: 0; border-top: 1px solid var(--border); }
+  .article-index__sidebar { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 1rem; }
   .article-index__sidebar section:last-child { grid-column: 1 / -1; }
 }
 
@@ -104,21 +96,24 @@
   align-items: start;
   gap: 16px;
   padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: transparent;
-  transition: background-color 300ms ease-in-out;
+  border: 1px solid rgba(220, 216, 235, .82);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .7);
+  box-shadow: none;
+  transition: background-color 240ms ease, border-color 240ms ease, transform 240ms ease;
 }
 .article-preview:hover,
 .article-preview:focus-within {
-  background: color-mix(in srgb, var(--secondary) 50%, transparent);
+  border-color: rgba(108, 99, 255, .32);
+  background: rgba(255, 255, 255, .9);
+  transform: translateY(-2px);
 }
 .article-preview--text-only { grid-template-columns: minmax(0, 1fr); }
 .article-preview__cover {
   display: block;
   aspect-ratio: 1.9;
   overflow: hidden;
-  border-radius: 0;
+  border-radius: 10px;
   background: transparent;
 }
 .article-preview__cover > img { width: 100%; height: 100%; object-fit: cover; }
@@ -174,5 +169,5 @@
   .article-preview__title { font-size: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .article-preview { transition: none; }
+  .article-preview { transition: none; transform: none; }
 }

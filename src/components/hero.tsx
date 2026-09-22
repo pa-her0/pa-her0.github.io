@@ -1,293 +1,325 @@
 "use client"
 
-import { ArrowUpRight, ChevronUp, ChevronDown, Clock3, MapPin, Pause, Play, Radio, Zap } from "lucide-react"
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react"
-import { homeDashboard, type HomeTrack } from "@/data/home-dashboard"
-import { HomeGlobe } from "@/components/home-globe"
-import { useHomeWakatime } from "@/components/use-home-wakatime"
-import type { ActivityDay } from "@/lib/home-activity"
-import { ActivitySnake } from "@/components/activity-snake"
-import { AboutSceneCard } from "@/components/about-scene-card"
-import { FlipDiskMatrix } from "@/components/ui/flip-disk-matrix"
+import { useGSAP } from "@gsap/react"
+import { IconArrowUpRight } from "@tabler/icons-react"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useEffect, useRef } from "react"
 
-export interface HeroProps {
-  latestPost?: { title: string; description: string; href: string; image?: string; date: string; category: string }
-  activity: { days: ActivityDay[]; months: { label: string; column: number }[]; total: number }
+gsap.registerPlugin(useGSAP, ScrollTrigger)
+
+type BinaryParticle = {
+  x: number
+  y: number
+  value: "0" | "1"
+  bornAt: number
+  duration: number
+  size: number
+  driftX: number
+  driftY: number
+  strength: number
 }
 
-function GalleryCard() {
-  const [images, setImages] = useState(() => [...homeDashboard.gallery])
-  return (
-    <div className="bento-card bento-gallery" aria-label="噜噜相册">
-      {images.map((image, index) => (
-        <button key={image.src} type="button" className="bento-photo"
-          style={{ zIndex: images.length - index, transform: `translate(-50%, calc(-50% - ${index * 6}px)) rotate(${[5, -7, 6, -5, 8][index]}deg)` }}
-          aria-label={`切换图片：${image.alt}`} tabIndex={index === 0 ? 0 : -1}
-          onClick={() => setImages((current) => [...current.filter((item) => item.src !== image.src), image])}>
-          <img src={image.src} alt={image.alt} width={300} height={300} draggable={false}
-            decoding="async" fetchPriority={index === 0 ? "high" : "low"} />
-        </button>
-      ))}
-      <span className="sr-only" aria-live="polite">当前图片：{images[0].alt}</span>
-    </div>
-  )
-}
+function useBinaryField(
+  canvasRef: React.RefObject<HTMLCanvasElement | null>,
+  rootRef: React.RefObject<HTMLElement | null>,
+) {
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const root = rootRef.current
+    const context = canvas?.getContext("2d")
+    if (!canvas || !root || !context) return
 
-function MusicCard() {
-  const audioRef = useRef<HTMLAudioElement>(null)
-  const requestRef = useRef(0)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  const [trackIndex, setTrackIndex] = useState(0)
-  const [status, setStatus] = useState<"idle" | "loading" | "playing" | "error">("idle")
-  const [progress, setProgress] = useState(0)
-  const [coverFailed, setCoverFailed] = useState(false)
-  const track: HomeTrack = homeDashboard.tracks[trackIndex]
+    const baseCanvas = document.createElement("canvas")
+    const baseContext = baseCanvas.getContext("2d")
+    if (!baseContext) return
 
-  function stop() {
-    requestRef.current += 1
-    clearTimeout(timerRef.current)
-    audioRef.current?.pause()
-    setStatus("idle")
-  }
-  function changeTrack(direction: number) {
-    stop()
-    const audio = audioRef.current
-    if (audio) { audio.removeAttribute("src"); audio.load() }
-    setTrackIndex((value) => (value + direction + homeDashboard.tracks.length) % homeDashboard.tracks.length)
-    setProgress(0)
-    setCoverFailed(false)
-  }
-  async function toggle() {
-    const audio = audioRef.current
-    if (!audio) return
-    if (status === "playing" || status === "loading") { stop(); return }
-    if (!track.src || !track.mimeType || audio.canPlayType(track.mimeType) === "") {
-      setStatus("error")
-      return
-    }
-    const request = ++requestRef.current
-    setStatus("loading")
-    if (audio.getAttribute("src") !== track.src) { audio.src = track.src; audio.load() }
-    timerRef.current = setTimeout(() => {
-      if (requestRef.current === request) {
-        requestRef.current += 1
-        audio.pause()
-        setStatus("error")
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const particles: BinaryParticle[] = []
+    let animationFrame = 0
+    let pixelRatio = 1
+    let width = 0
+    let height = 0
+    let lastPointer = { x: -100, y: -100 }
+
+    const drawBase = () => {
+      baseContext.clearRect(0, 0, width, height)
+      baseContext.fillStyle = "rgba(89, 86, 106, 0.038)"
+      baseContext.textAlign = "center"
+      baseContext.textBaseline = "middle"
+      baseContext.font = '500 10px "Geist Mono", ui-monospace, monospace'
+
+      const gap = width < 720 ? 48 : 42
+      const columns = Math.ceil(width / gap) + 1
+      const rows = Math.ceil(height / gap) + 1
+      for (let row = 0; row < rows; row += 1) {
+        for (let column = 0; column < columns; column += 1) {
+          if ((row * 5 + column * 3) % 4 === 0) continue
+          const value = (row * 7 + column * 13) % 2 === 0 ? "0" : "1"
+          baseContext.fillText(value, column * gap + gap / 2, row * gap + gap / 2)
+        }
       }
-    }, 20000)
-    try {
-      document.querySelectorAll("audio").forEach((item) => { if (item !== audio) item.pause() })
-      window.dispatchEvent(new CustomEvent("jiely:audio-play", { detail: audio }))
-      await audio.play()
-      if (requestRef.current !== request) return
-      clearTimeout(timerRef.current)
-      setStatus("playing")
-    } catch {
-      if (requestRef.current !== request) return
-      clearTimeout(timerRef.current)
-      setStatus("error")
     }
-  }
 
-  useEffect(() => {
-    const audio = audioRef.current
-    const halt = () => {
-      requestRef.current += 1
-      clearTimeout(timerRef.current)
-      audio?.pause()
+    const paint = (timestamp: number) => {
+      animationFrame = 0
+      context.clearRect(0, 0, width, height)
+      context.drawImage(baseCanvas, 0, 0, width, height)
+
+      for (let index = particles.length - 1; index >= 0; index -= 1) {
+        const particle = particles[index]
+        const progress = Math.min(1, Math.max(0, (timestamp - particle.bornAt) / particle.duration))
+        const eased = 1 - (1 - progress) ** 3
+        const alpha = (1 - progress) * particle.strength
+
+        context.fillStyle = `rgba(108, 99, 255, ${alpha * 0.72})`
+        context.font = `600 ${particle.size}px "Geist Mono", ui-monospace, monospace`
+        context.textAlign = "center"
+        context.textBaseline = "middle"
+        context.fillText(
+          particle.value,
+          particle.x + particle.driftX * eased,
+          particle.y + particle.driftY * eased,
+        )
+
+        if (progress >= 1) particles.splice(index, 1)
+      }
+
+      if (particles.length > 0) animationFrame = window.requestAnimationFrame(paint)
     }
-    const stopForAnotherPlayer = (event: Event) => {
-      if (event instanceof CustomEvent && event.detail === audio) return
-      halt()
-      setStatus("idle")
+
+    const schedulePaint = () => {
+      if (animationFrame === 0) animationFrame = window.requestAnimationFrame(paint)
     }
-    document.addEventListener("astro:before-swap", halt)
-    window.addEventListener("pagehide", halt)
-    window.addEventListener("jiely:audio-play", stopForAnotherPlayer)
+
+    const resize = () => {
+      const bounds = root.getBoundingClientRect()
+      width = Math.max(1, Math.round(bounds.width))
+      height = Math.max(1, Math.round(bounds.height))
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 2)
+
+      canvas.width = Math.round(width * pixelRatio)
+      canvas.height = Math.round(height * pixelRatio)
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+
+      baseCanvas.width = Math.round(width * pixelRatio)
+      baseCanvas.height = Math.round(height * pixelRatio)
+      baseContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+      drawBase()
+      context.clearRect(0, 0, width, height)
+      context.drawImage(baseCanvas, 0, 0, width, height)
+    }
+
+    const addBinaryTrail = (event: PointerEvent) => {
+      if (reduceMotion.matches || event.pointerType === "touch") return
+
+      const bounds = root.getBoundingClientRect()
+      const x = event.clientX - bounds.left
+      const y = event.clientY - bounds.top
+      if (x < 0 || y < 0 || x > bounds.width || y > bounds.height) return
+
+      const distance = Math.hypot(x - lastPointer.x, y - lastPointer.y)
+      if (distance < 9) return
+
+      const steps = Math.min(4, Math.max(1, Math.floor(distance / 14)))
+      const now = performance.now()
+      for (let step = 0; step < steps; step += 1) {
+        const ratio = (step + 1) / steps
+        const pointX = lastPointer.x < 0 ? x : lastPointer.x + (x - lastPointer.x) * ratio
+        const pointY = lastPointer.y < 0 ? y : lastPointer.y + (y - lastPointer.y) * ratio
+
+        particles.push({
+          x: pointX + (Math.random() - 0.5) * 24,
+          y: pointY + (Math.random() - 0.5) * 18,
+          value: Math.random() > 0.5 ? "1" : "0",
+          bornAt: now,
+          duration: 620 + Math.random() * 420,
+          size: 10 + Math.random() * 8,
+          driftX: (Math.random() - 0.5) * 20,
+          driftY: -12 - Math.random() * 24,
+          strength: 0.38 + Math.random() * 0.42,
+        })
+      }
+
+      if (particles.length > 150) particles.splice(0, particles.length - 150)
+      lastPointer = { x, y }
+      schedulePaint()
+    }
+
+    const resetPointer = () => {
+      lastPointer = { x: -100, y: -100 }
+    }
+
+    const handleMotionPreference = () => {
+      if (!reduceMotion.matches) return
+      particles.length = 0
+      if (animationFrame) window.cancelAnimationFrame(animationFrame)
+      animationFrame = 0
+      context.clearRect(0, 0, width, height)
+      context.drawImage(baseCanvas, 0, 0, width, height)
+    }
+
+    resize()
+    window.addEventListener("resize", resize, { passive: true })
+    root.addEventListener("pointermove", addBinaryTrail, { passive: true })
+    root.addEventListener("pointerleave", resetPointer, { passive: true })
+    reduceMotion.addEventListener("change", handleMotionPreference)
+
     return () => {
-      halt()
-      if (audio) { audio.removeAttribute("src"); audio.load() }
-      document.removeEventListener("astro:before-swap", halt)
-      window.removeEventListener("pagehide", halt)
-      window.removeEventListener("jiely:audio-play", stopForAnotherPlayer)
+      if (animationFrame) window.cancelAnimationFrame(animationFrame)
+      window.removeEventListener("resize", resize)
+      root.removeEventListener("pointermove", addBinaryTrail)
+      root.removeEventListener("pointerleave", resetPointer)
+      reduceMotion.removeEventListener("change", handleMotionPreference)
     }
-  }, [])
-
-  return (
-    <article className="bento-card bento-music">
-      <a href={track.href} className="bento-music-service" target="_blank" rel="noreferrer" aria-label="在网易云音乐打开当前歌曲">
-        {/* NetEase Cloud Music mark from Simple Icons (CC0), without its outer disc. */}
-        <svg width={25} height={25} viewBox="3 3 18 18" fill="currentColor" aria-hidden="true" focusable="false">
-          <path d="M13.046 9.388a3.919 3.919 0 0 0-.66.19c-.809.312-1.447.991-1.666 1.775a2.269 2.269 0 0 0-.074.81c.048.546.333 1.05.764 1.35a1.483 1.483 0 0 0 2.01-.286c.406-.531.355-1.183.24-1.636-.098-.387-.22-.816-.345-1.249a64.76 64.76 0 0 1-.269-.954zm-.82 10.07c-3.984 0-7.224-3.24-7.224-7.223 0-.98.226-3.02 1.884-4.822A7.188 7.188 0 0 1 9.502 5.6a.792.792 0 1 1 .587 1.472 5.619 5.619 0 0 0-2.795 2.462 5.538 5.538 0 0 0-.707 2.7 5.645 5.645 0 0 0 5.638 5.638c1.844 0 3.627-.953 4.542-2.428 1.042-1.68.772-3.931-.627-5.238a3.299 3.299 0 0 0-1.437-.777c.172.589.334 1.18.494 1.772.284 1.12.1 2.181-.519 2.989-.39.51-.956.888-1.592 1.064a3.038 3.038 0 0 1-2.58-.44 3.45 3.45 0 0 1-1.44-2.514c-.04-.467.002-.93.128-1.376.35-1.256 1.356-2.339 2.622-2.826a5.5 5.5 0 0 1 .823-.246l-.134-.505c-.37-1.371.25-2.579 1.547-3.007.329-.109.68-.145 1.025-.105.792.09 1.476.592 1.709 1.023.258.507-.096 1.153-.706 1.153a.788.788 0 0 1-.54-.213c-.088-.08-.163-.174-.259-.247a.825.825 0 0 0-.632-.166.807.807 0 0 0-.634.551c-.056.191-.031.406.02.595.07.256.159.597.217.82 1.11.098 2.162.54 2.97 1.296 1.974 1.844 2.35 4.886.892 7.233-1.197 1.93-3.509 3.177-5.889 3.177z" />
-        </svg>
-      </a>
-      <div className="bento-music-top">
-        <img className="bento-album" src={coverFailed ? "/hero-avatar.jpg" : track.cover} alt={track.album} width={160} height={160}
-          onError={() => setCoverFailed(true)} />
-        <div className="bento-music-buttons">
-          <button type="button" onClick={() => changeTrack(-1)} aria-label="上一首"><ChevronUp size={20} /></button>
-          <button type="button" onClick={() => void toggle()} aria-label={status === "playing" ? "暂停" : status === "loading" ? "取消加载" : "播放"}>
-            {status === "playing" ? <Pause size={21} /> : <Play size={21} />}
-          </button>
-          <button type="button" onClick={() => changeTrack(1)} aria-label="下一首"><ChevronDown size={20} /></button>
-        </div>
-      </div>
-      <div className="bento-music-copy">
-        <p className="bento-playing" aria-live="polite"><Radio size={17} />{status === "playing" ? "Now playing…" : status === "loading" ? "Loading…" : status === "error" ? "暂时无法播放" : "Ready to play"}</p>
-        <h2>{track.title}</h2>
-        <p className="bento-muted">by {track.artist}</p>
-        <p className="bento-muted bento-album-name" title={track.album}>on {track.album}</p>
-        {status === "error" ? <a className="bento-audio-error" href={track.href} target="_blank" rel="noreferrer">音源受限或网络不可用，去网易云收听 ↗</a> : (
-          <input className="bento-progress" type="range" min={0} max={100} step={0.1} value={progress}
-            aria-label="播放进度" disabled={status !== "playing" && progress === 0}
-            onChange={(event) => {
-              const audio = audioRef.current
-              if (audio && Number.isFinite(audio.duration)) {
-                const value = Number(event.target.value)
-                audio.currentTime = audio.duration * value / 100
-                setProgress(value)
-              }
-            }} />
-        )}
-      </div>
-      <audio ref={audioRef} preload="none" playsInline crossOrigin="anonymous"
-        onTimeUpdate={() => {
-          const audio = audioRef.current
-          if (audio && Number.isFinite(audio.duration) && audio.duration > 0) setProgress(audio.currentTime / audio.duration * 100)
-        }}
-        onEnded={() => { setStatus("idle"); setProgress(0) }}
-        onError={() => {
-          if (audioRef.current?.getAttribute("src")) {
-            clearTimeout(timerRef.current)
-            setStatus("error")
-          }
-        }} />
-    </article>
-  )
+  }, [canvasRef, rootRef])
 }
 
-function LatestUpdateCard({ post }: { post?: HeroProps["latestPost"] }) {
-  if (!post) {
-    return (
-      <article className="bento-card bento-recent bento-recent-empty">
-        <h2 className="bento-card-label"><Clock3 size={17} />最近更新</h2>
-        <p>文章正在路上。</p>
-      </article>
-    )
-  }
-
-  return (
-    <a className="bento-card bento-recent" href={post.href} aria-label={`阅读最近更新：${post.title}`}>
-      <div className="bento-recent-heading">
-        <h2 className="bento-card-label"><Clock3 size={17} />最近更新</h2>
-        <span>UPDATED</span>
-      </div>
-      <div className="bento-recent-main">
-        <div className="bento-recent-media">
-          {post.image ? <img src={post.image} alt="" width={320} height={320} loading="lazy" decoding="async" /> : <span className="bento-recent-placeholder" aria-hidden="true" />}
-        </div>
-        <div className="bento-recent-copy">
-          <h3>{post.title}</h3>
-          <p>{post.description}</p>
-        </div>
-      </div>
-      <div className="bento-recent-meta">
-        <time dateTime={post.date}>更新于 {post.date}</time>
-        <span aria-hidden="true"><ArrowUpRight size={16} /></span>
-      </div>
-    </a>
-  )
+interface HeroProps {
+  articleHref?: string
 }
 
-export function Hero({ latestPost, activity }: HeroProps) {
-  const stackTrack = useRef<HTMLDivElement>(null)
-  const bentoGrid = useRef<HTMLDivElement>(null)
-  const bentoPointerFrame = useRef(0)
-  const pendingBentoPointer = useRef<{ card: HTMLElement; clientX: number; clientY: number } | null>(null)
+export function Hero({ articleHref = "/articles/" }: HeroProps) {
+  const rootRef = useRef<HTMLElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const calligraphyRef = useRef<HTMLDivElement>(null)
+  const copyRef = useRef<HTMLDivElement>(null)
 
-  function moveBentoSpotlight(event: ReactPointerEvent<HTMLDivElement>) {
-    const card = (event.target as HTMLElement).closest<HTMLElement>(".bento-card")
-    if (!card || !event.currentTarget.contains(card)) return
-    pendingBentoPointer.current = { card, clientX: event.clientX, clientY: event.clientY }
-    if (bentoPointerFrame.current) return
-    bentoPointerFrame.current = window.requestAnimationFrame(() => {
-      bentoPointerFrame.current = 0
-      const pointer = pendingBentoPointer.current
-      if (!pointer) return
-      const bounds = pointer.card.getBoundingClientRect()
-      const x = pointer.clientX - bounds.left
-      const y = pointer.clientY - bounds.top
-      pointer.card.style.setProperty("--bento-pointer-x", `${x}px`)
-      pointer.card.style.setProperty("--bento-pointer-y", `${y}px`)
-      pointer.card.style.setProperty("--bento-tilt-x", `${((x / bounds.width) - 0.5) * 1.4}deg`)
-      pointer.card.style.setProperty("--bento-tilt-y", `${((y / bounds.height) - 0.5) * -1.4}deg`)
-    })
-  }
+  useBinaryField(canvasRef, rootRef)
 
-  function resetBentoSpotlight() {
-    pendingBentoPointer.current = null
-    if (bentoPointerFrame.current) window.cancelAnimationFrame(bentoPointerFrame.current)
-    bentoPointerFrame.current = 0
-    bentoGrid.current?.querySelectorAll<HTMLElement>(".bento-card").forEach((card) => {
-      card.style.removeProperty("--bento-tilt-x")
-      card.style.removeProperty("--bento-tilt-y")
-    })
-  }
+  useGSAP(
+    () => {
+      const root = rootRef.current
+      const calligraphy = calligraphyRef.current
+      const copy = copyRef.current
+      if (!root || !calligraphy || !copy) return
 
-  useEffect(() => {
-    const track = stackTrack.current
-    if (!track) return
-    let inView = true
-    const sync = () => { track.style.animationPlayState = document.hidden || !inView ? "paused" : "running" }
-    const observer = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; sync() })
-    observer.observe(track)
-    document.addEventListener("visibilitychange", sync)
-    sync()
-    return () => {
-      observer.disconnect()
-      document.removeEventListener("visibilitychange", sync)
-      if (bentoPointerFrame.current) window.cancelAnimationFrame(bentoPointerFrame.current)
-    }
-  }, [])
-  const { calendar } = useHomeWakatime()
-  const secondsByDate = new Map(calendar?.map((day) => [day.date, day.seconds]))
-  const days = calendar ? activity.days.map((day) => {
-    const seconds = day.future ? 0 : (secondsByDate.get(day.date) ?? 0)
-    return { ...day, count: Math.round(seconds / 60), level: seconds <= 0 ? 0 : seconds < 1800 ? 1 : seconds < 7200 ? 2 : seconds < 14400 ? 3 : 4 }
-  }) : activity.days
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      if (reduceMotion) {
+        gsap.set(".jiely-intro", { display: "none" })
+        gsap.set([calligraphy, copy], { clearProps: "transform,opacity,visibility" })
+        return
+      }
+
+      const timeline = gsap.timeline({ defaults: { ease: "power3.out" } })
+      timeline
+        .fromTo(
+          ".jiely-intro__lockup",
+          { autoAlpha: 0, y: 10, scale: 0.96 },
+          { autoAlpha: 1, y: 0, scale: 1, duration: 0.5 },
+        )
+        .fromTo(
+          ".jiely-intro__cat",
+          { x: -8, rotation: -4 },
+          { x: 0, rotation: 0, duration: 0.42, ease: "back.out(1.4)" },
+          "<0.04",
+        )
+        .to(".jiely-intro__lockup", { autoAlpha: 0, y: -8, duration: 0.24 }, "+=0.28")
+        .to(".jiely-intro__panel--top", { yPercent: -100, duration: 0.72 }, "-=0.05")
+        .to(".jiely-intro__panel--bottom", { yPercent: 100, duration: 0.72 }, "<")
+        .from(calligraphy, { autoAlpha: 0, y: 22, scale: 0.965, duration: 0.82 }, "-=0.48")
+        .from(
+          copy.children,
+          { autoAlpha: 0, y: 18, duration: 0.58, stagger: 0.08 },
+          "<0.08",
+        )
+        .set(".jiely-intro", { display: "none" })
+
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: root,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 0.65,
+        },
+      })
+        .to(calligraphy, { yPercent: -5, scale: 1.025, rotation: -0.6, ease: "none" }, 0)
+        .to(copy, { yPercent: -4, autoAlpha: 0.88, ease: "none" }, 0)
+
+      return () => {
+        timeline.kill()
+      }
+    },
+    { scope: rootRef },
+  )
+
   return (
-    <section id="home-main" className="bento-home" aria-label="个人首页">
-      <div className="bento-grid" ref={bentoGrid} onPointerMove={moveBentoSpotlight} onPointerLeave={resetBentoSpotlight}>
-        <article className="bento-card bento-intro">
-          <h1>{homeDashboard.intro.title}</h1>
-          <div>{homeDashboard.intro.lines.map((line) => <p key={line}>{line}</p>)}</div>
-        </article>
-        <article className="bento-card bento-location">
-          <h2 className="bento-card-label"><MapPin size={19} />{homeDashboard.location}</h2>
-          <HomeGlobe />
-        </article>
-        <article className="bento-card bento-stack">
-          <div className="bento-stack-heading">
-            <h2 className="bento-card-label"><Zap size={19} />Stacks</h2>
+    <section
+      id="home-main"
+      ref={rootRef}
+      data-binary-home
+      className="jiely-hero"
+      aria-labelledby="jiely-home-title"
+    >
+      <div className="jiely-hero__stage">
+        <canvas ref={canvasRef} className="jiely-hero__binary" aria-hidden="true" />
+
+        <div className="jiely-intro" aria-hidden="true">
+          <div className="jiely-intro__panel jiely-intro__panel--top" />
+          <div className="jiely-intro__panel jiely-intro__panel--bottom" />
+          <div className="jiely-intro__lockup">
+            <img
+              className="jiely-intro__cat"
+              src="/brand/intro-cat-v1.png"
+              alt=""
+              width={1254}
+              height={1254}
+            />
+            <img
+              className="jiely-intro__wordmark"
+              src="/brand/jiely-brush-wordmark.png"
+              alt=""
+              width={1774}
+              height={887}
+            />
           </div>
-          <div className="bento-stack-marquee">
-            <div className="bento-stack-track" ref={stackTrack}>
-              {[0, 1].map((copy) => <div key={copy} className="bento-stack-icons" role="list" aria-label={copy === 0 ? "技术栈" : undefined} aria-hidden={copy === 1 ? true : undefined}>
-                {homeDashboard.stack.map((item) => <div key={item.name} role="listitem" title={item.name}>
-                  <img src={item.icon} alt="" width={34} height={34} /><span>{item.name}</span>
-                </div>)}
-              </div>)}
-            </div>
+        </div>
+
+        <div ref={calligraphyRef} className="jiely-calligraphy" aria-hidden="true">
+          <img
+            src="/home-gallery/tianxia-wushuang-brush.png"
+            alt=""
+            width={2172}
+            height={724}
+            decoding="async"
+          />
+        </div>
+
+        <div ref={copyRef} className="jiely-hero__copy">
+          <h1 id="jiely-home-title" className="jiely-hero__title">
+            <span className="sr-only">写技术，也写人间。</span>
+            <img
+              src="/brand/home-writing-humanity-v2.png"
+              alt=""
+              width={2076}
+              height={757}
+              decoding="async"
+            />
+          </h1>
+          <p className="jiely-hero__summary">
+            <span className="sr-only">记录技术的求索，也珍藏生活的微光。</span>
+            <img
+              src="/brand/home-subtitle-handwriting-v1.png"
+              alt=""
+              width={2172}
+              height={724}
+              decoding="async"
+            />
+          </p>
+          <div className="jiely-hero__links">
+            <a href={articleHref} data-astro-prefetch>
+              最近更新 <IconArrowUpRight size={18} stroke={1.6} aria-hidden="true" />
+            </a>
+            <a href="/about/" data-astro-prefetch>
+              关于我
+            </a>
+            <a href="/acad-homepage/index.html">
+              学习经历
+            </a>
           </div>
-        </article>
-        <GalleryCard />
-        <article className="bento-card bento-flip-matrix" aria-label="翻盘点阵时钟">
-          <FlipDiskMatrix latestPost={latestPost} />
-        </article>
-        <MusicCard />
-        <LatestUpdateCard post={latestPost} />
-        <ActivitySnake days={days} coding={!!calendar} />
-        <AboutSceneCard />
+        </div>
       </div>
     </section>
   )
