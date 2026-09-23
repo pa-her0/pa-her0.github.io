@@ -163,13 +163,23 @@
   filter: blur(28px);
 }
 
-.jiely-calligraphy img {
+.jiely-calligraphy__ink {
   display: block;
   width: 100%;
   height: auto;
-  opacity: 0.44;
   mix-blend-mode: multiply;
+}
+
+.jiely-calligraphy__ink--base {
+  opacity: 0.44;
   filter: saturate(0.72) contrast(0.94);
+}
+
+.jiely-calligraphy__ink--paint {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  opacity: 0.92;
 }
 
 .jiely-hero__copy {
@@ -306,7 +316,7 @@
     transform: translate(-50%, -50%) rotate(-3deg);
   }
 
-  .jiely-calligraphy img {
+  .jiely-calligraphy__ink--base {
     opacity: 0.4;
   }
 
@@ -344,6 +354,10 @@
   .jiely-hero__links a { transition: none; }
   .jiely-hero__links a:hover,
   .jiely-hero__links a:active { transform: none; }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .jiely-calligraphy__ink--paint { display: none; }
 }
 
 @media (prefers-reduced-transparency: reduce) {

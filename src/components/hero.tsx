@@ -177,6 +177,182 @@ function useBinaryField(
   }, [canvasRef, rootRef])
 }
 
+type BrushStamp = {
+  x: number
+  y: number
+  radius: number
+  angle: number
+  strength: number
+}
+
+function useCalligraphyBrush(
+  canvasRef: React.RefObject<HTMLCanvasElement | null>,
+  calligraphyRef: React.RefObject<HTMLDivElement | null>,
+  rootRef: React.RefObject<HTMLElement | null>,
+) {
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const calligraphy = calligraphyRef.current
+    const root = rootRef.current
+    const baseImage = calligraphy?.querySelector<HTMLImageElement>(".jiely-calligraphy__ink--base")
+    const context = canvas?.getContext("2d")
+    if (!canvas || !calligraphy || !root || !baseImage || !context) return
+
+    const inkCanvas = document.createElement("canvas")
+    const maskCanvas = document.createElement("canvas")
+    const inkContext = inkCanvas.getContext("2d")
+    const maskContext = maskCanvas.getContext("2d")
+    if (!inkContext || !maskContext) return
+
+    const strokes: BrushStamp[] = []
+    const pendingStrokes: BrushStamp[] = []
+    let frame = 0
+    let width = 0
+    let height = 0
+    let pixelRatio = 1
+    let previousPoint: { x: number; y: number } | null = null
+
+    const stampMask = (stamp: BrushStamp) => {
+      const x = stamp.x * width
+      const y = stamp.y * height
+      const radius = stamp.radius * width
+      const gradient = maskContext.createRadialGradient(0, 0, 0, 0, 0, radius)
+      gradient.addColorStop(0, `rgb(255 255 255 / ${0.96 * stamp.strength})`)
+      gradient.addColorStop(0.46, `rgb(255 255 255 / ${0.82 * stamp.strength})`)
+      gradient.addColorStop(0.78, `rgb(255 255 255 / ${0.28 * stamp.strength})`)
+      gradient.addColorStop(1, "transparent")
+
+      maskContext.save()
+      maskContext.translate(x, y)
+      maskContext.rotate(stamp.angle)
+      maskContext.scale(1, 0.7)
+      maskContext.fillStyle = gradient
+      maskContext.beginPath()
+      maskContext.arc(0, 0, radius, 0, Math.PI * 2)
+      maskContext.fill()
+      maskContext.restore()
+    }
+
+    const renderInk = () => {
+      context.save()
+      context.setTransform(1, 0, 0, 1, 0, 0)
+      context.clearRect(0, 0, canvas.width, canvas.height)
+      context.drawImage(inkCanvas, 0, 0)
+      context.globalCompositeOperation = "destination-in"
+      context.drawImage(maskCanvas, 0, 0)
+      context.restore()
+    }
+
+    const paintPendingStrokes = () => {
+      frame = 0
+      if (pendingStrokes.length === 0) return
+      pendingStrokes.splice(0).forEach(stampMask)
+      renderInk()
+    }
+
+    const schedulePaint = () => {
+      if (frame === 0) frame = window.requestAnimationFrame(paintPendingStrokes)
+    }
+
+    const prepareCanvases = () => {
+      const bounds = calligraphy.getBoundingClientRect()
+      width = Math.max(1, bounds.width)
+      height = Math.max(1, bounds.height)
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5)
+
+      const backingWidth = Math.round(width * pixelRatio)
+      const backingHeight = Math.round(height * pixelRatio)
+      canvas.width = backingWidth
+      canvas.height = backingHeight
+      inkCanvas.width = backingWidth
+      inkCanvas.height = backingHeight
+      maskCanvas.width = backingWidth
+      maskCanvas.height = backingHeight
+
+      inkContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+      inkContext.clearRect(0, 0, width, height)
+      inkContext.drawImage(baseImage, 0, 0, width, height)
+      inkContext.globalCompositeOperation = "source-in"
+      inkContext.fillStyle = "#6c63ff"
+      inkContext.fillRect(0, 0, width, height)
+      inkContext.globalCompositeOperation = "source-over"
+
+      maskContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+      maskContext.clearRect(0, 0, width, height)
+      strokes.forEach(stampMask)
+      renderInk()
+    }
+
+    const addBrushStroke = (event: PointerEvent) => {
+      if (event.pointerType === "touch") return
+
+      const bounds = calligraphy.getBoundingClientRect()
+      const x = event.clientX - bounds.left
+      const y = event.clientY - bounds.top
+      if (x < 0 || y < 0 || x > bounds.width || y > bounds.height) {
+        previousPoint = null
+        return
+      }
+
+      const currentPoint = { x, y }
+      const distance = previousPoint
+        ? Math.hypot(currentPoint.x - previousPoint.x, currentPoint.y - previousPoint.y)
+        : 0
+      const baseRadius = Math.min(27, Math.max(14, bounds.width * 0.019))
+      const spacing = Math.max(3, baseRadius * 0.3)
+      const steps = previousPoint ? Math.min(16, Math.max(1, Math.ceil(distance / spacing))) : 1
+      const angle = previousPoint
+        ? Math.atan2(currentPoint.y - previousPoint.y, currentPoint.x - previousPoint.x)
+        : 0
+
+      for (let step = 1; step <= steps; step += 1) {
+        const progress = step / steps
+        const pointX = previousPoint
+          ? previousPoint.x + (currentPoint.x - previousPoint.x) * progress
+          : currentPoint.x
+        const pointY = previousPoint
+          ? previousPoint.y + (currentPoint.y - previousPoint.y) * progress
+          : currentPoint.y
+        const variation = 0.9 + Math.sin((strokes.length + step) * 1.73) * 0.1
+        const pressure = event.pointerType === "pen" && event.pressure > 0
+          ? 0.72 + event.pressure * 0.42
+          : 1
+        const stamp: BrushStamp = {
+          x: pointX / bounds.width,
+          y: pointY / bounds.height,
+          radius: (baseRadius * variation * pressure) / bounds.width,
+          angle,
+          strength: 0.88 + Math.cos((strokes.length + step) * 2.17) * 0.08,
+        }
+        strokes.push(stamp)
+        pendingStrokes.push(stamp)
+      }
+
+      previousPoint = currentPoint
+      schedulePaint()
+    }
+
+    const stopStroke = () => {
+      previousPoint = null
+    }
+
+    const resizeObserver = new ResizeObserver(prepareCanvases)
+    resizeObserver.observe(calligraphy)
+    if (baseImage.complete) prepareCanvases()
+    else baseImage.addEventListener("load", prepareCanvases, { once: true })
+    root.addEventListener("pointermove", addBrushStroke, { passive: true })
+    root.addEventListener("pointerleave", stopStroke, { passive: true })
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame)
+      resizeObserver.disconnect()
+      baseImage.removeEventListener("load", prepareCanvases)
+      root.removeEventListener("pointermove", addBrushStroke)
+      root.removeEventListener("pointerleave", stopStroke)
+    }
+  }, [canvasRef, calligraphyRef, rootRef])
+}
+
 interface HeroProps {
   articleHref?: string
 }
@@ -185,9 +361,11 @@ export function Hero({ articleHref = "/articles/" }: HeroProps) {
   const rootRef = useRef<HTMLElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const calligraphyRef = useRef<HTMLDivElement>(null)
+  const calligraphyCanvasRef = useRef<HTMLCanvasElement>(null)
   const copyRef = useRef<HTMLDivElement>(null)
 
   useBinaryField(canvasRef, rootRef)
+  useCalligraphyBrush(calligraphyCanvasRef, calligraphyRef, rootRef)
 
   useGSAP(
     () => {
@@ -279,11 +457,16 @@ export function Hero({ articleHref = "/articles/" }: HeroProps) {
 
         <div ref={calligraphyRef} className="jiely-calligraphy" aria-hidden="true">
           <img
+            className="jiely-calligraphy__ink jiely-calligraphy__ink--base"
             src="/home-gallery/tianxia-wushuang-brush.png"
             alt=""
             width={2172}
             height={724}
             decoding="async"
+          />
+          <canvas
+            ref={calligraphyCanvasRef}
+            className="jiely-calligraphy__ink jiely-calligraphy__ink--paint"
           />
         </div>
 
