@@ -170,7 +170,7 @@ const resolvedTwitterDescription = twitterDescription || description
   </head>
   <body class:list={["bg-background text-foreground", { "font-profile-interface": useInterfaceProfile }]}>
     <slot />
-    <ArticleActions articleMode={showArticleActions} latestPostHref={latestPostHref} client:load />
+    <ArticleActions articleMode={showArticleActions} latestPostHref={latestPostHref} pagePath={Astro.url.pathname} client:load />
     <CursorTrail />
     <SiteBentoMotion />
     <script is:inline>

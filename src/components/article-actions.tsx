@@ -14,8 +14,10 @@ gsap.registerPlugin(useGSAP)
 type PetPose = "idle" | "waving" | "jumping" | "running-left" | "running-right" | "review" | "failed"
 type MusicStatus = "idle" | "loading" | "playing" | "paused" | "error"
 type Point = { x: number; y: number }
-interface ArticleActionsProps { articleMode?: boolean; latestPostHref?: string }
+type PetPromptKind = "music" | "link"
+interface ArticleActionsProps { articleMode?: boolean; latestPostHref?: string; pagePath?: string }
 interface PetAction { name: string; icon: LucideIcon; action?: () => void | Promise<void>; href?: string }
+interface PetPrompt { id: string; question: string; detail: string; icon: LucideIcon; kind: PetPromptKind; href?: string }
 
 const STORAGE_KEY = "jiely-pet-tools-position-v2"
 const PET_WIDTH = 88
@@ -49,7 +51,7 @@ const formatTime = (seconds: number) => {
   return `${minutes}:${rest}`
 }
 
-export function ArticleActions({ articleMode = false, latestPostHref = "/articles/" }: ArticleActionsProps) {
+export function ArticleActions({ articleMode = false, latestPostHref = "/articles/", pagePath = "/" }: ArticleActionsProps) {
   const [open, setOpen] = useState(false)
   const [playerOpen, setPlayerOpen] = useState(false)
   const [playlistOpen, setPlaylistOpen] = useState(false)
@@ -63,6 +65,8 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
   const [trackIndex, setTrackIndex] = useState(0)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [promptIndex, setPromptIndex] = useState(0)
+  const [promptVisible, setPromptVisible] = useState(false)
   const root = useRef<HTMLDivElement>(null)
   const toggle = useRef<HTMLButtonElement>(null)
   const playerRef = useRef<HTMLDivElement>(null)
@@ -70,6 +74,9 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
   const audioRef = useRef<HTMLAudioElement>(null)
   const drag = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number; moved: boolean } | null>(null)
   const poseTimer = useRef<number | null>(null)
+  const promptShowTimer = useRef<number | null>(null)
+  const promptHideTimer = useRef<number | null>(null)
+  const promptStopped = useRef(false)
   const currentTrack: HomeTrack = homeDashboard.tracks[trackIndex]
 
   const updateDirections = (point: Point) => {
@@ -195,7 +202,64 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     poseTimer.current = window.setTimeout(() => setPose("idle"), timeout)
   }
 
+  const isHomePage = pagePath === "/"
+  const prompts: PetPrompt[] = isHomePage ? [
+    { id: "music", question: "要不要听首歌？", detail: "点一下，我来选一首。", icon: Music2, kind: "music" },
+    { id: "latest", question: "要不要看一下最新文章？", detail: "刚更新的内容在这里。", icon: Newspaper, kind: "link", href: latestPostHref },
+    { id: "projects", question: "要不要看看最近的项目？", detail: "看看我最近在做什么。", icon: ExternalLink, kind: "link", href: "/projects/" },
+    { id: "about", question: "要不要认识一下我？", detail: "去我的小世界里转转。", icon: UserRound, kind: "link", href: "/about/" },
+  ] : articleMode ? [
+    { id: "music", question: "要不要听首歌？", detail: "边读边听，也很不错。", icon: Music2, kind: "music" },
+    { id: "articles", question: "要不要看看更多文章？", detail: "去文章目录继续逛逛。", icon: Newspaper, kind: "link", href: "/articles/" },
+    { id: "home", question: "要不要回首页走走？", detail: "回到最开始的地方。", icon: House, kind: "link", href: "/#home-main" },
+  ] : [
+    { id: "music", question: "要不要听首歌？", detail: "点一下，我来选一首。", icon: Music2, kind: "music" },
+    { id: "latest", question: "要不要看一下最新文章？", detail: "刚更新的内容在这里。", icon: Newspaper, kind: "link", href: latestPostHref },
+    { id: "home", question: "要不要回首页走走？", detail: "回到最开始的地方。", icon: House, kind: "link", href: "/#home-main" },
+  ]
+
+  const clearPromptTimers = () => {
+    if (promptShowTimer.current) window.clearTimeout(promptShowTimer.current)
+    if (promptHideTimer.current) window.clearTimeout(promptHideTimer.current)
+    promptShowTimer.current = null
+    promptHideTimer.current = null
+  }
+
+  const dismissPromptSequence = () => {
+    promptStopped.current = true
+    clearPromptTimers()
+    setPromptVisible(false)
+  }
+
+  useEffect(() => {
+    promptStopped.current = false
+    setPromptIndex(0)
+    setPromptVisible(false)
+
+    const showPrompt = (index: number, delay: number) => {
+      promptShowTimer.current = window.setTimeout(() => {
+        if (promptStopped.current) return
+        setPromptIndex(index)
+        setPromptVisible(true)
+        flashPose("waving", 900)
+        promptHideTimer.current = window.setTimeout(() => {
+          if (promptStopped.current) return
+          setPromptVisible(false)
+          const nextIndex = index + 1
+          if (nextIndex < prompts.length) showPrompt(nextIndex, 2200)
+        }, 6200)
+      }, delay)
+    }
+
+    showPrompt(0, isHomePage ? 1900 : 2300)
+    return () => {
+      promptStopped.current = true
+      clearPromptTimers()
+    }
+  }, [articleMode, latestPostHref, pagePath])
+
   const openMusicPlayer = () => {
+    dismissPromptSequence()
     const rect = root.current?.getBoundingClientRect()
     if (rect) setPanelBelow(rect.top < Math.min(window.innerHeight * 0.42, 340))
     setOpen(false); setPlayerOpen(true); flashPose("waving", 780)
@@ -261,6 +325,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
 
   const onPointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (event.button !== 0 && event.pointerType === "mouse") return
+    dismissPromptSequence()
     const rect = root.current?.getBoundingClientRect()
     if (!rect) return
     drag.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, originX: rect.left, originY: rect.top, moved: false }
@@ -314,11 +379,14 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
   const actions = articleMode ? articleActions : siteActions
   const progressPercent = duration > 0 ? Math.min(100, Math.max(0, progress / duration * 100)) : 0
   const hasCollapsedPlayer = musicStatus !== "idle" && !playerOpen
+  const showPrompt = promptVisible && !open && !playerOpen && !hasCollapsedPlayer
+  const currentPrompt = prompts[promptIndex % prompts.length]
+  const PromptIcon = currentPrompt.icon
 
   return (
     <div
       ref={root}
-      className={`article-actions ${open ? "is-open" : ""} ${playerOpen ? "is-player-open" : ""} ${playlistOpen ? "is-playlist-open" : ""} ${hasCollapsedPlayer ? "has-now-playing" : ""} ${panelBelow ? "panel-below" : "panel-above"} ${musicStatus === "playing" ? "is-playing" : ""} ${position ? "is-positioned" : ""} ${labelsRight ? "labels-right" : "labels-left"}`}
+      className={`article-actions ${open ? "is-open" : ""} ${playerOpen ? "is-player-open" : ""} ${playlistOpen ? "is-playlist-open" : ""} ${showPrompt ? "has-prompt" : ""} ${hasCollapsedPlayer ? "has-now-playing" : ""} ${panelBelow ? "panel-below" : "panel-above"} ${musicStatus === "playing" ? "is-playing" : ""} ${position ? "is-positioned" : ""} ${labelsRight ? "labels-right" : "labels-left"}`}
       style={position ? { left: position.x, top: position.y } : undefined}
       role="group"
       aria-label={articleMode ? "文章快捷操作" : "网站快捷导航"}
@@ -346,6 +414,22 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
         onPointerCancel={() => { drag.current = null; setPose("idle") }} onClick={onToggleClick}>
         <img src={petSource(pose)} alt="" draggable="false" width="88" height="94" />
       </button>
+
+      {showPrompt ? (
+        <div className="article-actions__prompt" role="status">
+          {currentPrompt.kind === "music" ? (
+            <button type="button" onClick={() => { dismissPromptSequence(); void shuffleTrack() }} aria-label={`同意，${currentPrompt.question}`}>
+              <span className="article-actions__prompt-icon" aria-hidden="true"><PromptIcon /></span>
+              <span className="article-actions__prompt-copy"><strong>{currentPrompt.question}</strong><small>{currentPrompt.detail}</small></span>
+            </button>
+          ) : (
+            <a href={currentPrompt.href} onClick={dismissPromptSequence} aria-label={`同意，${currentPrompt.question}`}>
+              <span className="article-actions__prompt-icon" aria-hidden="true"><PromptIcon /></span>
+              <span className="article-actions__prompt-copy"><strong>{currentPrompt.question}</strong><small>{currentPrompt.detail}</small></span>
+            </a>
+          )}
+        </div>
+      ) : null}
 
       {hasCollapsedPlayer ? (
         <div className="article-actions__now-playing">
