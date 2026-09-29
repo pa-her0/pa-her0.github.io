@@ -3,8 +3,10 @@ import BaseLayout from "@/layouts/BaseLayout.astro"
 import { Footer } from "@/components/footer"
 import SiteHeader from "@/components/site-header.astro"
 import { Hero } from "@/components/hero"
+import { ScrollJourney } from "@/components/scroll-journey"
 import { getLatestPublishedPostHref } from "@/lib/posts"
 import "@/styles/home-minimal.css"
+import "@/styles/home-journey.css"
 
 const title = "Jiely 的博客"
 const description = "记录 AI、算法、科研与生活"
@@ -16,6 +18,7 @@ const articleHref = await getLatestPublishedPostHref()
     <SiteHeader minimal />
     <main>
       <Hero {articleHref} client:load />
+      <ScrollJourney {articleHref} client:visible={{ rootMargin: "600px" }} />
     </main>
     <Footer />
   </div>

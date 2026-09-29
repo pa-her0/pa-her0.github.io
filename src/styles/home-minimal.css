@@ -118,15 +118,8 @@
   opacity: 0;
 }
 
-.jiely-intro__cat {
-  width: 31%;
-  height: auto;
-  flex: none;
-  filter: drop-shadow(0 10px 18px rgb(68 59 126 / 10%));
-}
-
 .jiely-intro__wordmark {
-  width: 69%;
+  width: 100%;
   height: auto;
   filter: saturate(0.82) contrast(1.02);
 }

@@ -388,12 +388,6 @@ export function Hero({ articleHref = "/articles/" }: HeroProps) {
           { autoAlpha: 0, y: 10, scale: 0.96 },
           { autoAlpha: 1, y: 0, scale: 1, duration: 0.5 },
         )
-        .fromTo(
-          ".jiely-intro__cat",
-          { x: -8, rotation: -4 },
-          { x: 0, rotation: 0, duration: 0.42, ease: "back.out(1.4)" },
-          "<0.04",
-        )
         .to(".jiely-intro__lockup", { autoAlpha: 0, y: -8, duration: 0.24 }, "+=0.28")
         .to(".jiely-intro__panel--top", { yPercent: -100, duration: 0.72 }, "-=0.05")
         .to(".jiely-intro__panel--bottom", { yPercent: 100, duration: 0.72 }, "<")
@@ -438,13 +432,6 @@ export function Hero({ articleHref = "/articles/" }: HeroProps) {
           <div className="jiely-intro__panel jiely-intro__panel--top" />
           <div className="jiely-intro__panel jiely-intro__panel--bottom" />
           <div className="jiely-intro__lockup">
-            <img
-              className="jiely-intro__cat"
-              src="/brand/intro-cat-v1.png"
-              alt=""
-              width={1254}
-              height={1254}
-            />
             <img
               className="jiely-intro__wordmark"
               src="/brand/jiely-brush-wordmark.png"
@@ -503,6 +490,9 @@ export function Hero({ articleHref = "/articles/" }: HeroProps) {
             </a>
           </div>
         </div>
+        <a className="jiely-hero__scroll" href="#personal-journey" aria-label="向下，认识 Jiely">
+          <span>向下，认识我</span><span aria-hidden="true">↓</span>
+        </a>
       </div>
     </section>
   )
