@@ -14,6 +14,8 @@ const posts = defineCollection({
     section: z.enum(["article", "note", "life"]).optional(),
     series: z.string().optional().default(""),
     seriesOrder: z.number().optional().default(0),
+    learningTrack: z.enum(["nowcoder", "hdu", "ai-infra"]).optional(),
+    learningUnit: z.string().optional().default(""),
     lang: z.string().optional().default(""),
     pinned: z.boolean().optional().default(false),
     commentSlug: z.string().optional(),

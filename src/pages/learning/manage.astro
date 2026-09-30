@@ -1,0 +1,30 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import SiteHeader from "@/components/site-header.astro"
+import { Footer } from "@/components/footer"
+import { LearningDashboard } from "@/components/learning-dashboard"
+import learningProgress from "@/data/learning-progress.json"
+import { getSortedPosts } from "@/lib/posts"
+import { buildLearningArticles } from "@/lib/learning-articles"
+import { normalizeLearningProgress } from "@/lib/learning-progress"
+import "@/styles/learning-dashboard.css"
+
+const posts = await getSortedPosts(true)
+const articles = buildLearningArticles(posts)
+const initialProgress = normalizeLearningProgress(learningProgress)
+---
+
+<BaseLayout
+  title="本地学习管理 | Jiely 的博客"
+  description="仅在本地开放的学习进度管理页面"
+  robots="noindex,nofollow,noarchive"
+  fontProfile="interface"
+>
+  <div class="site-page learning-page">
+    <SiteHeader />
+    <main>
+      <LearningDashboard {initialProgress} {articles} editable client:load />
+    </main>
+    <Footer />
+  </div>
+</BaseLayout>

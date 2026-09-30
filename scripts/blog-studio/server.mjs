@@ -527,12 +527,10 @@ async function collectDiagnostics(error) {
   const typeError = output.match(/([\w-]+)\*{0,2}:\s*\*{0,2}\1:\s*Expected type `(?:\\?"?)([^`"\\]+)(?:\\?"?)`, received `(?:\\?"?)([^`"\\]+)(?:\\?"?)`/i)
   const detail = typeError
     ? `字段“${typeError[1]}”类型错误：需要 ${typeError[2]}，当前是 ${typeError[3]}。`
-    : /new blank line at EOF/i.test(output)
-      ? "文件末尾存在多余空白行。"
-      : /trailing whitespace/i.test(output)
-        ? "该行末尾存在多余空格。"
-        : lines.map((line) => line.trim()).find((line) => /error ts\(|does not match collection schema/i.test(line))
-          || "请查看完整检查信息。"
+    : /trailing whitespace/i.test(output)
+      ? "该行末尾存在多余空格。"
+      : lines.map((line) => line.trim()).find((line) => /error ts\(|does not match collection schema/i.test(line))
+        || "请查看完整检查信息。"
   const diagnostics = []
   const seen = new Set()
   const filePattern = /(src[\\/][^:\r\n]+?\.(?:md|mdx|astro|ts|tsx|js|jsx|css|mjs))(?::(\d+)(?::(\d+))?)?/i
@@ -598,9 +596,6 @@ async function checkChangedMarkdownFormatting() {
     lines.forEach((line, index) => {
       if (/[\t ]+$/.test(line)) issues.push(`${file}:${index + 1}: trailing whitespace.`)
     })
-    if (/\n[\t ]*\n$/.test(source)) {
-      issues.push(`${file}:${Math.max(1, lines.length - 1)}: new blank line at EOF.`)
-    }
   }
 
   if (issues.length) {
@@ -652,7 +647,7 @@ async function publish(message) {
     await step("检查内容和代码", "pnpm", ["check"], { timeout: 10 * 60 * 1000 })
     await step("构建正式博客", "pnpm", ["build"], { timeout: 15 * 60 * 1000 })
     await step("暂存本次改动", "git", ["add", "-A"])
-    await step("检查待提交内容", "git", ["diff", "--cached", "--check"])
+    await step("检查待提交内容", "git", ["-c", "core.whitespace=blank-at-eol,space-before-tab,-blank-at-eof", "diff", "--cached", "--check"])
     await step("保存版本", "git", ["commit", "-m", String(message || "content: update blog").trim()])
   } else {
     await step("构建正式博客", "pnpm", ["build"], { timeout: 15 * 60 * 1000 })

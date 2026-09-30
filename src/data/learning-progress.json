@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-30T04:01:14.492Z",
+  "dailyGoal": 1,
+  "completedAt": {},
+  "currentTaskByTrack": {
+    "nowcoder": "nowcoder-1-a",
+    "hdu": "hdu-1-1001",
+    "ai-infra": "ai-infra-0-python"
+  },
+  "statusNoteByTrack": {
+    "nowcoder": "从第一场开始逐题补齐，完成后同步整理题解。",
+    "hdu": "从第一场开始推进，优先记录关键算法与易错点。",
+    "ai-infra": "先完成第零层前置基础，再进入 CUDA 与算子优化。"
+  }
+}
