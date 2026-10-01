@@ -1,8 +1,10 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-30T04:01:14.492Z",
+  "updatedAt": "2026-09-30T10:50:02.887Z",
   "dailyGoal": 1,
-  "completedAt": {},
+  "completedAt": {
+    "nowcoder-1-a": "2026-09-30"
+  },
   "currentTaskByTrack": {
     "nowcoder": "nowcoder-1-a",
     "hdu": "hdu-1-1001",

@@ -118,10 +118,22 @@ function Invoke-AutoPublish {
     )
     if ($SkipChecks) { $arguments += "-SkipChecks" }
 
-    $output = & powershell.exe @arguments 2>&1 | Out-String
-    $publishExit = $LASTEXITCODE
+    # Windows PowerShell exposes a native program's stderr as error records when
+    # it is redirected with 2>&1. Git writes ordinary fetch progress (for
+    # example, "From https://github.com/...") to stderr, so the script-wide
+    # Stop preference must not turn that harmless progress into an exception.
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = "Continue"
+        $records = @(& powershell.exe @arguments 2>&1)
+        $publishExit = $LASTEXITCODE
+    }
+    finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
+    $output = (($records | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine).Trim()
     if (-not [string]::IsNullOrWhiteSpace($output)) {
-        Write-AutoLog $output.Trim() "DETAIL"
+        Write-AutoLog $output "DETAIL"
     }
     if ($publishExit -ne 0) {
         throw "Publish workflow exited with code $publishExit. It will be retried next cycle."
