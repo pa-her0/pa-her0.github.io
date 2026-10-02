@@ -110,18 +110,15 @@
 .jiely-intro__lockup {
   position: relative;
   z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: clamp(0.2rem, 0.7vw, 0.65rem);
-  width: min(70vw, 18rem);
+  display: grid;
+  place-items: center;
+  max-width: 80vw;
   visibility: hidden;
   opacity: 0;
 }
 
-.jiely-intro__wordmark {
-  width: 100%;
-  height: auto;
-  filter: saturate(0.82) contrast(1.02);
+.jiely-intro__lockup .jiely-brand {
+  --brand-mark-height: clamp(3.5rem, 10vw, 6.25rem);
 }
 
 @keyframes jiely-intro-failsafe {
@@ -133,10 +130,10 @@
 
 .jiely-calligraphy {
   position: absolute;
-  top: 43%;
+  top: 40%;
   left: 50%;
   z-index: 1;
-  width: min(86vw, 82rem);
+  width: min(90vw, 130dvh, 82rem);
   transform: translate(-50%, -50%) rotate(-1.5deg);
   pointer-events: none;
   user-select: none;
@@ -164,8 +161,7 @@
 }
 
 .jiely-calligraphy__ink--base {
-  opacity: 0.44;
-  filter: saturate(0.72) contrast(0.94);
+  opacity: 0.8;
 }
 
 .jiely-calligraphy__ink--paint {
@@ -279,7 +275,7 @@
 
   .jiely-calligraphy {
     top: 39%;
-    width: min(106vw, 54rem);
+    width: min(94vw, 130dvh, 54rem);
   }
 
   .jiely-hero__copy {
@@ -305,12 +301,12 @@
 
   .jiely-calligraphy {
     top: 39%;
-    width: 110vw;
-    transform: translate(-50%, -50%) rotate(-3deg);
+    width: calc(100% - 1.5rem);
+    transform: translate(-50%, -50%) rotate(-1.5deg);
   }
 
   .jiely-calligraphy__ink--base {
-    opacity: 0.4;
+    opacity: 0.86;
   }
 
   .jiely-hero__copy {

@@ -130,15 +130,23 @@
   --journey-muted: var(--home-muted, #716f80);
   position: relative;
   display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  align-items: center;
-  gap: 5vw;
+  place-items: center;
   min-height: 100svh;
   padding: 6rem 8vw;
   overflow: hidden;
   isolation: isolate;
   color: var(--home-ink, #2b333e);
   background: var(--journey-paper);
+}
+.journey-philosophy__layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: start;
+  gap: clamp(2.5rem, 6vw, 6rem);
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
 }
 .journey-philosophy__glow {
   position: absolute;
@@ -147,7 +155,7 @@
   background: radial-gradient(ellipse at 20% 40%, rgb(108 99 255 / 4.5%), transparent 48%);
   pointer-events: none;
 }
-.journey-philosophy__title { text-align: center; }
+.journey-philosophy__title { justify-self: center; text-align: center; }
 .journey-philosophy__title h2 {
   display: flex;
   flex-direction: column;
@@ -167,7 +175,7 @@
   letter-spacing: 0.2em;
   white-space: nowrap;
 }
-.journey-philosophy__copy { position: relative; max-width: 34rem; }
+.journey-philosophy__copy { position: relative; min-width: 0; width: 100%; max-width: 34rem; }
 .journey-philosophy__copy h3 {
   margin-bottom: 1.3rem;
   font-size: clamp(2rem, 3.25vw, 3.5rem);
@@ -251,9 +259,7 @@
 [data-animated] .journey-visual__veil { opacity: 0; z-index: 1; }
 [data-animated] .journey-opening { display: block; position: absolute; bottom: 12%; left: 6vw; padding: 0; }
 [data-animated] .journey-intro { position: absolute; top: 50%; right: 7vw; width: 35vw; max-width: 33rem; padding: 0; transform: translateY(-50%); }
-[data-animated] .journey-philosophy { position: absolute; inset: 0; display: block; min-height: 0; padding: 0; }
-[data-animated] .journey-philosophy__title { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-[data-animated] .journey-philosophy__copy { position: absolute; top: 50%; right: 9vw; width: 40vw; transform: translateY(-50%); }
+[data-animated] .journey-philosophy { position: absolute; inset: 0; min-height: 0; padding: max(5rem, 9svh) max(6vw, 1.5rem) 2.5rem; }
 [data-animated] .journey-chapters {
   position: absolute;
   bottom: 2.3rem;
@@ -274,7 +280,8 @@
   .jiely-hero__scroll { right: auto; left: 50%; bottom: 0.5%; transform: translateX(-50%); white-space: nowrap; }
   body:has(.character-journey[data-in-view="true"]) .article-actions__prompt { visibility: hidden; pointer-events: none; }
   .character-journey[data-animated] { height: 570svh; }
-  .journey-philosophy { grid-template-columns: 1fr; padding: 4rem 6vw; gap: 3.5rem; }
+  .journey-philosophy { padding: 4rem 6vw; }
+  .journey-philosophy__layout { grid-template-columns: 1fr; gap: 2rem; }
   .journey-philosophy__title h2 { flex-direction: row; justify-content: center; gap: 0.17em; font-size: clamp(2.6rem, 11vw, 4rem); }
   .journey-philosophy__subtitle { margin-top: 1rem !important; font-size: 0.59rem; }
   .journey-philosophy__copy { max-width: none; }
@@ -290,8 +297,7 @@
   .character-journey .journey-description { font-size: 0.8rem; line-height: 1.8; }
   .journey-interests { margin-top: 0.8rem; gap: 0.2rem 0.8rem; font-size: 0.72rem; }
   .journey-text-link { margin-top: 0.65rem; font-size: 0.73rem; }
-  [data-animated] .journey-philosophy__title { width: 100%; }
-  [data-animated] .journey-philosophy__copy { top: 39%; right: 7vw; left: 7vw; width: auto; transform: none; }
+  [data-animated] .journey-philosophy { padding: 7rem 7vw 3rem; }
   .journey-philosophy__copy h3 { font-size: 1.8rem; line-height: 1.35; margin-bottom: 0.8rem; }
   .journey-practices { margin-top: 0.8rem; gap: 0; }
   .journey-practice { min-height: 54px; gap: 0.7rem; padding-block: 0.3rem; }
@@ -316,7 +322,6 @@
   .journey-intro .journey-intro__lead { font-size: 1rem; margin-bottom: 0.45rem; }
   .journey-intro .journey-description { font-size: 0.73rem; }
   .journey-intro .journey-text-link { margin-top: 0.1rem; }
-  [data-animated] .journey-philosophy__copy { top: 35%; }
   .journey-philosophy__copy h3 { font-size: 1.55rem; }
   .journey-philosophy__copy .journey-description { font-size: 0.73rem; }
   .journey-practice { min-height: 48px; }

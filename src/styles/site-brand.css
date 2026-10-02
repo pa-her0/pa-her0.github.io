@@ -1,0 +1,49 @@
+.jiely-brand {
+  --brand-mark-height: 2.25rem;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--brand-mark-height) * 0.12);
+  line-height: 0;
+  user-select: none;
+}
+
+.jiely-brand__orange,
+.jiely-brand__wordmark {
+  display: block;
+  flex: none;
+  height: var(--brand-mark-height);
+  max-width: none;
+  object-fit: contain;
+  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.jiely-brand__orange {
+  width: var(--brand-mark-height);
+  transform-origin: 50% 80%;
+}
+
+.jiely-brand__wordmark {
+  width: calc(var(--brand-mark-height) * 2.4);
+}
+
+.site-header a:is(:hover, :focus-visible) .jiely-brand__orange {
+  transform: translateY(-1px) rotate(-10deg);
+}
+
+.site-header a:is(:hover, :focus-visible) .jiely-brand__wordmark {
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jiely-brand__orange,
+  .jiely-brand__wordmark {
+    transition: none;
+  }
+
+  .site-header a:is(:hover, :focus-visible) .jiely-brand__orange,
+  .site-header a:is(:hover, :focus-visible) .jiely-brand__wordmark {
+    transform: none;
+  }
+}

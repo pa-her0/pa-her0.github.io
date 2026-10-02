@@ -1,6 +1,7 @@
 ---
 import { ThemeToggle } from "@/components/theme-toggle"
 import { AccentToggle } from "@/components/accent-toggle"
+import { SiteBrand } from "@/components/site-brand"
 import { getLatestPublishedPostHref } from "@/lib/posts"
 
 interface Props {
@@ -34,7 +35,7 @@ const mobileItems = [
     {reading ? (
       <div class="site-header__reading-brand" aria-label="Jiely 文章">
         <a href="/#home-main" data-astro-prefetch aria-label="Jiely 首页">
-          <span data-site-wordmark>Jiely</span>
+          <SiteBrand />
         </a>
         <span class="site-header__reading-separator" aria-hidden="true">/</span>
         <a href={articleHref} data-astro-prefetch aria-current="page">文章</a>
@@ -42,7 +43,7 @@ const mobileItems = [
     ) : (
       <a href="/#home-main" data-astro-prefetch class="group flex items-center gap-2.5 justify-self-start" aria-label={minimal ? "Jiely 首页" : "Whalefall 首页"}>
         {minimal ? (
-        <span data-site-wordmark>Jiely</span>
+        <SiteBrand />
         ) : (
           <>
             <div class="relative h-8 w-9 overflow-hidden transition-transform duration-300 group-hover:scale-105" aria-hidden="true">
@@ -146,30 +147,9 @@ const mobileItems = [
 </div>
 
 <style>
-  [data-site-wordmark] {
-    display: block;
-    width: 4.5rem;
-    height: 2.25rem;
-    overflow: hidden;
-    color: transparent;
-    font-size: 0;
-    line-height: 0;
-    background: url("/brand/jiely-brush-wordmark.png") center / contain no-repeat;
-    transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
-  .site-header a:hover [data-site-wordmark] {
-    transform: rotate(-2deg) scale(1.045);
-  }
-
   .site-header__reading-brand > a:first-child {
     display: inline-flex;
     align-items: center;
-  }
-
-  .site-header__reading-brand [data-site-wordmark] {
-    width: 4.1rem;
-    height: 2rem;
   }
 
   .mobile-menu[data-open="true"] {
@@ -192,14 +172,6 @@ const mobileItems = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    [data-site-wordmark] {
-      transition: none;
-    }
-
-    .site-header a:hover [data-site-wordmark] {
-      transform: none;
-    }
-
     .mobile-menu,
     .mobile-menu .mobile-nav-item {
       transition-duration: 1ms !important;

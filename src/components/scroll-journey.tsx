@@ -32,6 +32,8 @@ export function ScrollJourney({ articleHref = "/articles/" }: ScrollJourneyProps
     const visual = query(".journey-visual")[0] as HTMLElement
     const intro = query(".journey-intro")[0] as HTMLElement
     const ending = query(".journey-philosophy")[0] as HTMLElement
+    const endingLayout = query(".journey-philosophy__layout")[0] as HTMLElement
+    const endingTitle = query(".journey-philosophy__title")[0] as HTMLElement
     const endingCopy = query(".journey-philosophy__copy")[0] as HTMLElement
     const chapterNumbers = query("[data-journey-chapter]") as HTMLElement[]
     const match = gsap.matchMedia()
@@ -167,9 +169,12 @@ export function ScrollJourney({ articleHref = "/articles/" }: ScrollJourneyProps
         .to(visual, { autoAlpha: 0, scale: 1.035, duration: 0.095 }, 0.59)
         .to(ending, { autoAlpha: 1, duration: 0.1 }, 0.61)
         .to(".journey-philosophy__character", { autoAlpha: 1, y: 0, stagger: 0.02, duration: 0.055 }, 0.65)
-        .to(".journey-philosophy__title", compact
-          ? { top: "15%", yPercent: 0, duration: 0.095 }
-          : { left: "24%", duration: 0.095 }, 0.755)
+        // Animate into the shared grid, rather than positioning each column
+        // independently. Layout offsets stay correct after fonts or sizes change.
+        .fromTo(endingTitle, {
+          x: () => compact ? 0 : (endingLayout.clientWidth - endingTitle.offsetWidth) / 2 - endingTitle.offsetLeft,
+          y: () => (endingLayout.clientHeight - endingTitle.offsetHeight) / 2 - endingTitle.offsetTop,
+        }, { x: 0, y: 0, duration: 0.095 }, 0.755)
         .fromTo(endingCopy, { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.06 }, 0.79)
         .to(".journey-practice", { autoAlpha: 1, y: 0, duration: 0.045, stagger: 0.012 }, 0.8)
         .to({}, { duration: 0.1 }, 0.9)
@@ -230,25 +235,27 @@ export function ScrollJourney({ articleHref = "/articles/" }: ScrollJourneyProps
 
         <section className="journey-philosophy" aria-labelledby="journey-philosophy-title">
           <div className="journey-philosophy__glow" aria-hidden="true" />
-          <div className="journey-philosophy__title">
-            <h2 id="journey-philosophy-title" aria-label={philosophy.title}>
-              {Array.from(philosophy.title).map((character) => <span className="journey-philosophy__character" aria-hidden="true" key={character}>{character}</span>)}
-            </h2>
-            <p className="journey-philosophy__subtitle">{philosophy.subtitle}</p>
-          </div>
-          <div className="journey-philosophy__copy">
-            <h3>{philosophy.heading.map((line) => <span key={line}>{line}</span>)}</h3>
-            <p className="journey-description">{philosophy.description}</p>
-            <div className="journey-practices">
-              {philosophy.entries.map((entry) => (
-                <a className="journey-practice" href={entry.href} key={entry.index}>
-                  <span className="journey-practice__number">{entry.index}</span>
-                  <span><strong>{entry.title}</strong><small>{entry.description}</small></span>
-                  <span className="journey-practice__arrow" aria-hidden="true">↗</span>
-                </a>
-              ))}
+          <div className="journey-philosophy__layout">
+            <div className="journey-philosophy__title">
+              <h2 id="journey-philosophy-title" aria-label={philosophy.title}>
+                {Array.from(philosophy.title).map((character) => <span className="journey-philosophy__character" aria-hidden="true" key={character}>{character}</span>)}
+              </h2>
+              <p className="journey-philosophy__subtitle">{philosophy.subtitle}</p>
             </div>
-            <a className="journey-text-link" href={articleHref}>{philosophy.latestLabel}<span aria-hidden="true">↗</span></a>
+            <div className="journey-philosophy__copy">
+              <h3>{philosophy.heading.map((line) => <span key={line}>{line}</span>)}</h3>
+              <p className="journey-description">{philosophy.description}</p>
+              <div className="journey-practices">
+                {philosophy.entries.map((entry) => (
+                  <a className="journey-practice" href={entry.href} key={entry.index}>
+                    <span className="journey-practice__number">{entry.index}</span>
+                    <span><strong>{entry.title}</strong><small>{entry.description}</small></span>
+                    <span className="journey-practice__arrow" aria-hidden="true">↗</span>
+                  </a>
+                ))}
+              </div>
+              <a className="journey-text-link" href={articleHref}>{philosophy.latestLabel}<span aria-hidden="true">↗</span></a>
+            </div>
           </div>
         </section>
 

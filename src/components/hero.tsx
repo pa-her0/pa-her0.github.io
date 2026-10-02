@@ -5,6 +5,7 @@ import { IconArrowUpRight } from "@tabler/icons-react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useEffect, useRef } from "react"
+import { SiteBrand } from "@/components/site-brand"
 
 gsap.registerPlugin(useGSAP, ScrollTrigger)
 
@@ -381,6 +382,9 @@ export function Hero({ articleHref = "/articles/" }: HeroProps) {
         return
       }
 
+      // Keep centering relative to the artwork when the viewport is resized.
+      gsap.set(calligraphy, { x: 0, y: 0, xPercent: -50, yPercent: -50 })
+
       const timeline = gsap.timeline({ defaults: { ease: "power3.out" } })
       timeline
         .fromTo(
@@ -407,7 +411,7 @@ export function Hero({ articleHref = "/articles/" }: HeroProps) {
           scrub: 0.65,
         },
       })
-        .to(calligraphy, { yPercent: -5, scale: 1.025, rotation: -0.6, ease: "none" }, 0)
+        .to(calligraphy, { yPercent: -55, scale: 1.025, rotation: -0.6, ease: "none" }, 0)
         .to(copy, { yPercent: -4, autoAlpha: 0.88, ease: "none" }, 0)
 
       return () => {
@@ -432,23 +436,17 @@ export function Hero({ articleHref = "/articles/" }: HeroProps) {
           <div className="jiely-intro__panel jiely-intro__panel--top" />
           <div className="jiely-intro__panel jiely-intro__panel--bottom" />
           <div className="jiely-intro__lockup">
-            <img
-              className="jiely-intro__wordmark"
-              src="/brand/jiely-brush-wordmark.png"
-              alt=""
-              width={1774}
-              height={887}
-            />
+            <SiteBrand />
           </div>
         </div>
 
         <div ref={calligraphyRef} className="jiely-calligraphy" aria-hidden="true">
           <img
             className="jiely-calligraphy__ink jiely-calligraphy__ink--base"
-            src="/home-gallery/tianxia-wushuang-brush.png"
+            src="/brand/tianxia-wushuang-handwriting-v2.webp"
             alt=""
-            width={2172}
-            height={724}
+            width={2004}
+            height={785}
             decoding="async"
           />
           <canvas
