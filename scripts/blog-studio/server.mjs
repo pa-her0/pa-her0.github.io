@@ -598,11 +598,7 @@ async function checkChangedMarkdownFormatting() {
     })
   }
 
-  if (issues.length) {
-    const error = new Error("发现 Markdown 空白格式问题。")
-    error.output = issues.join("\n")
-    throw error
-  }
+  return issues
 }
 
 async function gitStatus() {
@@ -647,7 +643,7 @@ async function publish(message) {
     await step("检查内容和代码", "pnpm", ["check"], { timeout: 10 * 60 * 1000 })
     await step("构建正式博客", "pnpm", ["build"], { timeout: 15 * 60 * 1000 })
     await step("暂存本次改动", "git", ["add", "-A"])
-    await step("检查待提交内容", "git", ["-c", "core.whitespace=blank-at-eol,space-before-tab,-blank-at-eof", "diff", "--cached", "--check"])
+    await step("检查待提交内容（空白仅提示）", process.execPath, [path.join(repoRoot, "scripts", "check-publish-whitespace.mjs")])
     await step("保存版本", "git", ["commit", "-m", String(message || "content: update blog").trim()])
   } else {
     await step("构建正式博客", "pnpm", ["build"], { timeout: 15 * 60 * 1000 })
@@ -702,10 +698,21 @@ async function api(req, res, url) {
     const task = body.task === "build" ? "build" : "check"
     try {
       const output = await run("pnpm", [task], { timeout: task === "build" ? 15 * 60 * 1000 : 10 * 60 * 1000 })
-      if (task === "check") await checkChangedMarkdownFormatting()
+      const formattingIssues = task === "check" ? await checkChangedMarkdownFormatting() : []
+      const warnings = formattingIssues.length
+        ? (await collectDiagnostics({ output: formattingIssues.join("\n") })).map((diagnostic) => ({
+          ...diagnostic,
+          severity: "warning",
+          message: `${diagnostic.message}（格式提醒，不阻止发布）`,
+        }))
+        : []
+      const formattingOutput = task !== "check" ? "" : formattingIssues.length
+        ? `空白格式提醒（仅供参考，不影响发布）：\n${formattingIssues.join("\n")}`
+        : "Markdown 空白格式检查通过。"
       return json(res, 200, {
-        output: [output, task === "check" ? "Markdown 空白格式检查通过。" : ""].filter(Boolean).join("\n\n") || `${task} 完成，没有发现问题。`,
+        output: [output, formattingOutput].filter(Boolean).join("\n\n") || `${task} 完成，没有发现问题。`,
         diagnostics: [],
+        warnings,
       })
     } catch (error) {
       error.diagnostics = await collectDiagnostics(error)

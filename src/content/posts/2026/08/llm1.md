@@ -25,3 +25,7 @@ pinned: false
 ## 推理链
 其实 大模型所谓的 思考能力，就是 **任务拆分**，链式的解决思路，如果大家经常使用GPT的Thinking模型就会知道，在 Thinking 过程，大模型是不会一次性回答答案的，他类似于一种**DFS**的执行策略，就是在不断的寻找答案的过程，在 **思考--方案--验证** 的过程，其实这个可能也是 GPT 的 Thinking 的一个重要设计，就是 **一个解决问题的工作流设计**，目前的LLMs已经从学习 “要回答什么问题” 转变成 “如何回答问题” 的转变
 ![图片说明](https://dns.whalefall.top/llm1-1788928520599.png)
+
+
+### 学习资料
+![A Visual Guide to Reasoning LLMs](https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-reasoning-llms)

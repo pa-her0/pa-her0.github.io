@@ -122,8 +122,7 @@ try {
 
         & git add -A
         if ($LASTEXITCODE -ne 0) { throw "git add -A failed ($LASTEXITCODE)." }
-        & git @('-c', 'core.whitespace=blank-at-eol,space-before-tab,-blank-at-eof', 'diff', '--cached', '--check')
-        if ($LASTEXITCODE -ne 0) { throw "Staged changes contain whitespace errors." }
+        Invoke-Native node (Join-Path $PSScriptRoot "check-publish-whitespace.mjs")
 
         $committed = $false
         & git diff --cached --quiet

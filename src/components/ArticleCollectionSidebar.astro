@@ -30,17 +30,13 @@ const groups: NavigationGroup[] = Array.from(grouped, ([name, posts]) => ({ name
 })
 
 const total = groups.reduce((sum, group) => sum + group.posts.length, 0)
-const latestPost = [...allPosts].sort(
-  (a, b) => (b.data.published?.getTime() ?? 0) - (a.data.published?.getTime() ?? 0),
-)[0]
-const articleHref = latestPost ? `/posts/${latestPost.slug}/` : `/posts/${post.slug}/`
 ---
 
 <aside class="article-library" aria-label="文章分类导航" data-article-library>
   <div class="article-library__desktop">
     <div class="article-library__scroll" id="article-library-panel">
       <header class="article-library__header">
-        <a href={articleHref}>文章</a>
+        <a href="/notes/" data-astro-prefetch title="返回文章分类页面">文章</a>
         <span>{total} 篇</span>
       </header>
 

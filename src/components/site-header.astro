@@ -2,7 +2,6 @@
 import { ThemeToggle } from "@/components/theme-toggle"
 import { AccentToggle } from "@/components/accent-toggle"
 import { SiteBrand } from "@/components/site-brand"
-import { getLatestPublishedPostHref } from "@/lib/posts"
 
 interface Props {
   minimal?: boolean
@@ -10,7 +9,7 @@ interface Props {
 }
 
 const { minimal = true, reading = false } = Astro.props as Props
-const articleHref = await getLatestPublishedPostHref()
+const articleHref = "/notes/"
 
 const primaryItems = [
   { name: "文章", href: articleHref },

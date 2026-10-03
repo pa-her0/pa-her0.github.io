@@ -2,6 +2,7 @@ node_modules
 dist
 .astro
 *.log
+/tmp/home-calligraphy-preview/
 .env
 .wrangler
 

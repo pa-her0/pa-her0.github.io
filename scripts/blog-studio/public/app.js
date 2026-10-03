@@ -330,7 +330,7 @@ function renderDiagnostics(diagnostics = []) {
     if (diagnostic.contentPath) {
       const action = document.createElement("span")
       action.className = "diagnostic-action"
-      action.textContent = "打开修改 →"
+      action.textContent = diagnostic.severity === "warning" ? "打开查看 →" : "打开修改 →"
       item.append(action)
     }
     list.append(item)
@@ -351,7 +351,9 @@ async function runCheck() {
   showLog("正在检查博客", "发布前检查", "正在核对内容结构、Astro 与 TypeScript。")
   try {
     const data = await request("/api/check", { method: "POST", body: JSON.stringify({ task: "check" }) })
-    finishLog("success", "检查通过", data.output, "博客状态正常，可以继续构建或发布。")
+    const warnings = Array.isArray(data.warnings) ? data.warnings : []
+    finishLog("success", warnings.length ? "检查通过（有格式提醒）" : "检查通过", data.output,
+      warnings.length ? "空白格式仅作提醒，不会阻止发布。可点击查看，也可以直接继续发布。" : "博客状态正常，可以继续构建或发布。", warnings)
   } catch (error) {
     finishLog("error", "检查未通过", [friendlyError(error), error.output].filter(Boolean).join("\n\n"), "已整理出问题位置，点击对应项目即可打开修改。", error.diagnostics)
   } finally {
@@ -441,7 +443,7 @@ $("#diagnosticList").addEventListener("click", async (event) => {
   $("#logDialog").close()
   await loadEntry(item.dataset.diagnosticPath)
   elements.title.focus()
-  toast("已打开存在问题的内容")
+  toast("已打开对应内容")
 })
 
 for (const input of [elements.title, elements.slug, elements.published, elements.description, elements.section, elements.series, elements.category, elements.tags, elements.image, elements.body, elements.draft, elements.pinned]) {
