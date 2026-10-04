@@ -5,7 +5,7 @@ commentSlug: '2025-08-05-Four-popular-AI'
 published: 2025-08-05T00:00:00.000Z
 draft: false
 description: '在如今这个大语言泛滥的时代,很多基础能力都已经被AI所取代,随着AI的能力不断变强,很多人已经变得麻木,已经仅仅沉浸于享受调教AI的轻松感....'
-image: /post-covers/2025-08-05-four-popular-ai.jpg
+image: /post-covers/anime-v1/2025-08-05-four-popular-ai.webp
 tags:
   - 锐评
   - 体验

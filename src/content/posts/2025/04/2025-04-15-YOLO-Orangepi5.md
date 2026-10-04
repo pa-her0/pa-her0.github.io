@@ -5,7 +5,7 @@ commentSlug: '2025-04-15-YOLO-Orangepi5'
 published: 2025-04-15T00:00:00.000Z
 draft: false
 description: '阐述一下我在 YOLO模型转化 和 开发板上配置踩的坑。 :（'
-image: /post-covers/2025-04-15-yolo-orangepi5.jpg
+image: /post-covers/anime-v1/2025-04-15-yolo-orangepi5.webp
 tags:
   - 热爱
 category: 开发

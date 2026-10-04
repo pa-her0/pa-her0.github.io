@@ -5,7 +5,7 @@ commentSlug: '2025-03-25-Old-Alogrithm'
 published: 2025-03-25T00:00:00.000Z
 draft: false
 description: Hello-World，算法学习的开始
-image: /post-covers/2025-03-25-old-alogrithm.jpg
+image: /post-covers/anime-v1/2025-03-25-old-alogrithm.webp
 tags:
   - 热爱
   - 日常学习

@@ -5,7 +5,7 @@ commentSlug: '2025-11-12-KNN-bayesi'
 published: 2025-11-12T00:00:00.000Z
 draft: false
 description: 解释一下统计学中的两个通用性模型
-image: /post-covers/2025-11-12-knn-bayesi.jpg
+image: /post-covers/anime-v1/2025-11-12-knn-bayesi.webp
 tags:
   - 日常学习
 category: 学习

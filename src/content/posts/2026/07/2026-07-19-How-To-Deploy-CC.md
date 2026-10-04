@@ -5,7 +5,7 @@ commentSlug: '2026-07-19-How-To-Deploy-CC'
 published: 2026-07-19T00:00:00.000Z
 draft: false
 description: 关于 如何提高科研效率
-image: /post-covers/2026-07-19-how-to-deploy-cc.jpg
+image: /post-covers/anime-v1/2026-07-19-how-to-deploy-cc.webp
 tags:
   - 生活
 category: 开发

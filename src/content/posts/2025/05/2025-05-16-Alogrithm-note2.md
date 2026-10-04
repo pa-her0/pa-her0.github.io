@@ -5,7 +5,7 @@ commentSlug: '2025-05-16-Alogrithm-note2'
 published: 2025-05-16T00:00:00.000Z
 draft: false
 description: 本文章是 基于 左神课程 + 牛客课程 进行算法系统式学习的知识汇总。
-image: /post-covers/2025-05-16-alogrithm-note2.jpg
+image: /post-covers/anime-v1/2025-05-16-alogrithm-note2.webp
 tags:
   - 算法
   - 热爱

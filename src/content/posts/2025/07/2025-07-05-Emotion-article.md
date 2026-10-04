@@ -5,7 +5,7 @@ commentSlug: '2025-07-05-Emotion-article'
 published: 2025-07-05T00:00:00.000Z
 draft: false
 description: '查找学习关于\"人工网络中的情绪传播机制\"，以下是两篇我阅读学习的文献 —— 精读的很烂，太浮躁了，没有脚踏实地地去读，如果内容有问题，请多包涵 :）'
-image: /post-covers/2025-07-05-emotion-article.jpg
+image: /post-covers/anime-v1/2025-07-05-emotion-article.webp
 tags:
   - 科研
 category: 科研

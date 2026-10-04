@@ -5,7 +5,7 @@ commentSlug: '2025-06-10-On-time-Nowcoder'
 published: 2025-06-10T00:00:00.000Z
 draft: false
 description: 统一记录牛客上的题目
-image: /post-covers/2025-06-10-on-time-nowcoder.jpg
+image: /post-covers/anime-v1/2025-06-10-on-time-nowcoder.webp
 tags:
   - 学习
   - 热爱

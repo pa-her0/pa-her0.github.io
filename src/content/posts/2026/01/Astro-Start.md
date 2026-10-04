@@ -5,7 +5,7 @@ commentSlug: 'Astro-Start'
 published: 2026-01-24T00:00:00.000Z
 draft: false
 description: Astro的开端
-image: /post-covers/astro-start.jpg
+image: /post-covers/anime-v1/astro-start.webp
 tags:
   - 生活
 category: 生活

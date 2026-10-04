@@ -5,7 +5,7 @@ commentSlug: '2025-0619-OperationSystem'
 published: 2025-06-19T00:00:00.000Z
 draft: false
 description: 关于王道考研2024-操作系统的笔记
-image: /post-covers/2025-06-19-operation-system.jpg
+image: /post-covers/anime-v1/2025-06-19-operation-system.webp
 tags:
   - 课程学习
 category: 学习

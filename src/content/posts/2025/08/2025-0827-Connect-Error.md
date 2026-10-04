@@ -5,7 +5,7 @@ commentSlug: '2025-0827-Connect-Error'
 published: 2025-08-27T00:00:00.000Z
 draft: false
 description: '由于有时候本地服务器难以连接一下国外网站的情况,我们可以通过一下流程解决 connect error,Time out的问题'
-image: /post-covers/2025-08-27-connect-error.jpg
+image: /post-covers/anime-v1/2025-08-27-connect-error.webp
 tags:
   - 日常学习
 category: 科研

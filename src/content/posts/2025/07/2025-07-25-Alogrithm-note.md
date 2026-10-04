@@ -5,7 +5,7 @@ commentSlug: '2025-07-25-Alogrithm-note'
 published: 2025-07-25T00:00:00.000Z
 draft: false
 description: 对最近的自己的一些问题的总结
-image: /post-covers/2025-07-25-alogrithm-note.jpg
+image: /post-covers/anime-v1/2025-07-25-alogrithm-note.webp
 tags:
   - 算法
   - 生活

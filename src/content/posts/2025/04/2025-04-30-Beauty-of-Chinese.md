@@ -5,7 +5,7 @@ commentSlug: '2025-04-30-Beauty-of-Chinese'
 published: 2025-04-30T00:00:00.000Z
 draft: false
 description: '关于文字的眼泪,今天突然听到“曾经志在四方少年，羡慕南飞的雁”.'
-image: /post-covers/2025-04-30-beauty-of-chinese.jpg
+image: /post-covers/anime-v1/2025-04-30-beauty-of-chinese.webp
 tags:
   - Youth
 category: 生活

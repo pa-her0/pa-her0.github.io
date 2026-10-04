@@ -5,7 +5,7 @@ commentSlug: '2025-09-21-Alogrithm--structure'
 published: 2025-09-21T00:00:00.000Z
 draft: false
 description: '我感觉将算法放到一个板子里面容易忘记自己学了什么,所以我以后单独开个专栏来记录算法知识点'
-image: /post-covers/2025-09-21-alogrithm-structure.jpg
+image: /post-covers/anime-v1/2025-09-21-alogrithm-structure.webp
 tags:
   - 算法
   - 热爱

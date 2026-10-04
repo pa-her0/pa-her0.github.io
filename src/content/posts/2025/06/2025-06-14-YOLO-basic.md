@@ -5,7 +5,7 @@ commentSlug: '2025-06-14-YOLO-basic'
 published: 2025-06-14T00:00:00.000Z
 draft: false
 description: 基于YOLO的图像识别训练（英文手写体 + 生活中常见的事物（猫猫狗狗））
-image: /post-covers/2025-06-14-yolo-basic.jpg
+image: /post-covers/anime-v1/2025-06-14-yolo-basic.webp
 tags:
   - 日常学习
 category: 学习

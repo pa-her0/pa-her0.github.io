@@ -1,0 +1,369 @@
+{
+  "version": 1,
+  "created": "2026-10-04",
+  "method": "built-in image_gen",
+  "reference": "User-provided pink anime/code-panel cover",
+  "sharedPrompt": "Use case: infographic-diagram. Asset type: final illustrated cover for a Chinese personal technical blog. Create a finished horizontal 16:9 landscape raster image, preferably 1536x864 or larger, with crisp legible Chinese text and detailed full-color 2D cel-shaded anime fan illustration. Match the user's reference design language: a large expressive anime character occupies the left 28–32% as a waist-up cutout, the right 64% contains a bold question headline plus one or two white code-window/diagram panels, pastel tinted outlines and soft offset shadows, explanatory arrows and one meaningful status icon. This is an editorial educational cover, not a mockup of a whole webpage and not a black-and-white chibi drawing. Use the named recognizable character in a natural fully clothed non-sexual pose reacting to the subject. All Chinese headline and subtitle text supplied below must be reproduced verbatim, in clean bold friendly sans-serif type, dark ink with a single accent color. Headline has strong hierarchy and fits within at most 2 lines. Keep all meaningful content at least 6% away from every edge, and particularly the top/bottom edges so blog thumbnails remain readable. Character must not overlap the headline, face and diagram cannot be cropped. Keep diagram simple with large readable labels; no tiny dense paragraph, watermark, signature, extra slogan, Japanese decoration, unrelated cat mascot, or invented performance claims. Subtle pastel-to-offwhite background, ample whitespace, balanced composition, polished educational-anime visual identity.",
+  "tasks": [
+    {
+      "index": 0,
+      "id": "astro-start",
+      "articleTitle": "Astro 的开始",
+      "headline": "Astro，新博客从这里开始",
+      "subtitle": "旧文章 → Astro → 新博客",
+      "character": "Frieren from Frieren: Beyond Journey’s End, curious white-haired elf with green eyes and pointed ears, in her white-and-gold travelling outfit",
+      "palette": "lilac and soft peach",
+      "diagram": "Two tasteful browser-window panels on the right: a small stack of old article cards labeled 旧文章 connects via a clear curved arrow to a clean blog window labeled Astro. Inside new window use three tiny card shapes and a green check. This is a first-post announcing migration, not a framework tutorial."
+    },
+    {
+      "index": 1,
+      "id": "2025-08-27-connect-error",
+      "articleTitle": "服务器:Time Out?",
+      "headline": "服务器为什么又超时？",
+      "subtitle": "连接排查 · 代理 · 环境变量",
+      "character": "Mikoto Misaka from A Certain Scientific Railgun, brown bob haircut, flower hairclip, beige school vest over white short-sleeved shirt, puzzled expression",
+      "palette": "blush pink and coral",
+      "diagram": "On the right upper terminal panel show exactly curl example.com then Connection timed out, small red cross. Lower diagram has 服务器 → 代理 → 目标网站 with a green check at the end. Do not imply that every timeout can be fixed by a proxy."
+    },
+    {
+      "index": 2,
+      "id": "2025-09-21-ai",
+      "articleTitle": "为什么AI胡言乱语",
+      "headline": "AI 为什么会一本正经地胡说？",
+      "subtitle": "从 Transformer 理解语言模型",
+      "character": "Conan Edogawa from Detective Conan, dark tousled hair, round glasses, blue jacket and red bow tie, thinking pose",
+      "palette": "powder blue and lavender",
+      "diagram": "Right top chat panel shows plausible-looking short output followed by a red question mark and label 事实？; bottom diagram shows token blocks entering Attention and emerging as 生成文本. A clear separation with label 流畅 ≠ 真实. No fabricated historical facts."
+    },
+    {
+      "index": 3,
+      "id": "2025-08-26-git",
+      "articleTitle": "GiT仓库管理",
+      "headline": "改完代码，怎样同步到 GitHub？",
+      "subtitle": "工作区 · 暂存区 · 本地仓库 · 远程仓库",
+      "character": "Rintaro Okabe from Steins;Gate, black swept-back hair, white lab coat, holding a laptop and looking thoughtfully to the right",
+      "palette": "mint and teal",
+      "diagram": "One clean right-side workflow with four boxes labeled 工作区, 暂存区, 本地仓库, 远程仓库; arrows labeled add, commit, push. Small lower code window shows git pull then git push. A small branching commit graph gives visual rhythm, no random code."
+    },
+    {
+      "index": 4,
+      "id": "2025-04-15-yolo-orangepi5",
+      "articleTitle": "OrangePi5部署YOLO推理模型",
+      "headline": "YOLO 怎样跑上 OrangePi 5？",
+      "subtitle": "模型转换与开发板部署",
+      "character": "Mikoto Misaka from A Certain Scientific Railgun, brown bob, flower hairclip, beige vest, interested confident expression",
+      "palette": "soft apricot and coral",
+      "diagram": "Right side three large file cards .pt → .onnx → .rknn then a small single-board computer connected to a detection preview with labeled boxes. Show small red warning triangle at conversion and green check at board. Headline readable."
+    },
+    {
+      "index": 5,
+      "id": "2026-07-19-how-to-deploy-cc",
+      "articleTitle": "如何在服务器上部署外置大脑？",
+      "headline": "给服务器装一个「外置大脑」",
+      "subtitle": "Claude Code 部署与配置",
+      "character": "Lain Iwakura from Serial Experiments Lain, brown asymmetric bob, small hair clip, modest white shirt, intent calm expression",
+      "palette": "lavender and periwinkle",
+      "diagram": "Right terminal window says Claude Code and has three clearly labeled configuration steps 安装 → 配置 API → 连接模型. Below: server icon communicates with model cloud icon. No keys, URLs, tokens, fabricated shell install commands or guarantee of network access."
+    },
+    {
+      "index": 6,
+      "id": "2026-07-28-my-post",
+      "articleTitle": "服务器上实验的相关优化策略",
+      "headline": "实验跑完了，结论站得住吗？",
+      "subtitle": "理论对齐 · 实验验证 · 资源优化",
+      "character": "Senku Ishigami from Dr. Stone, tall green-tipped ivory hair, science outfit, confident analytical expression",
+      "palette": "sage green and amber",
+      "diagram": "Right two panels: 理论条件 with parameter sliders, and 实验设置 with matching sliders, aligned by arrows. Below a loop 问题 → 实验 → 证据. Small restrained GPU and disk icons. Focus scientific experiment validity, no fake performance numbers."
+    },
+    {
+      "index": 7,
+      "id": "2025-03-24-python",
+      "articleTitle": "Python算法学习--备战蓝桥杯",
+      "headline": "Python 算法题，从哪一步下手？",
+      "subtitle": "递归 · 搜索 · 动态规划",
+      "character": "Conan Edogawa from Detective Conan, round glasses, blue jacket, red bow tie, analyzing a notebook",
+      "palette": "sky blue and cyan",
+      "diagram": "Right side a branching search tree with a highlighted path and an adjacent Python code panel showing def dfs(u): then visit(u), no incomplete misleading indentation emphasized. Lower small sequence 问题 → 思路 → 实现. Python learning notes, no promised exam success."
+    },
+    {
+      "index": 8,
+      "id": "2025-03-25-old-alogrithm",
+      "articleTitle": "算法笔记1.0",
+      "headline": "大问题，能不能拆成小问题？",
+      "subtitle": "算法笔记 1.0 · 分治与基础结构",
+      "character": "Shikamaru Nara from Naruto, dark tied-up hair, green flak jacket, chin-on-hand thoughtful expression",
+      "palette": "sage and muted green",
+      "diagram": "On right, array 4 1 3 2 splits into 4 1 and 3 2, then merges into 1 2 3 4. Use two white code-like panels, clean arrows between splits and merge, main labels 分治 and 合并. Correct exact numbers."
+    },
+    {
+      "index": 9,
+      "id": "2025-03-25-start",
+      "articleTitle": "开端",
+      "headline": "从第一篇记录开始",
+      "subtitle": "你好，我的博客",
+      "character": "Shoyo Hinata from Haikyu!!, orange tousled hair, casual orange hoodie, bright curious expression",
+      "palette": "warm apricot and pale yellow",
+      "diagram": "Right a clean blog draft window with simple title 第一篇记录 and a blinking caret, lower closed-to-open notebook transformation and rising sun graphic. Quiet optimistic feeling, no fake tutorial code."
+    },
+    {
+      "index": 10,
+      "id": "2025-04-12-dataset",
+      "articleTitle": "数据库基础知识",
+      "headline": "多张表，怎样查到想要的答案？",
+      "subtitle": "SQL 基础与关系查询",
+      "character": "Conan Edogawa from Detective Conan, blue blazer and red bow tie, inspecting clues",
+      "palette": "mint and turquoise",
+      "diagram": "Right two tiny readable tables 学生(id,name) and 成绩(student_id,score), connected at id by a JOIN bridge to one result table. Code window uses exact short SQL: SELECT name, score then FROM students then JOIN scores ON id = student_id; no extra dense content."
+    },
+    {
+      "index": 11,
+      "id": "2025-04-28-latex",
+      "articleTitle": "Latex基础公式学习",
+      "headline": "公式，怎样写得清楚又漂亮？",
+      "subtitle": "Markdown 里的 LaTeX",
+      "character": "Violet Evergarden, blonde braided hair, blue eyes, modest blue-and-white dress, thoughtfully holding a pen",
+      "palette": "pale lavender and dusty blue",
+      "diagram": "Right two stacked white panels: upper labeled LaTeX with exact code \\frac{a}{b}; lower labeled 渲染结果 shows mathematically typeset a over b with a fraction bar, joined by a downward arrow. Secondary small formula E=mc². Clean accurate comparison."
+    },
+    {
+      "index": 12,
+      "id": "2025-04-30-beauty-of-chinese",
+      "articleTitle": "文字的魅力",
+      "headline": "为什么一句话，会让人停很久？",
+      "subtitle": "文字的魅力",
+      "character": "Violet Evergarden, blonde braided hair, blue eyes, blue-and-white dress, warm introspective expression",
+      "palette": "blush rose and cream",
+      "diagram": "Right a letter-paper panel with large short text 文字的魅力, a small typewriter silhouette, hand-drawn breeze line and a folded letter. Three little paper tabs labeled 记忆, 共鸣, 表达. No invented literary quotations."
+    },
+    {
+      "index": 13,
+      "id": "2025-05-16-alogrithm-note2",
+      "articleTitle": "算法笔记2.0",
+      "headline": "会了模板，为什么还是不会做题？",
+      "subtitle": "算法笔记 2.0 · 从结构到思路",
+      "character": "Shikamaru Nara from Naruto, tied-up black hair, green flak jacket, thoughtful composed face",
+      "palette": "pale teal and sage",
+      "diagram": "Right a problem card 问题 and three tool cards 单调栈, 前缀和, 线段树 linked as alternative choices to 思路 then 实现; a crossed out tangled line becomes a clean path. No claim all algorithms apply simultaneously."
+    },
+    {
+      "index": 14,
+      "id": "2025-06-10-on-time-nowcoder",
+      "articleTitle": "牛客赛",
+      "headline": "这道题，关键的突破口在哪里？",
+      "subtitle": "牛客赛 · 题解与复盘",
+      "character": "Conan Edogawa from Detective Conan, round glasses, blue jacket, pointing at a clue",
+      "palette": "soft periwinkle and sky blue",
+      "diagram": "Right competition problem window with short label 思路卡住了？; below three cards 建模 → 推导 → 实现 and a final green AC badge. Include small DP state table and a graph edge as supporting visual, no fabricated scores."
+    },
+    {
+      "index": 15,
+      "id": "2025-06-14-yolo-basic",
+      "articleTitle": "基于YOLO的神经网络剪枝条",
+      "headline": "模型太重？给 YOLO 做减法",
+      "subtitle": "数据清洗 · 训练 · 通道剪枝",
+      "character": "Edward Elric from Fullmetal Alchemist, blond braid, red coat, modest outfit, focused engineering pose",
+      "palette": "peach and warm red",
+      "diagram": "Right big neural network labeled 剪枝前 transitions with small scissors icon to a compact network labeled 剪枝后, then a small object detection panel. Keep shapes legible, no invented percentage gains or benchmarks."
+    },
+    {
+      "index": 16,
+      "id": "2025-06-19-operation-system",
+      "articleTitle": "操作系统笔记-王道考研",
+      "headline": "CPU 忙起来，谁先运行？",
+      "subtitle": "操作系统 · 进程与资源管理",
+      "character": "Lain Iwakura from Serial Experiments Lain, brown bob and hairclip, modest white shirt, curious analytical expression",
+      "palette": "soft blue and lavender",
+      "diagram": "Right diagram includes queue P1 P2 P3, arrow to CPU, lower timeline of equal segments labeled P1 P2 P3 P1 to communicate round-robin. Three secondary chips 进程, 内存, 文件. Clean code/editor-like panel frames."
+    },
+    {
+      "index": 17,
+      "id": "2025-06-29-maozedong",
+      "articleTitle": "毛概复习(全面版)",
+      "headline": "知识点太多，怎样串成一条线？",
+      "subtitle": "毛概复习 · 框架与重点",
+      "character": "Kumiko Oumae from Sound! Euphonium, wavy auburn hair, modest school uniform, attentive studying expression",
+      "palette": "cream and muted coral",
+      "diagram": "Right notebook-like map with large center label 知识框架 branching to 理论, 背景, 意义, plus a small timeline and checked revision cards. Academic neutral study cover. No political portraits, banners, slogans, or invented historical assertions."
+    },
+    {
+      "index": 18,
+      "id": "2025-07-05-emotion-article",
+      "articleTitle": "情绪传播机制--相关文献调研",
+      "headline": "一种情绪，怎样传遍整个网络？",
+      "subtitle": "情绪传播 · Agent 建模 · 文献调研",
+      "character": "Anya Forger from Spy x Family, pink bob, black-and-gold horn-shaped hair accessories, modest black dress, surprised curious expression",
+      "palette": "blush pink and plum",
+      "diagram": "Right social network of small nodes in gray, coral and blue, one wave propagates along directed links across three steps t=0, t=1, t=2. Small label 情绪 × 关系 × 互动. A few tiny chat panels, no large irrelevant brain."
+    },
+    {
+      "index": 19,
+      "id": "2025-07-09-network",
+      "articleTitle": "人工合成网络--相关文献调研",
+      "headline": "怎样生成一个像真实世界的网络？",
+      "subtitle": "ERGM · TERGM · 合成网络",
+      "character": "Senku Ishigami from Dr. Stone, green-tipped ivory hair, science tunic, examining a graph",
+      "palette": "pale mint and teal",
+      "diagram": "Right two side-by-side white panels labeled 随机连接 and 结构约束, each contains visibly different node-link graph; below ERGM → TERGM with a little time sequence. No implying random and real graph equivalence."
+    },
+    {
+      "index": 20,
+      "id": "2025-07-12-gan",
+      "articleTitle": "生成式对抗网络(GAN)--相关文献调研",
+      "headline": "一个负责生成，一个负责挑错",
+      "subtitle": "GAN · 生成器与判别器",
+      "character": "Edward Elric from Fullmetal Alchemist, blond braid, red coat, intrigued expression",
+      "palette": "peach and lavender",
+      "diagram": "Right large clean diagram 噪声 → 生成器 G → 生成样本 → 判别器 D; second input 真实样本 also points to 判别器 D. Feedback curved arrow from D toward G labeled 反馈. Correct relationship, no duplicate unnecessary nodes."
+    },
+    {
+      "index": 21,
+      "id": "2025-07-16-thinking1",
+      "articleTitle": "科研思考1.0",
+      "headline": "一篇论文，怎样读到只剩一页？",
+      "subtitle": "科研思考 1.0 · 提炼核心",
+      "character": "Frieren, white-haired elf, green eyes, white-and-gold outfit, carefully reading a paper",
+      "palette": "lavender and mint",
+      "diagram": "Right tall stack of paper sheets condenses through an arrow into a single white note panel with four generous rows 目的, 方法, 实现, 不足. Keep clear editorial look, no dense unreadable manuscript."
+    },
+    {
+      "index": 22,
+      "id": "2025-07-21-thinking2",
+      "articleTitle": "科研思考2.0",
+      "headline": "笔记写了很多，真的读懂了吗？",
+      "subtitle": "科研思考 2.0 · 回到原文",
+      "character": "Houtarou Oreki from Hyouka, dark shaggy hair, green eyes, black school uniform, chin-on-hand thoughtful expression",
+      "palette": "pale olive and cream",
+      "diagram": "Right first card has tangled faint lines labeled 抄写; arrow to second clear card labeled 理解 with three rows 核心问题, 关键逻辑, 自己的判断. Magnifying glass over one short original paragraph placeholder; no fake citation text."
+    },
+    {
+      "index": 23,
+      "id": "2025-07-25-alogrithm-note",
+      "articleTitle": "算法小记",
+      "headline": "没有思路时，怎样继续往前走？",
+      "subtitle": "算法小记 · 解题与学习复盘",
+      "character": "Hitori Gotoh from Bocchi the Rock!, long pink hair, blue-yellow hairclip, modest pink tracksuit, anxious but determined expression",
+      "palette": "soft pink and periwinkle",
+      "diagram": "Right a stuck problem card with question mark transforms into three practical note cards 读懂题意 → 手推样例 → 拆小问题. A soft scribble becomes a neat line. Reflective rather than guaranteed algorithm solution."
+    },
+    {
+      "index": 24,
+      "id": "2025-08-03-basical-knowledge",
+      "articleTitle": "暑假闲事-基础技能",
+      "headline": "神经网络，到底怎样学会？",
+      "subtitle": "暑期基础课 · PyTorch 与模型入门",
+      "character": "Senku Ishigami from Dr. Stone, tall ivory-green hair, science outfit, curious confident expression",
+      "palette": "mint and powder blue",
+      "diagram": "Right a training loop diagram 前向计算 → 计算损失 → 反向传播 → 更新参数 with a return arrow. A small code panel only loss.backward() and optimizer.step(). Simple 3-layer node network above, not crowded."
+    },
+    {
+      "index": 25,
+      "id": "2025-08-05-four-popular-ai",
+      "articleTitle": "学习麻花",
+      "headline": "AI 给了答案，我真的学会了吗？",
+      "subtitle": "工具体验与独立思考",
+      "character": "Houtarou Oreki from Hyouka, dark hair and green eyes, black school uniform, skeptical thoughtful expression",
+      "palette": "pale lilac and dusty blue",
+      "diagram": "Right upper chat card says 答案已生成 with a green check; lower notebook card says 我能解释吗？ with question mark; connect via a gap and label 思考. Four small neutral tool tabs GPT, Claude, Grok, Gemini. No scores or fabricated comparisons."
+    },
+    {
+      "index": 26,
+      "id": "2025-08-07-autumn",
+      "articleTitle": "秋",
+      "headline": "把过去留给风，把目光交给秋天",
+      "subtitle": "秋 · 一段日常随记",
+      "character": "Takashi Natsume from Natsume's Book of Friends, light brown hair, white shirt and modest cream cardigan, quiet wistful expression",
+      "palette": "pale amber and dusty green",
+      "diagram": "Right large cream postcard panel with two or three maple leaves, evening path and small sun; small tabs 过去 and 以后 joined by soft breeze arrow. Elegant clear typography, not scenic wallpaper, no tiny quotes."
+    },
+    {
+      "index": 27,
+      "id": "2025-09-18-last",
+      "articleTitle": "最近",
+      "headline": "忙着赶路，也记得看看方向",
+      "subtitle": "最近 · 竞赛与科研",
+      "character": "Shoyo Hinata from Haikyu!!, short orange hair, casual hoodie, focused yet tired smile",
+      "palette": "soft peach and dusty lavender",
+      "diagram": "Right two overlapping planner panels labeled 算法竞赛 and 科研, with a few simple checklist marks and a small calendar. One short central tag 整理节奏. No made-up completed milestones or counts."
+    },
+    {
+      "index": 28,
+      "id": "2025-09-21-alogrithm-structure",
+      "articleTitle": "数据结构(算法)",
+      "headline": "一段区间的信息，怎样高效维护？",
+      "subtitle": "数据结构 · 笛卡尔树与前缀信息",
+      "character": "Shikamaru Nara from Naruto, tied-up dark hair, green vest, focused expression",
+      "palette": "pale teal and mint",
+      "diagram": "Right upper panel has indexed array bars with contiguous range highlighted; lower panel has a clear small binary tree and separate prefix-sum strip. Arrows show 数列 → 结构 → 查询, no incorrect specific values needed."
+    },
+    {
+      "index": 29,
+      "id": "2025-10-27-graph",
+      "articleTitle": "图论(算法)",
+      "headline": "删掉哪条边，整个图就断了？",
+      "subtitle": "图论 · 连通性与 Tarjan",
+      "character": "Conan Edogawa from Detective Conan, round glasses, blue blazer and red bow tie, excited deduction pose",
+      "palette": "powder blue and violet",
+      "diagram": "Right two three-node triangle clusters linked by exactly one red edge; label that edge 桥. Lower comparison removes red edge producing two separated components, label 不再连通. Red cross at bridge and clear arrow. Technically correct graph."
+    },
+    {
+      "index": 30,
+      "id": "2025-10-27-math",
+      "articleTitle": "数学(算法)",
+      "headline": "整除结果相同，能不能一起算？",
+      "subtitle": "算法数学 · 整除分块",
+      "character": "Senku Ishigami from Dr. Stone, green-tipped ivory hair, science outfit, confident teaching expression",
+      "palette": "pale mint and amber",
+      "diagram": "Right code-like panel shows floor(n / i), below a step plot with plateaus and colored interval blocks, arrows skip whole intervals. Short lower code exactly r = n / (n / l). No invented numeric complexity comparison."
+    },
+    {
+      "index": 31,
+      "id": "2025-11-12-knn-bayesi",
+      "articleTitle": "贝叶斯 AND KNN",
+      "headline": "靠概率，还是看最近的邻居？",
+      "subtitle": "贝叶斯与 KNN 的两种思路",
+      "character": "Conan Edogawa from Detective Conan, round glasses, blue jacket, finger on chin",
+      "palette": "lavender and sky blue",
+      "diagram": "Right two equal panels: 贝叶斯 with a tiny directed acyclic probability graph; KNN with red and blue scatter dots, center query point and dashed circle around 3 nearest neighbors. Large VS between them. No suggestion methods are same."
+    },
+    {
+      "index": 32,
+      "id": "2025-12-25-nlp",
+      "articleTitle": "NLP--基础知识",
+      "headline": "一句话，怎样变成模型的输入？",
+      "subtitle": "NLP · 分词 · 词向量 · 语义",
+      "character": "Violet Evergarden, blonde braided hair, blue eyes, blue-and-white dress, engaged reading pose",
+      "palette": "blush and dusty blue",
+      "diagram": "Right text panel uses exact sentence 我喜欢学习, then splits correctly into 我 | 喜欢 | 学习; arrow to colored vector blocks labeled 词向量 then simple network labeled 模型. Clear typographic panels echo reference code screenshot."
+    },
+    {
+      "index": 33,
+      "id": "2026-01-27-dl",
+      "articleTitle": "动手学深度学习",
+      "headline": "深度学习，从哪里开始？",
+      "subtitle": "预备知识与学习入口",
+      "character": "Senku Ishigami from Dr. Stone, green-tipped ivory hair, science tunic, interested expression",
+      "palette": "pale mint and lavender",
+      "diagram": "Right three stepping cards labeled 预备知识, 读书, 动手尝试 beside a simple 3-layer neural network and an open book. This article is only a short starter with reading link, do not claim finished training tutorials or results."
+    },
+    {
+      "index": 34,
+      "id": "2026-01-27-rl",
+      "articleTitle": "动手学强化学习",
+      "headline": "从一次奖励，认识强化学习",
+      "subtitle": "学习入口 · Agent 与环境",
+      "character": "Shoyo Hinata from Haikyu!!, orange hair, black-orange sports jersey, energetic curious expression",
+      "palette": "warm apricot and mint",
+      "diagram": "Right simple conceptual loop Agent → 动作 → 环境, feedback returns labeled 奖励 / 状态, plus tiny stepping-stone path. It is a learning-start cover, not claiming completed exercises or measured rewards."
+    },
+    {
+      "index": 35,
+      "id": "2026-05-12-future-plan",
+      "articleTitle": "未来规划",
+      "headline": "方向很多，下一步先做什么？",
+      "subtitle": "未来规划 · 把目标落到行动",
+      "character": "Frieren, white-haired elf with green eyes, white and gold travelling outfit, contemplative expression",
+      "palette": "pale lilac and sage",
+      "diagram": "Right a gentle roadmap branches into 英语, 科研, 学习 then converges into one highlighted card 下一步. Small notebook checklist and soft path motif. No invented dates, percentages or accomplished tasks."
+    }
+  ]
+}

@@ -5,7 +5,7 @@ commentSlug: '2025-08-03-basical-knowledge'
 published: 2025-08-03T00:00:00.000Z
 draft: false
 description: 本文是学习清华计算机科协的暑期课程--基础技能讲解
-image: /post-covers/2025-08-03-basical-knowledge.jpg
+image: /post-covers/anime-v1/2025-08-03-basical-knowledge.webp
 tags:
   - 学习
 category: 学习

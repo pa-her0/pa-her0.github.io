@@ -5,7 +5,7 @@ commentSlug: '2026-05-12-Future-Plan'
 published: 2026-05-12T00:00:00.000Z
 draft: false
 description: 近期规划
-image: /post-covers/2026-05-12-future-plan.jpg
+image: /post-covers/anime-v1/2026-05-12-future-plan.webp
 tags:
   - 规划
   - 思考

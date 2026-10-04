@@ -5,7 +5,7 @@ commentSlug: 'my-post'
 published: 2026-07-28T10:47:09.000Z
 draft: false
 description: 科研不仅仅是埋头苦干，你要有一定的前置经验才能事半功倍，不要让自己成为老黄牛，做一些真正有价值的事情！
-image: /post-covers/2026-07-28-my-post.jpg
+image: /post-covers/anime-v1/2026-07-28-my-post.webp
 tags:
   - 科研
 category: 科研

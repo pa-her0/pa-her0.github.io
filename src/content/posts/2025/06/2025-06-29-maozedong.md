@@ -5,7 +5,7 @@ commentSlug: '2025-06-29-maozedong'
 published: 2025-06-29T00:00:00.000Z
 draft: false
 description: '毛概书 1-4章,6-8章书本知识总结'
-image: /post-covers/2025-06-29-maozedong.jpg
+image: /post-covers/anime-v1/2025-06-29-maozedong.webp
 tags:
   - 课程学习
 category: 学习
