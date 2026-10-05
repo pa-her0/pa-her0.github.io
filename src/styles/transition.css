@@ -1,12 +1,13 @@
 /* Page transition animations with Astro View Transitions */
 
-/* Default fade transition */
+/* Keep navigation responsive: the previous page stays visible until the new
+   document is ready, then the replacement settles in with a very short fade. */
 ::view-transition-old(root) {
-  animation: fade-out 110ms ease-out;
+  animation: none;
 }
 
 ::view-transition-new(root) {
-  animation: fade-in 140ms ease-out;
+  animation: fade-in 80ms ease-out;
 }
 
 @keyframes fade-out {

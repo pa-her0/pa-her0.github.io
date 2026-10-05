@@ -54,6 +54,7 @@ const total = groups.reduce((sum, group) => sum + group.posts.length, 0)
                 {group.posts.map((entry) => (
                   <a
                     href={`/posts/${entry.slug}/`}
+                    data-astro-prefetch="hover"
                     aria-current={entry.slug === post.slug ? "page" : undefined}
                     title={entry.data.title}
                   >
@@ -76,7 +77,7 @@ const total = groups.reduce((sum, group) => sum + group.posts.length, 0)
       data-article-library-toggle
     >
       <span class="article-library__toggle-icon" aria-hidden="true">‹</span>
-      <span class="sr-only" data-article-library-label>收起左侧文章栏</span>
+      <span class="article-library__toggle-label" data-article-library-label>收起文章栏</span>
     </button>
   </div>
 
@@ -90,7 +91,11 @@ const total = groups.reduce((sum, group) => sum + group.posts.length, 0)
         <section>
           <h2>{group.name}</h2>
           {group.posts.map((entry) => (
-            <a href={`/posts/${entry.slug}/`} aria-current={entry.slug === post.slug ? "page" : undefined}>
+            <a
+              href={`/posts/${entry.slug}/`}
+              data-astro-prefetch="hover"
+              aria-current={entry.slug === post.slug ? "page" : undefined}
+            >
               {entry.data.title}
             </a>
           ))}
@@ -117,9 +122,10 @@ const total = groups.reduce((sum, group) => sum + group.posts.length, 0)
         page.classList.toggle("article-library-is-collapsed", collapsed)
         button.setAttribute("aria-expanded", String(!collapsed))
         button.title = collapsed ? "展开左侧文章栏" : "收起左侧文章栏"
+        button.setAttribute("aria-label", button.title)
         panel.setAttribute("aria-hidden", String(collapsed))
         panel.toggleAttribute("inert", collapsed)
-        if (label) label.textContent = button.title
+        if (label) label.textContent = collapsed ? "展开文章栏" : "收起文章栏"
       }
 
       let collapsed = false

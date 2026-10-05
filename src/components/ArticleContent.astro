@@ -65,7 +65,7 @@ const articleHref = await getLatestPublishedPostHref()
         </header>
 
         {data.image && (
-          <figure class="article-reading__cover" data-bento-motion>
+          <figure class="article-reading__cover">
             <img src={data.image} alt={data.title} loading="eager" decoding="async" />
           </figure>
         )}
@@ -96,11 +96,11 @@ const articleHref = await getLatestPublishedPostHref()
           </div>
 
           <div class="article-reading__pager">
-            <a href={data.prevSlug ? `/posts/${data.prevSlug}/` : articleHref}>
+            <a href={data.prevSlug ? `/posts/${data.prevSlug}/` : articleHref} data-astro-prefetch="hover">
               <small>上一篇</small>
               <span>{data.prevTitle || "浏览更多文章"}</span>
             </a>
-            <a href={data.nextSlug ? `/posts/${data.nextSlug}/` : articleHref}>
+            <a href={data.nextSlug ? `/posts/${data.nextSlug}/` : articleHref} data-astro-prefetch="hover">
               <small>下一篇</small>
               <span>{data.nextTitle || "浏览更多文章"}</span>
             </a>

@@ -396,7 +396,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
         {actions.map(({ name, icon: Icon, action, href }) => (
           <div className="article-actions__satellite" key={name} aria-hidden={!open} inert={!open ? true : undefined}>
             {href ? (
-              <a href={href} className="article-actions__button" aria-label={name} tabIndex={open ? 0 : -1} onClick={closeWithJump}>
+              <a href={href} data-astro-prefetch="hover" className="article-actions__button" aria-label={name} tabIndex={open ? 0 : -1} onClick={closeWithJump}>
                 <Icon aria-hidden="true" /><span className="article-actions__label">{name}</span>
               </a>
             ) : (
@@ -423,7 +423,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
               <span className="article-actions__prompt-copy"><strong>{currentPrompt.question}</strong><small>{currentPrompt.detail}</small></span>
             </button>
           ) : (
-            <a href={currentPrompt.href} onClick={dismissPromptSequence} aria-label={`同意，${currentPrompt.question}`}>
+            <a href={currentPrompt.href} data-astro-prefetch="hover" onClick={dismissPromptSequence} aria-label={`同意，${currentPrompt.question}`}>
               <span className="article-actions__prompt-icon" aria-hidden="true"><PromptIcon /></span>
               <span className="article-actions__prompt-copy"><strong>{currentPrompt.question}</strong><small>{currentPrompt.detail}</small></span>
             </a>
@@ -451,7 +451,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
 
         <div className="article-actions__current">
           <div className="article-actions__artwork">
-            <img src={currentTrack.cover} alt={currentTrack.album} width="88" height="88" onError={(event) => { event.currentTarget.src = fallbackCover }} />
+            <img src={currentTrack.cover} alt={currentTrack.album} width="88" height="88" loading="lazy" decoding="async" onError={(event) => { event.currentTarget.src = fallbackCover }} />
             <span className="article-actions__equalizer" aria-hidden="true"><i /><i /><i /></span>
           </div>
           <div className="article-actions__track-copy"><h2>{currentTrack.title}</h2><p>{currentTrack.artist}</p><span title={currentTrack.album}>{currentTrack.album}</span></div>

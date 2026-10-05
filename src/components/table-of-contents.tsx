@@ -17,6 +17,7 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
   const [headings, setHeadings] = useState<TocItem[]>([])
   const [activeId, setActiveId] = useState<string>("")
   const [readPercent, setReadPercent] = useState(0)
+  const [isViewportActive, setIsViewportActive] = useState(false)
   const navRef = useRef<HTMLElement | null>(null)
   const observerRef = useRef<IntersectionObserver | null>(null)
   const headingElementsRef = useRef<Map<string, IntersectionObserverEntry>>(new Map())
@@ -37,6 +38,14 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
       lockTimerRef.current = null
     }
   }, [])
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 900px)")
+    const sync = () => setIsViewportActive(showHeader ? !media.matches : media.matches)
+    sync()
+    media.addEventListener("change", sync)
+    return () => media.removeEventListener("change", sync)
+  }, [showHeader])
 
   const clearTocAutoScrollTimer = useCallback(() => {
     if (tocAutoScrollTimerRef.current !== null) {
@@ -145,6 +154,12 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
   )
 
   useEffect(() => {
+    if (!isViewportActive) {
+      setHeadings([])
+      setActiveId("")
+      return
+    }
+
     let resizeRaf = 0
     let remeasureRaf = 0
     let currentItems: TocItem[] = []
@@ -224,9 +239,11 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
       clearTocAutoScrollTimer()
       unlockProgrammaticLock()
     }
-  }, [clearTocAutoScrollTimer, collectHeadings, measureOffsets, setupObserver, unlockProgrammaticLock])
+  }, [clearTocAutoScrollTimer, collectHeadings, isViewportActive, measureOffsets, setupObserver, unlockProgrammaticLock])
 
   useEffect(() => {
+    if (!isViewportActive) return
+
     let progressRaf = 0
 
     const updateReadPercent = () => {
@@ -256,10 +273,10 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
       document.removeEventListener("astro:page-load", updateReadPercent)
       if (progressRaf) cancelAnimationFrame(progressRaf)
     }
-  }, [])
+  }, [isViewportActive])
 
   useEffect(() => {
-    if (!activeId || !navRef.current) return
+    if (!isViewportActive || !activeId || !navRef.current) return
 
     // Mobile renders the TOC inside a drawer that's usually closed; auto-scroll
     // there forces extra layout reads on every heading change while the user
@@ -302,7 +319,7 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
     return () => {
       clearTocAutoScrollTimer()
     }
-  }, [activeId, clearTocAutoScrollTimer])
+  }, [activeId, clearTocAutoScrollTimer, isViewportActive])
 
   const handleClick = (e: React.MouseEvent, id: string) => {
     e.preventDefault()
