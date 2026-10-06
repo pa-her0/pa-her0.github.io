@@ -2,12 +2,14 @@ import type { PostEntry } from "@/lib/posts"
 import { getPostSection, getPostSeries, toSeriesSlug } from "@/lib/content-sections"
 import { toPostMeta } from "@/lib/posts"
 import type { LearningArticles } from "@/lib/learning-progress"
-import type { LearningTrackId } from "@/data/learning-plan"
+import { learningTrackIds, type LearningTrackId } from "@/data/learning-plan"
 
 const trackMatchers: Record<LearningTrackId, RegExp> = {
   nowcoder: /牛客|nowcoder|ac\.nowcoder\.com/i,
   hdu: /杭电|\bhdu\b|acm\.hdu\.edu\.cn/i,
   "ai-infra": /ai\s*infra|aiinfra/i,
+  "regional-vp": /区域赛|\bicpc\b|\bccpc\b|virtual participation/i,
+  agent: /\b(?:ai|llm)[ -]?agents?\b|agentic|智能体|langgraph|langchain|工具调用/i,
 }
 
 function getPostHref(post: PostEntry) {
@@ -18,20 +20,20 @@ function getPostHref(post: PostEntry) {
 }
 
 export function buildLearningArticles(posts: PostEntry[]): LearningArticles {
-  const articles: LearningArticles = { nowcoder: [], hdu: [], "ai-infra": [] }
+  const articles = Object.fromEntries(learningTrackIds.map((id) => [id, []])) as unknown as LearningArticles
 
   posts.forEach((post) => {
     const explicitTrack = post.data.learningTrack as LearningTrackId | undefined
-    const searchable = [
+    const metadata = [
       post.data.title,
       post.data.description,
       ...(post.data.tags ?? []),
-      typeof post.body === "string" ? post.body : "",
     ].join(" ")
+    const searchable = `${metadata} ${typeof post.body === "string" ? post.body : ""}`
     const matchedTracks = explicitTrack
       ? [explicitTrack]
       : (Object.entries(trackMatchers) as [LearningTrackId, RegExp][])
-        .filter(([, matcher]) => matcher.test(searchable))
+        .filter(([trackId, matcher]) => matcher.test(searchable) || (trackId === "agent" && /\bagents?\b/i.test(metadata)))
         .map(([trackId]) => trackId)
 
     const meta = toPostMeta(post)

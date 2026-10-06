@@ -30,7 +30,7 @@ const createAdmonitionComponent = (type) => (properties = {}, children = []) => 
 }
 
 const learningProgressFile = fileURLToPath(new URL("./src/data/learning-progress.json", import.meta.url))
-const learningTrackIds = new Set(["nowcoder", "hdu", "ai-infra"])
+const learningTrackIds = new Set(["nowcoder", "hdu", "regional-vp", "ai-infra", "agent"])
 const safeTaskId = /^[a-z0-9][a-z0-9-]{0,95}$/i
 const safeDate = /^\d{4}-\d{2}-\d{2}$/
 

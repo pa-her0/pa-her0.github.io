@@ -81,7 +81,6 @@ export function getCurrentTask(trackId: LearningTrackId, progress: LearningProgr
   const selectedId = progress.currentTaskByTrack[trackId]
   return trackTasks.find((task) => task.id === selectedId && !progress.completedAt[task.id])
     ?? trackTasks.find((task) => !progress.completedAt[task.id])
-    ?? trackTasks.at(-1)
 }
 
 export function getLearningStats(progress: LearningProgress, now = new Date()) {

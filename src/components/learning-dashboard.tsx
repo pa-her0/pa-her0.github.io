@@ -1,34 +1,49 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import {
   ArrowUpRight,
+  ArrowLeft,
   BookOpen,
-  CalendarDays,
   Check,
   ChevronDown,
   Circle,
-  Flame,
-  Gauge,
   LockKeyhole,
   NotebookPen,
   Save,
   Settings2,
   Sparkles,
-  Target,
   Undo2,
 } from "lucide-react"
-import { learningTasks, learningTracks, type LearningTask, type LearningTrack, type LearningTrackId, type LearningUnit } from "@/data/learning-plan"
+import {
+  learningTracks,
+  type LearningTask,
+  type LearningTrack,
+  type LearningTrackId,
+  type LearningUnit,
+} from "@/data/learning-plan"
 import {
   getCurrentTask,
-  getLearningStats,
-  getRecentDays,
   getTrackStats,
   normalizeLearningProgress,
   toLocalDateKey,
   type LearningArticles,
   type LearningProgress,
 } from "@/lib/learning-progress"
+
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { cn } from "@/lib/utils"
+import {
+  LearningNavigation,
+  LearningOverview,
+  LearningAside,
+  LearningCalendar,
+  LearningHistory,
+  LearningNotes,
+  isLearningView,
+  learningViewTitle,
+  type LearningView,
+} from "@/components/learning-board"
 
 interface LearningDashboardProps {
   initialProgress: LearningProgress
@@ -40,21 +55,9 @@ type SaveState = "idle" | "saving" | "saved" | "error"
 
 const localApiPath = "/__local/learning-progress"
 const draftStorageKey = "jiely-learning-progress-draft-v1"
-const weekdayLabels = ["日", "一", "二", "三", "四", "五", "六"]
 
 function isLocalHostname(hostname: string) {
   return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1"
-}
-
-function getWeekDays(now: Date) {
-  const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const offset = (monday.getDay() + 6) % 7
-  monday.setDate(monday.getDate() - offset)
-  return Array.from({ length: 7 }, (_, index) => {
-    const date = new Date(monday)
-    date.setDate(monday.getDate() + index)
-    return date
-  })
 }
 
 function findTaskContext(taskId?: string) {
@@ -70,19 +73,16 @@ function findTaskContext(taskId?: string) {
 
 function ProgressBar({ value, label }: { value: number; label: string }) {
   return (
-    <div className="learning-progressbar" role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={value}>
+    <div
+      className="learning-progressbar"
+      role="progressbar"
+      aria-label={label}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={value}
+    >
       <span style={{ width: `${value}%` }} />
     </div>
-  )
-}
-
-function MetricCard({ icon: Icon, label, value, suffix }: { icon: typeof Target; label: string; value: string | number; suffix?: string }) {
-  return (
-    <article className="learning-metric">
-      <span className="learning-metric__icon"><Icon size={17} strokeWidth={1.8} /></span>
-      <div><strong>{value}</strong>{suffix ? <small>{suffix}</small> : null}</div>
-      <p>{label}</p>
-    </article>
   )
 }
 
@@ -98,15 +98,27 @@ interface TaskRowProps {
 
 function TaskRow({ task, complete, current, canEdit, compact, onToggle, onSetCurrent }: TaskRowProps) {
   return (
-    <li className={`learning-task${complete ? " is-complete" : ""}${current ? " is-current" : ""}${compact ? " is-compact" : ""}`}>
+    <li
+      className={cn(
+        "learning-task",
+        complete && "is-complete",
+        current && "is-current",
+        compact && "is-compact",
+      )}
+    >
       {canEdit ? (
         <label className="learning-task__check">
           <input type="checkbox" checked={complete} onChange={() => onToggle(task.id)} />
           <span aria-hidden="true">{complete ? <Check size={13} /> : null}</span>
-          <span className="sr-only">{complete ? "标记为未完成" : "标记为完成"}</span>
+          <span className="sr-only">
+            {task.label}：{complete ? "标记为未完成" : "标记为完成"}
+          </span>
         </label>
       ) : (
-        <span className="learning-task__status" aria-label={complete ? "已完成" : current ? "正在学习" : "待完成"}>
+        <span
+          className="learning-task__status"
+          aria-label={complete ? "已完成" : current ? "正在学习" : "待完成"}
+        >
           {complete ? <Check size={13} /> : current ? <Sparkles size={13} /> : <Circle size={10} />}
         </span>
       )}
@@ -116,12 +128,13 @@ function TaskRow({ task, complete, current, canEdit, compact, onToggle, onSetCur
           <strong>{task.label}</strong>
           {current && !complete ? <span className="learning-task__current">当前</span> : null}
         </div>
-        {task.summary ? <p>{task.summary}</p> : null}
       </div>
 
       <div className="learning-task__actions">
         {canEdit && !current && !complete ? (
-          <button type="button" onClick={() => onSetCurrent(task.id)}>设为当前</button>
+          <button type="button" onClick={() => onSetCurrent(task.id)}>
+            设为当前
+          </button>
         ) : null}
         {task.href ? (
           <a href={task.href} target="_blank" rel="noreferrer" aria-label={`打开${task.label}`}>
@@ -138,32 +151,36 @@ interface UnitCardProps {
   progress: LearningProgress
   currentTaskId?: string
   canEdit: boolean
-  defaultOpen: boolean
+  index: number
   onToggle: (taskId: string) => void
   onSetCurrent: (taskId: string) => void
 }
 
-function UnitCard({ unit, progress, currentTaskId, canEdit, defaultOpen, onToggle, onSetCurrent }: UnitCardProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen)
+function UnitCard({ unit, progress, currentTaskId, canEdit, index, onToggle, onSetCurrent }: UnitCardProps) {
+  const [isOpen, setIsOpen] = useState(false)
   const completed = unit.tasks.filter((task) => progress.completedAt[task.id]).length
   const percentage = Math.round((completed / unit.tasks.length) * 100)
   const compact = unit.tasks.every((task) => !task.summary)
 
   return (
-    <details className="learning-unit" open={isOpen} onToggle={(event) => setIsOpen(event.currentTarget.open)}>
-      <summary>
+    <Collapsible className="learning-unit" open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger className="learning-unit__trigger">
         <span className="learning-unit__summary-main">
-          <span className="learning-unit__index">{String(unit.title.match(/\d+/)?.[0] ?? "·").padStart(2, "0")}</span>
-          <span><strong>{unit.title}</strong><small>{unit.description}</small></span>
+          <span className="learning-unit__index">{String(index + 1).padStart(2, "0")}</span>
+          <span>
+            <strong>{unit.title}</strong>
+          </span>
         </span>
         <span className="learning-unit__summary-progress">
-          <span>{completed}/{unit.tasks.length}</span>
+          <span>
+            {completed}/{unit.tasks.length}
+          </span>
           <ChevronDown size={17} aria-hidden="true" />
         </span>
-      </summary>
-      <div className="learning-unit__content">
+      </CollapsibleTrigger>
+      <CollapsibleContent className="learning-unit__content">
         <ProgressBar value={percentage} label={`${unit.title}进度`} />
-        <ul className={`learning-task-list${compact ? " is-grid" : ""}`}>
+        <ul className={cn("learning-task-list", compact && "is-grid")}>
           {unit.tasks.map((task) => (
             <TaskRow
               key={task.id}
@@ -180,8 +197,8 @@ function UnitCard({ unit, progress, currentTaskId, canEdit, defaultOpen, onToggl
         <a className="learning-unit__source" href={unit.href} target="_blank" rel="noreferrer">
           查看本章节资料 <ArrowUpRight size={14} />
         </a>
-      </div>
-    </details>
+      </CollapsibleContent>
+    </Collapsible>
   )
 }
 
@@ -195,7 +212,15 @@ interface TrackContentProps {
   onNoteChange: (trackId: LearningTrackId, note: string) => void
 }
 
-function TrackContent({ track, progress, articles, canEdit, onToggle, onSetCurrent, onNoteChange }: TrackContentProps) {
+function TrackContent({
+  track,
+  progress,
+  articles,
+  canEdit,
+  onToggle,
+  onSetCurrent,
+  onNoteChange,
+}: TrackContentProps) {
   const stats = getTrackStats(track.id, progress)
   const currentTask = getCurrentTask(track.id, progress)
   const currentContext = findTaskContext(currentTask?.id)
@@ -204,12 +229,11 @@ function TrackContent({ track, progress, articles, canEdit, onToggle, onSetCurre
     <section className="learning-track" data-track={track.id} aria-labelledby={`track-${track.id}`}>
       <header className="learning-track__header">
         <div>
-          <p>{track.eyebrow}</p>
           <h2 id={`track-${track.id}`}>{track.title}</h2>
-          <div className="learning-track__description">{track.description}</div>
         </div>
         <a href={track.sourceHref} target="_blank" rel="noreferrer" className="learning-source-link">
-          {track.sourceLabel}<ArrowUpRight size={15} />
+          {track.sourceLabel}
+          <ArrowUpRight size={15} />
         </a>
       </header>
 
@@ -217,7 +241,9 @@ function TrackContent({ track, progress, articles, canEdit, onToggle, onSetCurre
         <div>
           <span>当前进度</span>
           <strong>{stats.percentage}%</strong>
-          <small>{stats.completed} / {stats.total} 项完成</small>
+          <small>
+            {stats.completed} / {stats.total} 项完成
+          </small>
         </div>
         <div className="learning-track__now">
           <span>正在进行</span>
@@ -239,10 +265,13 @@ function TrackContent({ track, progress, articles, canEdit, onToggle, onSetCurre
             onChange={(event) => onNoteChange(track.id, event.target.value)}
           />
         ) : (
-          <p>{progress.statusNoteByTrack[track.id] || "按计划逐项推进，完成后同步整理学习笔记。"}</p>
+          <p>{progress.statusNoteByTrack[track.id] || "暂无记录"}</p>
         )}
       </div>
 
+      <div className="learning-section-heading">
+        <h3>章节与任务</h3>
+      </div>
       <div className="learning-units">
         {track.units.map((unit, index) => (
           <UnitCard
@@ -251,7 +280,7 @@ function TrackContent({ track, progress, articles, canEdit, onToggle, onSetCurre
             progress={progress}
             currentTaskId={currentTask?.id}
             canEdit={canEdit}
-            defaultOpen={index === 0 || unit.id === currentContext?.unit.id}
+            index={index}
             onToggle={onToggle}
             onSetCurrent={(taskId) => onSetCurrent(track.id, taskId)}
           />
@@ -266,7 +295,12 @@ function TrackContent({ track, progress, articles, canEdit, onToggle, onSetCurre
         {articles[track.id].length > 0 ? (
           <ul>
             {articles[track.id].slice(0, 4).map((article) => (
-              <li key={article.href}><a href={article.href}>{article.title}<span>{article.updated}</span></a></li>
+              <li key={article.href}>
+                <a href={article.href}>
+                  {article.title}
+                  <span>{article.updated}</span>
+                </a>
+              </li>
             ))}
           </ul>
         ) : (
@@ -277,119 +311,10 @@ function TrackContent({ track, progress, articles, canEdit, onToggle, onSetCurre
   )
 }
 
-interface TodayPanelProps {
-  now: Date | null
-  progress: LearningProgress
-  activeTrackId: LearningTrackId
-}
-
-function TodayPanel({ now, progress, activeTrackId }: TodayPanelProps) {
-  const datedStats = now ? getLearningStats(progress, now) : null
-  const weekDays = now ? getWeekDays(now) : []
-  const currentTask = getCurrentTask(activeTrackId, progress)
-  const context = findTaskContext(currentTask?.id)
-  const goalProgress = datedStats ? Math.min(100, Math.round((datedStats.todayCompleted / progress.dailyGoal) * 100)) : 0
-
-  return (
-    <section className="learning-sidecard learning-today" aria-labelledby="today-title">
-      <div className="learning-sidecard__heading">
-        <div><CalendarDays size={17} /><h2 id="today-title">今日学习</h2></div>
-        <span>{now ? toLocalDateKey(now).slice(5).replace("-", "/") : "--/--"}</span>
-      </div>
-
-      <div className="learning-week" aria-label="本周日期">
-        {weekDays.length > 0 ? weekDays.map((date) => {
-          const isToday = now ? toLocalDateKey(date) === toLocalDateKey(now) : false
-          return (
-            <div key={toLocalDateKey(date)} className={isToday ? "is-today" : ""}>
-              <span>{weekdayLabels[date.getDay()]}</span><strong>{String(date.getDate()).padStart(2, "0")}</strong>
-            </div>
-          )
-        }) : Array.from({ length: 7 }, (_, index) => <div key={index} className="is-loading"><span>·</span><strong>--</strong></div>)}
-      </div>
-
-      <div className="learning-daily-goal">
-        <div>
-          <span><Flame size={16} /> 每日 {progress.dailyGoal} 项</span>
-          <strong>{datedStats?.todayCompleted ?? 0}/{progress.dailyGoal}</strong>
-        </div>
-        <ProgressBar value={goalProgress} label="今日目标进度" />
-      </div>
-
-      <article className="learning-next-task">
-        <span>接下来</span>
-        <strong>{currentTask?.label ?? "路线已完成"}</strong>
-        <p>{context?.unit.title ?? "为自己安排一段新的学习旅程"}</p>
-        {currentTask?.href ? <a href={currentTask.href} target="_blank" rel="noreferrer">开始学习 <ArrowUpRight size={14} /></a> : null}
-      </article>
-
-      <div className="learning-today__stats">
-        <div><span>连续学习</span><strong>{datedStats?.streak ?? 0}<small>天</small></strong></div>
-        <div><span>本月完成</span><strong>{datedStats?.monthCompleted ?? 0}<small>项</small></strong></div>
-        <div><span>今日完成</span><strong>{datedStats?.todayCompleted ?? 0}<small>项</small></strong></div>
-      </div>
-    </section>
-  )
-}
-
-function ActivityPanel({ now, progress }: { now: Date | null; progress: LearningProgress }) {
-  const stats = now ? getLearningStats(progress, now) : null
-  const days = now ? getRecentDays(91, now) : []
-  const monthLabels = days.reduce<{ key: string; label: string }[]>((labels, day) => {
-    const key = day.key.slice(0, 7)
-    if (!labels.some((item) => item.key === key)) labels.push({ key, label: `${day.date.getMonth() + 1}月` })
-    return labels
-  }, [])
-
-  return (
-    <section className="learning-sidecard learning-activity" aria-labelledby="activity-title">
-      <div className="learning-sidecard__heading">
-        <div><Gauge size={17} /><h2 id="activity-title">学习足迹</h2></div>
-        <span>近 13 周</span>
-      </div>
-      <div className="learning-heatmap" aria-label="近十三周完成记录">
-        {days.length > 0 ? days.map((day) => {
-          const count = stats?.dailyCounts[day.key] ?? 0
-          const level = count === 0 ? 0 : count === 1 ? 1 : count <= 3 ? 2 : count <= 5 ? 3 : 4
-          return <span key={day.key} data-level={level} title={`${day.key}：${count} 项`} />
-        }) : Array.from({ length: 91 }, (_, index) => <span key={index} data-level={0} />)}
-      </div>
-      <div className="learning-heatmap__months">
-        {(monthLabels.length > 0 ? monthLabels : [{ key: "a", label: "" }, { key: "b", label: "" }, { key: "c", label: "" }]).map((item) => <span key={item.key}>{item.label}</span>)}
-      </div>
-    </section>
-  )
-}
-
-function DistributionPanel({ progress }: { progress: LearningProgress }) {
-  const totalCompleted = Object.keys(progress.completedAt).length
-  const total = learningTasks.length
-  const percentage = total === 0 ? 0 : Math.round((totalCompleted / total) * 100)
-
-  return (
-    <section className="learning-sidecard learning-distribution" aria-labelledby="distribution-title">
-      <div className="learning-sidecard__heading">
-        <div><Target size={17} /><h2 id="distribution-title">路线进度</h2></div>
-        <span>{totalCompleted}/{total}</span>
-      </div>
-      <div className="learning-distribution__body">
-        <div className="learning-ring" style={{ "--ring-progress": `${percentage * 3.6}deg` } as React.CSSProperties}>
-          <strong>{percentage}%</strong><span>总进度</span>
-        </div>
-        <ul>
-          {learningTracks.map((track) => {
-            const stats = getTrackStats(track.id, progress)
-            return <li key={track.id} data-track={track.id}><span>{track.shortTitle}</span><strong>{stats.percentage}%</strong></li>
-          })}
-        </ul>
-      </div>
-    </section>
-  )
-}
-
 export function LearningDashboard({ initialProgress, articles, editable = false }: LearningDashboardProps) {
   const [progress, setProgress] = useState(() => normalizeLearningProgress(initialProgress))
-  const [activeTrackId, setActiveTrackId] = useState<LearningTrackId>("nowcoder")
+  const [view, setView] = useState<LearningView>("overview")
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null)
   const [now, setNow] = useState<Date | null>(null)
   const [isLocal, setIsLocal] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -397,11 +322,40 @@ export function LearningDashboard({ initialProgress, articles, editable = false 
   const [saveState, setSaveState] = useState<SaveState>("idle")
   const [loadError, setLoadError] = useState("")
 
-  const activeTrack = learningTracks.find((track) => track.id === activeTrackId) ?? learningTracks[0]
+  const activeTrack = learningTracks.find((track) => track.id === view)
   const canEdit = editable && isLocal
-  const completedCount = Object.keys(progress.completedAt).length
-  const overallPercentage = Math.round((completedCount / learningTasks.length) * 100)
-  const datedStats = useMemo(() => now ? getLearningStats(progress, now) : null, [now, progress])
+
+  const navigate = (next: LearningView) => {
+    setView(next)
+    if (window.location.hash !== "#" + next) window.history.pushState(null, "", "#" + next)
+    if (view !== next)
+      window.requestAnimationFrame(() => {
+        const heading = document.querySelector<HTMLElement>(".learning-topbar h1")
+        heading?.focus({ preventScroll: true })
+        if (heading && heading.getBoundingClientRect().top < 80) heading.scrollIntoView({ block: "start" })
+      })
+  }
+
+  const selectDay = (date: Date) => {
+    setSelectedDay(date)
+    navigate("calendar")
+  }
+
+  useEffect(() => {
+    const syncView = () => {
+      const hash = window.location.hash.slice(1)
+      setView(isLearningView(hash) ? hash : "overview")
+    }
+    syncView()
+    const timer = window.setInterval(() => setNow(new Date()), 60_000)
+    window.addEventListener("hashchange", syncView)
+    window.addEventListener("popstate", syncView)
+    return () => {
+      window.clearInterval(timer)
+      window.removeEventListener("hashchange", syncView)
+      window.removeEventListener("popstate", syncView)
+    }
+  }, [])
 
   useEffect(() => {
     const local = isLocalHostname(window.location.hostname)
@@ -437,7 +391,9 @@ export function LearningDashboard({ initialProgress, articles, editable = false 
         if (!cancelled) setLoadError(error.message)
       })
 
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [editable])
 
   const updateProgress = (updater: (current: LearningProgress) => LearningProgress) => {
@@ -510,84 +466,129 @@ export function LearningDashboard({ initialProgress, articles, editable = false 
 
   return (
     <div className="learning-dashboard">
-      <header className="learning-hero">
-        <div className="learning-hero__copy">
-          <p className="learning-hero__eyebrow"><Sparkles size={15} /> LEARNING COMPASS</p>
-          <h1>学习进度</h1>
-          <p>把题目、章节和笔记放在同一张路线图里。每天推进一点，也能看见长期积累的形状。</p>
-          <div className="learning-hero__actions">
-            {isLocal && !editable ? <a href="/learning/manage/"><Settings2 size={16} /> 打开本地管理页</a> : null}
-            {editable ? <a href="/learning/"><ArrowUpRight size={16} /> 查看公开页面</a> : null}
-            <span>数据更新于 {progress.updatedAt.slice(0, 10)}</span>
-          </div>
-        </div>
-        <div className="learning-hero__score" aria-label={`总学习进度 ${overallPercentage}%`}>
-          <div className="learning-hero__ring" style={{ "--hero-progress": `${overallPercentage * 3.6}deg` } as React.CSSProperties}>
-            <strong>{overallPercentage}<small>%</small></strong>
-          </div>
-          <p><span>{completedCount}</span> / {learningTasks.length} 项已完成</p>
-        </div>
-      </header>
-
-      {editable ? (
-        <div className={`learning-admin-banner${!mounted ? " is-checking" : canEdit ? " is-local" : " is-locked"}`}>
+      <LearningNavigation view={view} progress={progress} onNavigate={navigate} />
+      <div className="learning-center">
+        <header className="learning-topbar">
           <div>
-            {mounted && canEdit ? <Settings2 size={19} /> : <LockKeyhole size={19} />}
-            <p>
-              <strong>{!mounted ? "正在确认管理环境" : canEdit ? "本地管理模式" : "线上只读模式"}</strong>
-              <span>{!mounted ? "管理控件仅会在本机开发环境启用。" : canEdit ? "勾选任务后保存，进度会写入项目并随下次发布同步。" : "管理功能只在 localhost / 127.0.0.1 开放，线上无法修改。"}</span>
-            </p>
+            <h1 tabIndex={-1}>{learningViewTitle(view)}</h1>
+            <span>
+              {now
+                ? now.toLocaleDateString("zh-CN", { month: "long", day: "numeric", weekday: "long" })
+                : "记录学习，慢慢生长"}
+            </span>
           </div>
-          {canEdit ? (
-            <div className="learning-admin-banner__actions">
-              <label>每日目标 <input type="number" min={1} max={20} value={progress.dailyGoal} onChange={(event) => updateProgress((current) => ({ ...current, dailyGoal: Number(event.target.value) }))} /> 项</label>
-              <button type="button" onClick={discardDraft} disabled={!dirty}><Undo2 size={15} /> 撤销</button>
-              <button type="button" className="is-primary" onClick={saveProgress} disabled={!dirty || saveState === "saving"}><Save size={15} /> {saveState === "saving" ? "保存中…" : saveState === "saved" ? "已保存" : "保存进度"}</button>
+          <div className="learning-topbar__actions">
+            {isLocal && !editable ? (
+              <a href={"/learning/manage/#" + view}>
+                <Settings2 size={14} /> 管理进度
+              </a>
+            ) : null}
+            {editable ? (
+              <a href={"/learning/#" + view}>
+                <ArrowUpRight size={14} /> 公开页面
+              </a>
+            ) : null}
+          </div>
+        </header>
+        {editable ? (
+          <div
+            className={cn(
+              "learning-admin-banner",
+              !mounted ? "is-checking" : canEdit ? "is-local" : "is-locked",
+            )}
+          >
+            <div>
+              {mounted && canEdit ? <Settings2 size={19} /> : <LockKeyhole size={19} />}
+              <p>
+                <strong>{!mounted ? "正在确认管理环境" : canEdit ? "本地管理模式" : "线上只读模式"}</strong>
+                <span>
+                  {!mounted
+                    ? "管理控件仅会在本机开发环境启用。"
+                    : canEdit
+                      ? "勾选任务后保存，进度会写入项目并随下次发布同步。"
+                      : "管理功能只在 localhost / 127.0.0.1 开放，线上无法修改。"}
+                </span>
+              </p>
             </div>
+            {canEdit ? (
+              <div className="learning-admin-banner__actions">
+                <label>
+                  每日目标{" "}
+                  <input
+                    type="number"
+                    min={1}
+                    max={20}
+                    value={progress.dailyGoal}
+                    onChange={(event) =>
+                      updateProgress((current) => ({ ...current, dailyGoal: Number(event.target.value) }))
+                    }
+                  />{" "}
+                  项
+                </label>
+                <button type="button" onClick={discardDraft} disabled={!dirty}>
+                  <Undo2 size={15} /> 撤销
+                </button>
+                <button
+                  type="button"
+                  className="is-primary"
+                  onClick={saveProgress}
+                  disabled={!dirty || saveState === "saving"}
+                >
+                  <Save size={15} />{" "}
+                  {saveState === "saving" ? "保存中…" : saveState === "saved" ? "已保存" : "保存进度"}
+                </button>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        {loadError ? (
+          <p className="learning-message is-error">{loadError}，当前显示已发布的进度快照。</p>
+        ) : null}
+        {saveState === "error" ? (
+          <p className="learning-message is-error">保存没有成功，请确认当前页面由本地开发服务打开。</p>
+        ) : null}
+
+        <section className="learning-main" aria-label={learningViewTitle(view)}>
+          {view === "overview" ? (
+            <LearningOverview now={now} progress={progress} onNavigate={navigate} onSelectDay={selectDay} />
           ) : null}
-        </div>
-      ) : null}
-
-      {loadError ? <p className="learning-message is-error">{loadError}，当前显示已发布的进度快照。</p> : null}
-      {saveState === "error" ? <p className="learning-message is-error">保存没有成功，请确认当前页面由本地开发服务打开。</p> : null}
-
-      <section className="learning-metrics" aria-label="学习统计">
-        <MetricCard icon={Target} label="全部学习项" value={learningTasks.length} suffix="项" />
-        <MetricCard icon={Check} label="已经完成" value={completedCount} suffix="项" />
-        <MetricCard icon={Flame} label="连续学习" value={datedStats?.streak ?? 0} suffix="天" />
-        <MetricCard icon={CalendarDays} label="本月完成" value={datedStats?.monthCompleted ?? 0} suffix="项" />
-      </section>
-
-      <nav className="learning-track-tabs" aria-label="学习路线">
-        {learningTracks.map((track) => {
-          const stats = getTrackStats(track.id, progress)
-          return (
-            <button key={track.id} type="button" data-track={track.id} aria-current={activeTrackId === track.id ? "page" : undefined} onClick={() => setActiveTrackId(track.id)}>
-              <span>{track.shortTitle}</span><strong>{stats.percentage}%</strong><small>{stats.completed}/{stats.total}</small>
-            </button>
-          )
-        })}
-      </nav>
-
-      <div className="learning-layout">
-        <section className="learning-main" aria-label={`${activeTrack.title} 学习任务`}>
-          <TrackContent
-            key={activeTrack.id}
-            track={activeTrack}
-            progress={progress}
-            articles={articles}
-            canEdit={canEdit}
-            onToggle={toggleTask}
-            onSetCurrent={setCurrentTask}
-            onNoteChange={setTrackNote}
-          />
+          {view === "calendar" && now ? (
+            <LearningCalendar
+              date={selectedDay ?? now}
+              now={now}
+              progress={progress}
+              onSelectDay={selectDay}
+              onNavigate={navigate}
+            />
+          ) : null}
+          {view === "activity" && now ? (
+            <LearningHistory now={now} progress={progress} onNavigate={navigate} onSelectDay={selectDay} />
+          ) : null}
+          {view === "notes" ? <LearningNotes articles={articles} onNavigate={navigate} /> : null}
+          {activeTrack ? (
+            <>
+              <button type="button" className="learning-back" onClick={() => navigate("overview")}>
+                <ArrowLeft size={14} /> 返回学习总览
+              </button>
+              <TrackContent
+                key={activeTrack.id}
+                track={activeTrack}
+                progress={progress}
+                articles={articles}
+                canEdit={canEdit}
+                onToggle={toggleTask}
+                onSetCurrent={setCurrentTask}
+                onNoteChange={setTrackNote}
+              />
+            </>
+          ) : null}
         </section>
-        <aside className="learning-sidebar" aria-label="每日学习概览">
-          <TodayPanel now={now} progress={progress} activeTrackId={activeTrackId} />
-          <ActivityPanel now={now} progress={progress} />
-          <DistributionPanel progress={progress} />
-        </aside>
+        <footer className="learning-workspace-footer">
+          <span>进度更新于 {progress.updatedAt.slice(0, 10)}</span>
+        </footer>
       </div>
+      <LearningAside now={now} progress={progress} onSelectDay={selectDay} onNavigate={navigate} />
     </div>
   )
 }

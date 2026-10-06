@@ -1,4 +1,5 @@
-export type LearningTrackId = "nowcoder" | "hdu" | "ai-infra"
+export const learningTrackIds = ["nowcoder", "hdu", "regional-vp", "ai-infra", "agent"] as const
+export type LearningTrackId = typeof learningTrackIds[number]
 
 export interface LearningTask {
   id: string
@@ -19,7 +20,6 @@ export interface LearningTrack {
   id: LearningTrackId
   title: string
   shortTitle: string
-  eyebrow: string
   description: string
   sourceLabel: string
   sourceHref: string
@@ -148,12 +148,63 @@ const aiInfraUnits: LearningUnit[] = [
   },
 ]
 
+const regionalVpHref = "https://vjudge.net/contest"
+const agentCourseHref = "https://huggingface.co/learn/agents-course/unit0/introduction"
+
+// Starter checklists: the contest year, location and problem set can be recorded in the track note.
+const regionalVpUnits: LearningUnit[] = [
+  {
+    id: "regional-vp-icpc", title: "ICPC 区域赛 VP", description: "选一场区域赛，完整走过模拟、补题与复盘。", href: regionalVpHref,
+    tasks: [
+      { id: "regional-vp-icpc-select", label: "选择赛站与题单", summary: "记录年份、赛站、比赛链接和本次目标。" },
+      { id: "regional-vp-icpc-contest", label: "完成一次限时 VP", summary: "按正式赛时模拟，记录通过题数与罚时。" },
+      { id: "regional-vp-icpc-upsolve", label: "补齐赛中未通过题目", summary: "先独立思考，再整理题解与关键实现。" },
+      { id: "regional-vp-icpc-review", label: "整理赛后复盘", summary: "回顾读题、选题、配合与时间分配。" },
+    ],
+  },
+  {
+    id: "regional-vp-ccpc", title: "CCPC 区域赛 VP", description: "把模拟赛变成发现薄弱点的一次练习。", href: regionalVpHref,
+    tasks: [
+      { id: "regional-vp-ccpc-select", label: "选择赛站与题单", summary: "记录年份、赛站与计划练习的题目。" },
+      { id: "regional-vp-ccpc-contest", label: "完成一次限时 VP", summary: "记录过题顺序、卡题时间与提交情况。" },
+      { id: "regional-vp-ccpc-upsolve", label: "完成赛后补题", summary: "补齐关键知识点并重新独立实现。" },
+      { id: "regional-vp-ccpc-review", label: "整理训练笔记", summary: "提炼可复用的结论、模板与下一轮目标。" },
+    ],
+  },
+]
+
+const agentUnits: LearningUnit[] = [
+  {
+    id: "agent-foundation", title: "Agent 基础", description: "理解模型如何从回答问题走向完成任务。", href: agentCourseHref,
+    tasks: [
+      { id: "agent-foundation-loop", label: "理解 Agent 执行循环", summary: "梳理观察、推理、行动与反馈之间的关系。" },
+      { id: "agent-foundation-tools", label: "实现工具调用", summary: "定义工具参数，处理调用结果与失败重试。" },
+      { id: "agent-foundation-prompt", label: "设计任务指令", summary: "明确目标、上下文、输出格式与完成条件。" },
+    ],
+  },
+  {
+    id: "agent-workflow", title: "工作流与记忆", description: "让多步骤任务有状态、有上下文、可恢复。", href: agentCourseHref,
+    tasks: [
+      { id: "agent-workflow-state", label: "搭建多步骤工作流", summary: "实践任务拆分、路由、状态管理与人工确认。" },
+      { id: "agent-workflow-memory", label: "加入检索与记忆", summary: "区分对话上下文、长期记忆与知识检索。" },
+      { id: "agent-workflow-cooperate", label: "尝试多 Agent 协作", summary: "明确角色边界、交接信息与终止条件。" },
+    ],
+  },
+  {
+    id: "agent-project", title: "实践与评估", description: "用一个小项目，把学习沉淀为可验证的能力。", href: agentCourseHref,
+    tasks: [
+      { id: "agent-project-build", label: "完成一个 Agent 小项目", summary: "从学习助手、资料整理或自动化任务开始。" },
+      { id: "agent-project-evaluate", label: "建立评估样例", summary: "检查成功率、工具调用、耗时与成本。" },
+      { id: "agent-project-review", label: "记录失败案例与复盘", summary: "整理不稳定环节，并验证改进前后的表现。" },
+    ],
+  },
+]
+
 export const learningTracks: LearningTrack[] = [
   {
     id: "nowcoder",
     title: "牛客多校训练",
     shortTitle: "牛客",
-    eyebrow: "NOWCODER",
     description: "十场训练、逐题补齐。完成后把思路与易错点同步进算法笔记。",
     sourceLabel: "打开牛客训练",
     sourceHref: nowcoderUnits[0].href,
@@ -163,21 +214,37 @@ export const learningTracks: LearningTrack[] = [
     id: "hdu",
     title: "杭电 HDU 多校",
     shortTitle: "HDU",
-    eyebrow: "HANGZHOU DIANZI UNIVERSITY",
     description: "按场次推进 HDU 题单，记录关键算法、补题状态与复盘。",
     sourceLabel: "打开 HDU 训练",
     sourceHref: hduUnits[0].href,
     units: hduUnits,
   },
   {
+    id: "regional-vp",
+    title: "区域赛VP练习题",
+    shortTitle: "区域赛 VP",
+    description: "从一场完整的模拟赛开始，连接限时训练、赛后补题与复盘。具体赛站和题单记在下方进度说明中。",
+    sourceLabel: "选择 VP 比赛",
+    sourceHref: regionalVpHref,
+    units: regionalVpUnits,
+  },
+  {
     id: "ai-infra",
     title: "AI Infra 学习路线",
     shortTitle: "AI Infra",
-    eyebrow: "SYSTEMS FOR AI",
     description: "从前置基础到推理部署，按章节建立可检验、可复盘的知识树。",
     sourceLabel: "查看原始学习路线",
     sourceHref: aiInfraGuideHref,
     units: aiInfraUnits,
+  },
+  {
+    id: "agent",
+    title: "Agent学习",
+    shortTitle: "Agent 学习",
+    description: "从工具调用到工作流、记忆与评估，一步步做出能完成实际任务的 Agent。",
+    sourceLabel: "打开 Agent 课程",
+    sourceHref: agentCourseHref,
+    units: agentUnits,
   },
 ]
 

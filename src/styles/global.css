@@ -6,6 +6,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Learning accents inherit the shared interior-page typography and palette. */
+.learning-dashboard {
+  --learning-lavender: var(--primary);
+  --learning-blue: #6194be;
+  --learning-peach: #b78a50;
+  --learning-sage: #62977b;
+  --learning-rose: #b97998;
+}
+
 /* Short pages keep the footer at the viewport bottom; long pages flow naturally. */
 .site-page {
   display: flex;
