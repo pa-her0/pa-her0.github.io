@@ -607,10 +607,9 @@
 }
 
 .article-reading__aside .toc-nav__scroller {
-  height: 18rem;
-  max-height: calc(100dvh - 12rem);
+  max-height: min(32rem, calc(100dvh - 12rem));
   overflow-y: auto;
-  padding-right: 0.45rem;
+  padding: 0.2rem 0.45rem 0.4rem 0.4rem;
   background: transparent;
   overscroll-behavior: contain;
   scrollbar-color: rgba(108, 99, 255, 0.24) transparent;
@@ -628,62 +627,85 @@
 }
 
 .toc-nav__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin: 0;
-  padding: 0.15rem 0.2rem 0.8rem 0.9rem;
-  color: #504b72;
-  font-size: 0.74rem;
-  font-weight: 650;
-  letter-spacing: 0.08em;
+  padding: 0.15rem 0.2rem 0.85rem 0.35rem;
+  color: color-mix(in oklab, var(--foreground) 75%, var(--background));
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
+.toc-nav__header svg { width: 14px; height: 14px; }
+
+.rail-toc { --rail: var(--primary); }
+.rail-toc__body { position: relative; }
+.rail-toc__track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.rail-toc__trail { stroke: color-mix(in oklab, var(--foreground) 22%, var(--background)); }
+.rail-toc__node {
+  fill: transparent;
+  stroke: color-mix(in oklab, var(--foreground) 30%, var(--background));
+  transition: fill 200ms ease, stroke 200ms ease;
+}
+.rail-toc__node.is-covered { fill: var(--rail); stroke: var(--rail); }
+.rail-toc__plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  color: var(--primary);
+  filter: drop-shadow(0 1px 2px color-mix(in oklab, var(--primary) 22%, transparent));
+  pointer-events: none;
+}
+.rail-toc__plane svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
 .toc-nav__list {
-  display: grid;
-  gap: 0;
+  position: relative;
   margin: 0;
-  padding: 0.05rem 0 0.65rem;
-  border-left: 1px solid #dfdceb;
+  padding: 0;
   list-style: none;
 }
 
-.toc-nav__link {
-  position: relative;
-  display: block;
-  padding: 0.36rem 0.2rem 0.36rem 0.9rem;
-  color: #777487;
-  font-size: 0.75rem;
-  line-height: 1.55;
-  transition: color 160ms ease, transform 160ms ease;
+.toc-nav__item--section:not(:first-child) {
+  margin-top: 0.6rem;
 }
 
-.toc-nav__link::before {
-  position: absolute;
-  top: 0.36rem;
-  bottom: 0.36rem;
-  left: -1px;
-  width: 2px;
-  border-radius: 0 999px 999px 0;
-  background: transparent;
-  content: "";
+.toc-nav__link {
+  display: block;
+  padding: 0.4rem 0.2rem;
+  border-radius: 5px;
+  color: var(--muted-foreground);
+  font-size: 0.78rem;
+  line-height: 1.65;
+  text-decoration: none;
+  transition: color 160ms ease;
 }
 
 .toc-nav__link:hover {
-  color: #5548e6;
-  transform: translateX(2px);
+  color: var(--foreground);
 }
 
 .toc-nav__link.is-active {
-  color: #6c63ff;
+  color: var(--primary);
   font-weight: 650;
 }
 
-.toc-nav__link.is-active::before {
-  background: #6c63ff;
+.toc-nav__link:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--primary) 50%, transparent);
+  outline-offset: -2px;
 }
 
 .toc-nav__link--nested {
-  padding-left: 1.7rem;
-  color: #8b8798;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
 }
 
 .toc-nav__link span {
@@ -698,16 +720,15 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin: 0.65rem 0 0;
-  padding: 0.75rem 0.2rem 0 0.9rem;
-  border-top: 1px solid #dfdceb;
-  color: #8b8798;
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 0.66rem;
+  margin: 0.85rem 0 0;
+  padding: 0 0.75rem 0 0.45rem;
+  color: var(--muted-foreground);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .toc-nav__progress strong {
-  color: #5f5a73;
+  color: var(--primary);
   font-size: inherit;
   font-weight: 560;
 }
@@ -757,10 +778,6 @@
 .article-reading__toc-mobile .toc-nav__progress {
   margin-inline: 1.05rem;
   padding-bottom: 0.8rem;
-}
-
-.article-reading__toc-mobile .toc-nav__link::before {
-  left: 0.12rem;
 }
 
 .article-reading__footer {
@@ -1077,6 +1094,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .rail-toc__node,
+  .toc-nav__link,
   .article-reading__layout,
   .article-comments-shell,
   .article-reading__toc-mobile summary b,
