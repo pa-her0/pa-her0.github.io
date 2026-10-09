@@ -1,0 +1,30 @@
+---
+import "@/styles/home-transition.css"
+import { getTransitionCopy } from "@/lib/transition-copy"
+const pageCopy = getTransitionCopy(Astro.url.pathname)
+---
+
+<div id="home-transition" class="home-transition" data-page={pageCopy.key} transition:persist="home-transition" aria-hidden="true">
+  <div class="home-transition__paper"></div>
+  <div class="home-transition__pixels"></div>
+  <p class="home-transition__copy" lang="en">
+    {pageCopy.lines.map((line) => (
+      <span class="home-transition__line">
+        <span class="home-transition__word"><span>{line.before}</span></span>
+        <span class="home-transition__keyword">
+          <span class="home-transition__word"><span>{line.keyword}</span></span>
+          <svg class="home-transition__stroke" viewBox="0 0 420 30" preserveAspectRatio="none" fill="none">
+            <path pathLength="1" d="M6 20 C73 10 119 7 181 11 S306 20 413 7" />
+            <path pathLength="1" d="M21 25 C125 14 270 22 400 13" />
+          </svg>
+        </span>
+        <span class="home-transition__word"><span>{line.after}</span></span>
+      </span>
+    ))}
+  </p>
+</div>
+
+<script>
+  import { initHomeTransition } from "@/lib/home-transition"
+  initHomeTransition()
+</script>

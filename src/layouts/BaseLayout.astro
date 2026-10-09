@@ -5,6 +5,7 @@ import "@/styles/site-brand.css"
 import { ClientRouter } from "astro:transitions"
 import CursorTrail from "@/components/CursorTrail.astro"
 import SiteBentoMotion from "@/components/SiteBentoMotion.astro"
+import HomeTransition from "@/components/HomeTransition.astro"
 import { ArticleActions } from "@/components/article-actions"
 import { getLatestPublishedPostHref } from "@/lib/posts"
 
@@ -168,8 +169,30 @@ const resolvedTwitterDescription = twitterDescription || description
       })();
     </script>
     <ClientRouter />
+    <style is:inline>
+      html[data-home-transition="initial"]::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #f5f4f1;
+        pointer-events: auto;
+      }
+    </style>
+    <script is:inline>
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.dataset.homeTransition = "initial"
+        // A failed or blocked module must not keep the document scroll-locked.
+        window.setTimeout(() => {
+          if (document.documentElement.dataset.homeTransition === "initial") {
+            document.documentElement.removeAttribute("data-home-transition")
+          }
+        }, 7000)
+      }
+    </script>
   </head>
   <body class:list={["bg-background text-foreground", { "font-profile-interface": useInterfaceProfile }]}>
+    <HomeTransition />
     <slot />
     <ArticleActions
       articleMode={showArticleActions}

@@ -1,12 +1,9 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro"
-import { Footer } from "@/components/footer"
 import SiteHeader from "@/components/site-header.astro"
 import { Hero } from "@/components/hero"
-import { ScrollJourney } from "@/components/scroll-journey"
 import { getLatestPublishedPostHref } from "@/lib/posts"
 import "@/styles/home-minimal.css"
-import "@/styles/home-journey.css"
 
 const title = "Jiely 的博客"
 const description = "记录 AI、算法、科研与生活"
@@ -14,12 +11,12 @@ const articleHref = await getLatestPublishedPostHref()
 ---
 
 <BaseLayout {title} {description} fontProfile="interface">
+  <link slot="head" rel="preload" href="/brand/jiely-display-v2.png" as="image" />
+  <noscript slot="head"><style is:inline>.voxel-playground__fallback { opacity: 0.8 !important; }</style></noscript>
   <div class="jiely-home">
     <SiteHeader minimal />
     <main>
       <Hero {articleHref} client:load />
-      <ScrollJourney {articleHref} client:visible={{ rootMargin: "600px" }} />
     </main>
-    <Footer />
   </div>
 </BaseLayout>

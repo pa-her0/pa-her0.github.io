@@ -1,0 +1,47 @@
+.dino-runner { width: min(100%, 76rem); margin-inline: auto; color: var(--home-ink); user-select: none; }
+.dino-runner__header { display: flex; align-items: center; justify-content: space-between; min-height: 42px; gap: 1rem; padding-inline: 0.8rem; }
+.dino-runner__name { display: inline-flex; align-items: center; gap: 0.65rem; font-size: 0.76rem; letter-spacing: 0.14em; color: var(--home-muted); white-space: nowrap; }
+.dino-runner__name > span { width: 6px; height: 6px; background: var(--home-accent); border-radius: 50%; }
+.dino-runner__scoreboard { display: flex; align-items: center; gap: 1.6rem; }
+.dino-runner__best, .dino-runner__score { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--home-muted); font-size: 0.7rem; }
+.dino-runner__scoreboard strong { min-width: 5ch; font-family: var(--font-mono), monospace; font-size: 1rem; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: 0.05em; }
+.dino-runner__score strong { color: var(--home-accent); }
+.dino-runner__actions { display: flex; gap: 0.25rem; }
+.dino-runner__actions button { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 50%; color: var(--home-muted); background: transparent; cursor: pointer; transition: background 160ms ease, color 160ms ease; }
+.dino-runner__actions button:hover:not(:disabled) { background: rgb(108 99 255 / 7%); color: var(--home-accent); }
+.dino-runner__actions button:disabled { opacity: 0.28; cursor: default; }
+.dino-runner__scene { position: relative; isolation: isolate; margin-top: 0.5rem; }
+.dino-runner__canvas { display: block; width: 100%; height: clamp(280px, 51svh, 550px); cursor: pointer; touch-action: pan-y; }
+.dino-runner__canvas:focus-visible { outline: 1px dashed color-mix(in srgb, var(--home-accent) 40%, transparent); outline-offset: 6px; border-radius: 8px; }
+.dino-runner__invitation { position: absolute; top: 39%; left: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; flex-direction: column; gap: 1.2rem; width: max-content; max-width: 90%; text-align: center; pointer-events: none; }
+.dino-runner__invitation p { margin: 0; color: var(--home-muted); font-size: clamp(0.95rem, 1.3vw, 1.1rem); font-weight: 400; letter-spacing: 0.14em; }
+.dino-runner__start { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; min-height: 43px; padding: 0.65rem 1.3rem; border: 0; border-radius: 999px; background: rgb(108 99 255 / 8%); color: var(--home-accent); font-size: 0.79rem; font-weight: 550; cursor: pointer; pointer-events: auto; transition: background 160ms ease, transform 160ms ease; }
+.dino-runner__start:hover { background: rgb(108 99 255 / 14%); transform: translateY(-2px); }
+.dino-runner__start:disabled { cursor: wait; opacity: 0.6; }
+.dino-runner__footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; padding: 0.35rem 0.8rem 0; color: var(--home-muted); font-size: 0.7rem; }
+.dino-runner__keys { display: flex; align-items: center; gap: 1.2rem; }
+.dino-runner__keys > span { display: flex; align-items: center; gap: 0.4rem; }
+.dino-runner kbd { display: inline-flex; justify-content: center; align-items: center; min-width: 23px; height: 22px; padding: 0 0.35rem; border-radius: 4px; background: rgb(113 111 128 / 6%); font: inherit; font-size: 0.66rem; }
+.dino-runner__rule { display: flex; align-items: center; gap: 0.55rem; white-space: nowrap; }
+.dino-runner__rule b { color: var(--home-accent); font-family: var(--font-mono), monospace; font-weight: 500; }
+.dino-runner__rule i { opacity: 0.5; font-style: normal; }
+.dino-runner__touch { display: none; align-items: center; gap: 0.25rem; min-height: 44px; padding: 0.5rem 0.75rem; border: 0; border-radius: 999px; background: rgb(108 99 255 / 8%); color: var(--home-accent); font: inherit; cursor: pointer; touch-action: manipulation; }
+.dino-runner button:focus-visible { outline: 2px solid var(--home-accent); outline-offset: 4px; }
+@media (max-width: 640px) {
+  .dino-runner__header { flex-wrap: wrap; gap: 0.5rem; padding-inline: 0.25rem; }
+  .dino-runner__name { font-size: 0.7rem; letter-spacing: 0.05em; gap: 0.4rem; }
+  .dino-runner__scoreboard { gap: 0.65rem; }
+  .dino-runner__best, .dino-runner__score { gap: 0.3rem; }
+  .dino-runner__scoreboard strong { font-size: 0.8rem; }
+  .dino-runner__best > span, .dino-runner__score > span { display: none; }
+  .dino-runner__actions { gap: 0; }
+  .dino-runner__actions button { width: 32px; height: 36px; }
+  .dino-runner__canvas { height: clamp(280px, 45svh, 430px); }
+  .dino-runner__invitation { top: 38%; }
+  .dino-runner__footer { padding-inline: 0.25rem; font-size: 0.66rem; }
+  .dino-runner__rule { gap: 0.4rem; }
+  .dino-runner__keys { display: none; }
+  .dino-runner__touch { display: inline-flex; }
+}
+@media (pointer: coarse) { .dino-runner__keys { display: none; } .dino-runner__touch { display: inline-flex; } }
+@media (prefers-reduced-motion: reduce) { .dino-runner button { transition: none; } .dino-runner__start:hover { transform: none; } }

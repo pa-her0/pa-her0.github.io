@@ -4,21 +4,22 @@ import SiteHeader from "@/components/site-header.astro"
 import { Footer } from "@/components/footer"
 import { LearningDashboard } from "@/components/learning-dashboard"
 import learningProgress from "@/data/learning-progress.json"
-import { getSortedPosts } from "@/lib/posts"
+import { normalizeLearningProgress, toLocalDateKey } from "@/lib/learning-progress"
 import { buildLearningArticles } from "@/lib/learning-articles"
-import { normalizeLearningProgress } from "@/lib/learning-progress"
+import { getSortedPosts } from "@/lib/posts"
 import "@/styles/learning-dashboard.css"
 
-const posts = await getSortedPosts(true)
-const articles = buildLearningArticles(posts)
 const initialProgress = normalizeLearningProgress(learningProgress)
+const linkedArticles = Object.values(buildLearningArticles((await getSortedPosts(true)).filter((post) => !post.data.draft))).flat()
+const articles = [...new Map(linkedArticles.map((article) => [article.href, article])).values()].sort((a, b) => b.updated.localeCompare(a.updated))
+const initialDay = toLocalDateKey()
 ---
 
-<BaseLayout title="学习进度 | Jiely 的博客" description="牛客、HDU、区域赛 VP、AI Infra 与 Agent 的学习看板、日历和进度记录" fontProfile="interface">
+<BaseLayout title="学习进度 | Jiely 的博客" description="牛客、HDU、区域赛 VP、AI Infra 与 Agent 的学习进度" fontProfile="interface">
   <div class="site-page learning-page">
     <SiteHeader />
     <main>
-      <LearningDashboard {initialProgress} {articles} client:load />
+      <LearningDashboard {initialProgress} {articles} {initialDay} client:load />
     </main>
     <Footer />
   </div>

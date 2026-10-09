@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-06T13:08:36.663Z",
+  "updatedAt": "2026-10-08T13:38:33.862Z",
   "dailyGoal": 10,
   "completedAt": {
     "nowcoder-1-a": "2026-09-30",
@@ -10,10 +10,11 @@
     "nowcoder-1-g": "2026-10-01",
     "nowcoder-1-h": "2026-10-03",
     "nowcoder-2-m": "2026-10-03",
-    "nowcoder-2-n": "2026-10-06"
+    "nowcoder-2-n": "2026-10-06",
+    "nowcoder-2-b": "2026-10-08"
   },
   "currentTaskByTrack": {
-    "nowcoder": "nowcoder-1-a",
+    "nowcoder": "nowcoder-2-b",
     "hdu": "hdu-1-1001",
     "ai-infra": "ai-infra-0-python"
   },

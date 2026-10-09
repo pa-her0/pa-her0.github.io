@@ -2,7 +2,6 @@
 .site-page :where(
   .site-panel,
   .article-preview,
-  .project-folder-hero,
   .project-file,
   .friend-bento-card,
   .friends-info-card,
@@ -75,7 +74,6 @@
   .site-page :where(
     .site-panel,
     .article-preview,
-    .project-folder-hero,
     .project-file,
     .friend-bento-card,
     .friends-info-card,
@@ -99,7 +97,6 @@
   .site-page :where(
     .site-panel,
     .article-preview,
-    .project-folder-hero,
     .project-file,
     .friend-bento-card,
     .friends-info-card,
@@ -116,7 +113,6 @@
   .site-page :where(
     .site-panel,
     .article-preview,
-    .project-folder-hero,
     .project-file,
     .friend-bento-card,
     .friends-info-card,
