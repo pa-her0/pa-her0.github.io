@@ -1,13 +1,13 @@
 .project-folder-stage {
-  --folder-scale: 1.14;
+  --folder-scale: 0.9;
   position: relative;
-  min-height: 550px;
-  height: calc(100svh - 5rem);
+  min-width: 0;
+  height: 500px;
 }
 
 .project-folder-scale {
   position: absolute;
-  top: calc(50% + 65px);
+  top: calc(50% + 38px);
   left: 50%;
   width: 321px;
   height: 270px;
@@ -147,15 +147,13 @@
 .folder-project-card__caption > span { color: var(--muted-foreground); font-size: 8px; line-height: 1.5; }
 
 @media (max-width: 900px) {
-  .project-folder-stage { --folder-scale: 1; min-height: 510px; }
-  .project-folder-scale { top: calc(50% + 60px); }
+  .project-folder-stage { height: 440px; }
+  .project-folder-scale { top: calc(50% + 40px); }
 }
 
 @media (max-width: 640px) {
-  .project-folder-stage { --folder-scale: 0.78; min-height: 410px; }
-  .project-folder-scale { top: calc(50% + 35px); }
+  .project-folder-stage { height: 340px; }
+  .project-folder-scale { top: calc(50% + 26px); }
 }
 
-@media (max-width: 440px) { .project-folder-stage { --folder-scale: 0.68; } }
-@media (max-width: 380px) { .project-folder-stage { --folder-scale: 0.6; } }
 @media (prefers-reduced-motion: reduce) { .folder-project-card { transition: none; } }

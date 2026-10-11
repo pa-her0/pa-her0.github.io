@@ -10,7 +10,7 @@ type IntroRun = {
   settling: boolean
 }
 
-/** One persistent overlay with destination-specific copy for page navigation. */
+/** Opening intro and main-navigation transitions share one persistent overlay. */
 export function initHomeTransition() {
   const overlay = document.querySelector<HTMLElement>("#home-transition")
   if (!overlay || overlay.dataset.initialized) return
@@ -172,8 +172,9 @@ export function initHomeTransition() {
 
   document.addEventListener("astro:before-preparation", (event) => {
     if (!isTransitionBeforePreparationEvent(event)) return
-    const samePage = event.from.pathname === event.to.pathname && event.from.search === event.to.search
-    if (samePage || event.from.pathname === event.to.pathname) {
+    const fromMainNavigation = event.sourceElement?.closest("a[data-page-transition]")
+    // Article links, collection navigation and history traversal stay immediate.
+    if (!fromMainNavigation || event.navigationType === "traverse" || event.from.pathname === event.to.pathname) {
       finish()
       return
     }
@@ -191,9 +192,10 @@ export function initHomeTransition() {
   })
 
   document.addEventListener("astro:before-swap", (event) => {
-    if (!isTransitionBeforeSwapEvent(event) || !current) return
-    event.newDocument.documentElement.dataset.homeTransition = "active"
-    // The pixel overlay owns this transition; don't crossfade a second snapshot.
+    if (!isTransitionBeforeSwapEvent(event)) return
+    if (current) event.newDocument.documentElement.dataset.homeTransition = "active"
+    else event.newDocument.documentElement.removeAttribute("data-home-transition")
+    // Main navigation uses the overlay; all other links swap without a crossfade.
     void event.viewTransition.ready.catch(() => undefined)
     event.viewTransition.skipTransition()
   })

@@ -77,7 +77,7 @@ const articleHref = await getLatestPublishedPostHref()
               <b aria-hidden="true">⌄</b>
             </summary>
             <div class="toc-panel">
-              <TableOfContents showHeader={false} client:only="react" />
+              <TableOfContents showHeader={false} client:load />
             </div>
           </details>
         </div>
@@ -110,7 +110,7 @@ const articleHref = await getLatestPublishedPostHref()
 
       <aside class="article-reading__aside" aria-label="文章目录">
         <div class="toc-panel">
-          <TableOfContents client:only="react" />
+          <TableOfContents client:load />
         </div>
       </aside>
     </div>

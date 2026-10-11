@@ -1,0 +1,134 @@
+---
+type Tool = { name: string; icon: string; href: string; monochrome?: boolean }
+type Tile = { row: number; col: number; tool?: Tool }
+
+// Keep the reference's staggered five-by-five arrangement and its quiet empty tiles.
+const tiles: Tile[] = [
+  { row: 1, col: 2 },
+  { row: 1, col: 4, tool: { name: 'Gemini', icon: '/icons/tools/gemini.svg', href: 'https://gemini.google.com/' } },
+  { row: 2, col: 1 },
+  { row: 2, col: 3, tool: { name: 'GPT', icon: '/icons/tools/gpt.svg', href: 'https://chatgpt.com/', monochrome: true } },
+  { row: 2, col: 5, tool: { name: 'Claude Code', icon: '/icons/tools/claude-code.svg', href: 'https://claude.com/product/claude-code' } },
+  { row: 3, col: 2, tool: { name: 'VS Code', icon: '/icons/tools/vscode.svg', href: 'https://code.visualstudio.com/' } },
+  { row: 3, col: 4, tool: { name: 'Sublime Text', icon: '/icons/tools/sublime.svg', href: 'https://www.sublimetext.com/' } },
+  { row: 4, col: 1 },
+  { row: 4, col: 3, tool: { name: 'Typora', icon: '/icons/tools/typora.png', href: 'https://typora.io/' } },
+  { row: 4, col: 5, tool: { name: 'Python', icon: '/icons/tech/python.svg', href: 'https://www.python.org/' } },
+  { row: 5, col: 2, tool: { name: 'Git', icon: '/icons/tech/git.svg', href: 'https://git-scm.com/' } },
+  { row: 5, col: 4, tool: { name: 'Astro', icon: '/icons/tech/astro.svg', href: 'https://astro.build/' } },
+]
+---
+
+<nav class="project-tools" aria-label="创作与开发工具">
+  <ul class="project-tool-grid">
+    {tiles.map(({ row, col, tool }) => (
+      <li
+        class:list={['project-tool-tile', { 'project-tool-tile--empty': !tool }]}
+        style={{ gridRow: row, gridColumn: col }}
+        aria-hidden={!tool ? 'true' : undefined}
+      >
+        {tool ? (
+          <a class="project-tool-tile__link" href={tool.href} target="_blank" rel="noopener noreferrer" aria-label={`${tool.name} 官网（新窗口打开）`}>
+            {tool.monochrome ? (
+              <span class="project-tool-tile__icon project-tool-tile__icon--monochrome" style={{ maskImage: `url('${tool.icon}')` }} aria-hidden="true" />
+            ) : (
+              <img
+                class="project-tool-tile__icon"
+                src={tool.icon}
+                alt=""
+                width="40"
+                height="40"
+                decoding="async"
+                draggable="false"
+              />
+            )}
+            <span class="project-tool-tile__name" aria-hidden="true">{tool.name}</span>
+          </a>
+        ) : <span class="project-tool-tile__placeholder" />}
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .project-tools { width: 100%; max-width: 29rem; justify-self: end; }
+  .project-tool-grid {
+    display: grid;
+    width: 100%;
+    aspect-ratio: 1;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(5, minmax(0, 1fr));
+    margin: 0;
+    padding: 4px;
+    list-style: none;
+    mask-image: radial-gradient(ellipse at center, black 48%, rgb(0 0 0 / 96%) 72%, transparent 100%);
+  }
+  .project-tool-tile { position: relative; min-width: 0; min-height: 0; }
+  .project-tool-tile__link,
+  .project-tool-tile__placeholder {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in oklab, var(--foreground) 9%, transparent);
+    border-radius: 13px;
+    background: color-mix(in oklab, var(--card) 88%, var(--background));
+  }
+  .project-tool-tile__link {
+    color: var(--muted-foreground);
+    box-shadow: 0 2px 3px color-mix(in oklab, var(--foreground) 5%, transparent);
+    text-decoration: none;
+    transition: transform 240ms cubic-bezier(.2, .8, .2, 1), box-shadow 240ms ease, border-color 240ms ease;
+  }
+  .project-tool-tile__placeholder {
+    opacity: 0.5;
+    background: color-mix(in oklab, var(--muted) 18%, transparent);
+  }
+  .project-tool-tile__icon {
+    width: 34%;
+    height: 34%;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    transition: transform 240ms ease;
+  }
+  .project-tool-tile__icon--monochrome {
+    background: var(--foreground);
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    mask-position: center;
+  }
+  .project-tool-tile__name {
+    position: absolute;
+    inset-inline: 2px;
+    bottom: 10%;
+    font-family: var(--font-sans);
+    font-size: clamp(8px, .75vw, 10px);
+    line-height: 1.3;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(3px);
+    transition: opacity 180ms ease, transform 180ms ease;
+    pointer-events: none;
+  }
+  .project-tool-tile__link:is(:hover, :focus-visible) {
+    z-index: 1;
+    border-color: color-mix(in oklab, var(--primary) 25%, transparent);
+    box-shadow: 0 8px 20px color-mix(in oklab, var(--primary) 10%, transparent);
+    transform: translateY(-4px) rotate(-2deg);
+  }
+  .project-tool-tile__link:focus-visible { outline: 2px solid var(--primary); outline-offset: -3px; }
+  .project-tool-tile__link:is(:hover, :focus-visible) .project-tool-tile__icon { transform: translateY(-5px); }
+  .project-tool-tile__link:is(:hover, :focus-visible) .project-tool-tile__name { opacity: 1; transform: none; }
+  @media (max-width: 900px) {
+    .project-tools { width: min(100%, 25rem); justify-self: center; }
+    .project-tool-tile__name { font-size: 9px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .project-tool-tile__link, .project-tool-tile__icon, .project-tool-tile__name { transition: none; }
+    .project-tool-tile__link:is(:hover, :focus-visible),
+    .project-tool-tile__link:is(:hover, :focus-visible) .project-tool-tile__icon { transform: none; }
+  }
+</style>

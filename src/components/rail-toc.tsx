@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 export type RailTocItem = { id: string; label: string; depth?: number }
 
 type Point = { x: number; y: number }
-type Geometry = { nodes: Point[]; d: string; width: number; height: number }
+type Geometry = { nodes: Point[]; d: string; segments: string[]; width: number; height: number }
 type RailTocProps = {
   items: RailTocItem[]
   offset?: number
@@ -24,41 +24,33 @@ const PLANE = "M12 2 20.5 21 12 17.5 3.5 21z"
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect
 
 function buildPath(nodes: Point[]) {
-  if (!nodes.length) return ""
+  if (!nodes.length) return { d: "", segments: [] }
   const point = ({ x, y }: Point) => `${Number(x.toFixed(2))} ${Number(y.toFixed(2))}`
   const commands = [`M${nodes[0].x} 0`, `L${point(nodes[0])}`]
+  const segments = [commands.join(" ")]
   for (let i = 1; i < nodes.length; i++) {
     const from = nodes[i - 1]
     const to = nodes[i]
     const span = to.y - from.y
+    let curve: string
     if (from.x === to.x) {
       // A gentle alternating bow gives siblings a flowing rhythm. Vertical
       // tangents at each node keep the plane's heading continuous at joins.
       const sway = Math.min(5 + (i % 3) * 0.6, span * 0.18) * (i % 2 ? 1 : -1)
       const middle = { x: from.x + sway, y: from.y + span / 2 }
-      commands.push(
+      curve = [
         `C${point({ x: from.x, y: from.y + span * 0.22 })} ${point({ x: middle.x, y: middle.y - span * 0.2 })} ${point(middle)}`,
         `C${point({ x: middle.x, y: middle.y + span * 0.2 })} ${point({ x: to.x, y: to.y - span * 0.22 })} ${point(to)}`,
-      )
+      ].join(" ")
     } else {
-      // Keep control-point heights ordered: lengthAtY relies on a path that
-      // always travels downward, including these broader chapter transitions.
+      // Ordered control points keep the plane moving down through each bend.
       const bend = Math.min(24, span * 0.48)
-      commands.push(`C${point({ x: from.x, y: from.y + bend })} ${point({ x: to.x, y: to.y - bend })} ${point(to)}`)
+      curve = `C${point({ x: from.x, y: from.y + bend })} ${point({ x: to.x, y: to.y - bend })} ${point(to)}`
     }
+    commands.push(curve)
+    segments.push(`M${point(from)} ${curve}`)
   }
-  return commands.join(" ")
-}
-
-function lengthAtY(path: SVGPathElement, total: number, y: number) {
-  let lo = 0
-  let hi = total
-  for (let i = 0; i < 24; i++) {
-    const mid = (lo + hi) / 2
-    if (path.getPointAtLength(mid).y < y) lo = mid
-    else hi = mid
-  }
-  return hi
+  return { d: commands.join(" "), segments }
 }
 
 export function RailToc({ items, offset = 96, indent = 18, showHeader = true, autoScroll = true }: RailTocProps) {
@@ -167,6 +159,7 @@ export function RailToc({ items, offset = 96, indent = 18, showHeader = true, au
     pinned.current = null
 
     const measure = () => {
+      const diagnosticStarted = performance.now()
       frame = 0
       if (disposed) return
       visible.current = list.offsetHeight > 0
@@ -190,12 +183,13 @@ export function RailToc({ items, offset = 96, indent = 18, showHeader = true, au
       })
       const nextGeometry = {
         nodes,
-        d: buildPath(nodes),
+        ...buildPath(nodes),
         width: Math.max(...nodes.map((node) => node.x)) + RAIL_X + 4,
         height: list.offsetHeight,
       }
       setGeometry((previous) => previous?.d === nextGeometry.d && previous.height === nextGeometry.height ? previous : nextGeometry)
       sync()
+      console.info('[toc-diagnostic] measure', Math.round(performance.now() - diagnosticStarted))
     }
     const scheduleMeasure = () => {
       if (!frame) frame = requestAnimationFrame(measure)
@@ -221,8 +215,20 @@ export function RailToc({ items, offset = 96, indent = 18, showHeader = true, au
   useIsoLayoutEffect(() => {
     const path = pathRef.current
     if (!path || !geometry) return
+    const diagnosticStarted = performance.now()
     total.current = path.getTotalLength()
-    lengths.current = geometry.nodes.map((node) => lengthAtY(path, total.current, node.y))
+    // Measure each short curve once. Repeatedly searching the full SVG path
+    // for every heading can block the main thread for a second on long TOCs.
+    const segment = document.createElementNS("http://www.w3.org/2000/svg", "path")
+    let cumulative = 0
+    lengths.current = geometry.segments.map((d) => {
+      segment.setAttribute("d", d)
+      cumulative += segment.getTotalLength()
+      return cumulative
+    })
+    // Account for rounding differences between per-segment and full-path lengths.
+    if (cumulative) lengths.current = lengths.current.map((length) => length * total.current / cumulative)
+    console.info('[toc-diagnostic] path', geometry.nodes.length, Math.round(performance.now() - diagnosticStarted))
     sync()
     pose(distance.get())
   }, [geometry, sync, pose, distance])

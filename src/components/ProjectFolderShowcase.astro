@@ -1,13 +1,16 @@
 ---
 import { ProjectFolder } from '@/components/project-folder'
+import ProjectToolGrid from '@/components/ProjectToolGrid.astro'
 ---
 
 <section class="project-folder-hero" aria-label="项目">
   <h1 class="sr-only">项目</h1>
-  <div class="project-folder-hero__word" aria-hidden="true">
-    PROJECT<br />ARCHIVE
+  <div class="project-folder-hero__layout">
+    <div class="project-folder-hero__projects">
+      <ProjectFolder client:load />
+    </div>
+    <ProjectToolGrid />
   </div>
-  <ProjectFolder client:load />
 </section>
 
 <style>
@@ -18,34 +21,37 @@ import { ProjectFolder } from '@/components/project-folder'
     isolation: isolate;
     color: var(--foreground);
   }
-  .project-folder-hero::before {
+  .project-folder-hero__layout {
+    display: grid;
+    width: min(calc(100% - 3rem), 78rem);
+    min-height: calc(100svh - 5rem);
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 4vw, 4.5rem);
+    margin-inline: auto;
+    padding-block: 3rem 5rem;
+  }
+  .project-folder-hero__projects {
+    position: relative;
+    min-width: 0;
+  }
+  .project-folder-hero__projects::before {
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: radial-gradient(ellipse at 50% 56%, color-mix(in oklab, var(--primary) 7%, transparent), transparent 52%);
+    background: radial-gradient(ellipse at 50% 58%, color-mix(in oklab, var(--primary) 8%, transparent), transparent 65%);
     content: '';
     pointer-events: none;
   }
-  .project-folder-hero__word {
-    position: absolute;
-    top: 54%;
-    left: 50%;
-    z-index: -1;
-    color: transparent;
-    font-family: var(--font-sans);
-    font-size: clamp(6rem, 17vw, 13rem);
-    font-weight: 850;
-    line-height: 0.72;
-    letter-spacing: -0.09em;
-    opacity: 0.07;
-    pointer-events: none;
-    text-align: center;
-    -webkit-text-stroke: 1px var(--foreground);
-    transform: translate(-50%, -30%);
-    user-select: none;
-    white-space: nowrap;
+  @media (max-width: 900px) {
+    .project-folder-hero__layout {
+      width: min(calc(100% - 2.5rem), 38rem);
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+      padding-block: 1rem 4rem;
+    }
   }
   @media (max-width: 640px) {
-    .project-folder-hero__word { font-size: 6rem; }
+    .project-folder-hero__layout { width: calc(100% - 2rem); gap: 0; padding-top: 0; }
   }
 </style>

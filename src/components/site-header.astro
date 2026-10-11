@@ -66,6 +66,7 @@ const mobileItems = [
         <a
           href={item.href}
           data-astro-prefetch
+          data-page-transition
           class="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 relative group"
         >
           {item.name}
@@ -131,6 +132,7 @@ const mobileItems = [
         <a
           href={item.href}
           data-astro-prefetch
+          data-page-transition
           class="mobile-nav-item group text-2xl font-medium tracking-tight text-foreground"
           style={`--stagger: ${60 + i * 40}ms`}
         >

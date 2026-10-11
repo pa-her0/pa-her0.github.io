@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useId, useRef, useState } from "react"
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { projects } from "@/data/projects"
 import "@/styles/project-folder.css"
@@ -23,17 +23,24 @@ export function ProjectFolder() {
   const cardsId = `project-folder-cards-${instanceId}`
   const filterId = `project-folder-inset-${instanceId}`
   const toggleRef = useRef<HTMLButtonElement>(null)
+  const stageRef = useRef<HTMLDivElement>(null)
   const [isHovered, setIsHovered] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [activeCard, setActiveCard] = useState<number | null>(null)
-  const [compact, setCompact] = useState(false)
+  const [layout, setLayout] = useState({ compact: false, scale: 0.9 })
 
   useEffect(() => {
-    const media = window.matchMedia("(max-width: 640px)")
-    const sync = () => setCompact(media.matches)
-    sync()
-    media.addEventListener("change", sync)
-    return () => media.removeEventListener("change", sync)
+    const stage = stageRef.current
+    if (!stage) return
+    // Fit the fan to its column, including when the two-column page stacks.
+    const observer = new ResizeObserver(([entry]) => {
+      const width = entry.contentRect.width
+      const compact = width < 440
+      const scale = Math.min(1.02, (width - 20) / (compact ? 510 : 650))
+      setLayout((current) => current.compact === compact && current.scale === scale ? current : { compact, scale })
+    })
+    observer.observe(stage)
+    return () => observer.disconnect()
   }, [])
 
   const close = () => {
@@ -42,7 +49,7 @@ export function ProjectFolder() {
   }
 
   return (
-    <div className="project-folder-stage">
+    <div ref={stageRef} className="project-folder-stage" style={{ "--folder-scale": layout.scale } as CSSProperties}>
       <div className="project-folder-scale">
         <div
           className="project-folder"
@@ -127,7 +134,7 @@ export function ProjectFolder() {
                   key={project.name}
                   initial={false}
                   animate={{
-                    x: pose[0] * (isOpen && compact ? 0.68 : 1),
+                    x: pose[0] * (isOpen && layout.compact ? 0.68 : 1),
                     y: pose[1] - (active ? 20 : 0),
                     rotate: active ? 0 : pose[2],
                     scale: active ? 1.06 : 1,

@@ -168,7 +168,47 @@ const resolvedTwitterDescription = twitterDescription || description
         }
       })();
     </script>
-    <ClientRouter />
+    <script is:inline>
+      // HomeTransition owns page animations. Skip native snapshots immediately:
+      // astro:before-swap runs only after the browser has captured the old page.
+      (() => {
+        if (typeof document.startViewTransition === 'function') {
+          const start = document.startViewTransition.bind(document)
+          document.startViewTransition = (...args) => {
+            const transition = start(...args)
+            transition.ready.catch(() => {})
+            transition.skipTransition()
+            return transition
+          }
+        }
+      })()
+    </script>
+    <ClientRouter fallback="swap" />
+    {import.meta.env.DEV && <script is:inline>
+      (() => {
+        let started = 0
+        let destination = ''
+        const log = (phase) => {
+          if (started) console.info('[navigation-diagnostic]', destination, phase, Math.round(performance.now() - started))
+        }
+        document.addEventListener('astro:before-preparation', (event) => {
+          started = performance.now()
+          destination = event.to.pathname
+          log('prepare')
+        })
+        for (const phase of ['after-preparation', 'before-swap', 'after-swap', 'page-load']) {
+          document.addEventListener(`astro:${phase}`, () => {
+            log(phase)
+            if (phase === 'page-load') requestAnimationFrame(() => requestAnimationFrame(() => log('painted')))
+          })
+        }
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (started && performance.now() - started < 5000) console.info('[navigation-longtask]', destination, Math.round(entry.duration))
+          }
+        }).observe({ type: 'longtask' })
+      })()
+    </script>}
     <style is:inline>
       html[data-home-transition="initial"]::before {
         content: "";
