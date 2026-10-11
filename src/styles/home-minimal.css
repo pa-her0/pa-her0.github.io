@@ -56,7 +56,7 @@ body:has(.jiely-home) { overflow: hidden; }
   display: block;
   width: 100%;
   height: auto;
-  mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 76%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent 100%);
 }
 .voxel-playground__canvas { opacity: 0; cursor: crosshair; touch-action: none; transition: opacity 400ms ease; }
 .voxel-playground__canvas > :is(canvas, svg) { display: block; width: 100%; height: 100%; background: transparent !important; }

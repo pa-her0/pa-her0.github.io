@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import type { VoxelScene } from "@/lib/voxel-scene"
+import { DINOSAUR_CELLS } from "@/data/voxel-dinosaur"
 
 // Rendered before WebGL is ready, and retained when graphics are unavailable.
 function VoxelBackdrop() {
@@ -15,11 +16,11 @@ function VoxelBackdrop() {
       <g transform="translate(600 280) rotate(-12) scale(1 .48) rotate(45)">
         <rect x="-420" y="-420" width="840" height="840" fill="url(#voxel-grid)" />
       </g>
-      {[[260, 300], [760, 190], [940, 365], [485, 235], [660, 375]].map(([x, y]) => (
-        <g key={x} transform={`translate(${x} ${y})`}>
-          <path d="M0-48 29-35 0-20-29-34Z" fill="var(--voxel-top)" />
-          <path d="M-29-34 0-20V14L-29 0Z" fill="var(--home-accent)" />
-          <path d="M0-20 29-35V0L0 14Z" fill="var(--voxel-side)" />
+      {[...DINOSAUR_CELLS].sort((a, b) => a.z - b.z || a.y - b.y || b.x - a.x).map(({ x, y, z }) => (
+        <g key={`${x}:${y}:${z}`} transform={`translate(${592 + x * 32 + z * 13} ${508 - y * 32 - z * 8})`}>
+          <path d="M0-32 13-40 45-40 32-32Z" fill="var(--voxel-top)" />
+          <path d="M32-32 45-40V-8L32 0Z" fill="var(--voxel-side)" />
+          <path d="M0-32H32V0H0Z" fill="var(--home-accent)" />
         </g>
       ))}
     </svg>
@@ -30,7 +31,7 @@ export function VoxelPlayground() {
   const canvasRef = useRef<HTMLDivElement>(null)
   const sceneRef = useRef<VoxelScene | null>(null)
   const [status, setStatus] = useState<"loading" | "ready" | "fallback">("loading")
-  const [count, setCount] = useState(6)
+  const [count, setCount] = useState(DINOSAUR_CELLS.length)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -70,7 +71,7 @@ export function VoxelPlayground() {
         className="voxel-playground__canvas"
         tabIndex={status === "ready" ? 0 : -1}
         role="application"
-        aria-label="立体方块画布"
+        aria-label="恐龙积木画布"
         aria-describedby="voxel-keyboard-instructions"
         aria-hidden={status === "fallback" ? true : undefined}
       />

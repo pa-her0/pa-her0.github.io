@@ -5,8 +5,9 @@ import {
   Vector2, WebGLRenderer,
 } from "three"
 import { SVGRenderer } from "three/addons/renderers/SVGRenderer.js"
+import { DINOSAUR_CELLS, DINOSAUR_SIZE, type VoxelCell } from "@/data/voxel-dinosaur"
 
-type Cell = { x: number; y: number; z: number }
+type Cell = VoxelCell
 type Block = { cell: Cell; mesh: Mesh<BoxGeometry, MeshLambertMaterial> }
 type SceneOptions = {
   background: string
@@ -18,14 +19,11 @@ export type VoxelScene = { dispose: () => void }
 
 const CELL_SIZE = 44
 const HALF_GRID = 12
-const LIMIT = 160
-const INITIAL_CELLS: Cell[] = [
-  { x: -7, y: 0, z: 4 }, { x: -5, y: 0, z: -4 },
-  { x: 2, y: 0, z: -6 }, { x: 7, y: 0, z: -2 },
-  { x: 8, y: 0, z: 3 }, { x: 8, y: 1, z: 3 },
-]
+const LIMIT = 360
+const MAX_HEIGHT = 18
+const LOOK_HEIGHT = DINOSAUR_SIZE.height * CELL_SIZE * 0.55
 const sameCell = (a: Cell, b: Cell) => a.x === b.x && a.y === b.y && a.z === b.z
-const inGrid = ({ x, y, z }: Cell) => x >= -HALF_GRID && x < HALF_GRID && z >= -HALF_GRID && z < HALF_GRID && y >= 0 && y < 9
+const inGrid = ({ x, y, z }: Cell) => x >= -HALF_GRID && x < HALF_GRID && z >= -HALF_GRID && z < HALF_GRID && y >= 0 && y < MAX_HEIGHT
 
 /** An original, event-rendered voxel playground. No continuous idle render loop. */
 export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions): VoxelScene {
@@ -101,8 +99,8 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
   let selectedBlock: Block | undefined
   let width = 1
   let height = 1
-  let yaw = 0.45
-  let pitch = 0.58
+  let yaw = 0.35
+  let pitch = 0.3
   let zoom = 1
   let frame = 0
   let active = true
@@ -120,9 +118,12 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
     })
   }
   const updateCamera = () => {
-    const radius = (width < 700 ? 1250 : 1175) * zoom
-    camera.position.set(Math.sin(yaw) * Math.cos(pitch) * radius, Math.sin(pitch) * radius, Math.cos(yaw) * Math.cos(pitch) * radius)
-    camera.lookAt(0, 0, 0)
+    // Frame the whole dinosaur, including its tail, on narrow portrait screens.
+    const halfFov = Math.tan(camera.fov * Math.PI / 360)
+    const fitWidth = DINOSAUR_SIZE.width * CELL_SIZE / (2 * halfFov * camera.aspect * 0.84)
+    const radius = Math.max(1175, fitWidth) * zoom
+    camera.position.set(Math.sin(yaw) * Math.cos(pitch) * radius, LOOK_HEIGHT + Math.sin(pitch) * radius, Math.cos(yaw) * Math.cos(pitch) * radius)
+    camera.lookAt(0, LOOK_HEIGHT, 0)
     camera.updateMatrixWorld()
     invalidate()
   }
@@ -322,7 +323,7 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
     if (active) invalidate()
   })
   intersectionObserver.observe(canvas)
-  replace(INITIAL_CELLS)
+  replace(DINOSAUR_CELLS)
   resize()
 
   return {

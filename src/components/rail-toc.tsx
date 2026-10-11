@@ -159,7 +159,6 @@ export function RailToc({ items, offset = 96, indent = 18, showHeader = true, au
     pinned.current = null
 
     const measure = () => {
-      const diagnosticStarted = performance.now()
       frame = 0
       if (disposed) return
       visible.current = list.offsetHeight > 0
@@ -189,7 +188,6 @@ export function RailToc({ items, offset = 96, indent = 18, showHeader = true, au
       }
       setGeometry((previous) => previous?.d === nextGeometry.d && previous.height === nextGeometry.height ? previous : nextGeometry)
       sync()
-      console.info('[toc-diagnostic] measure', Math.round(performance.now() - diagnosticStarted))
     }
     const scheduleMeasure = () => {
       if (!frame) frame = requestAnimationFrame(measure)
@@ -215,7 +213,6 @@ export function RailToc({ items, offset = 96, indent = 18, showHeader = true, au
   useIsoLayoutEffect(() => {
     const path = pathRef.current
     if (!path || !geometry) return
-    const diagnosticStarted = performance.now()
     total.current = path.getTotalLength()
     // Measure each short curve once. Repeatedly searching the full SVG path
     // for every heading can block the main thread for a second on long TOCs.
@@ -228,7 +225,6 @@ export function RailToc({ items, offset = 96, indent = 18, showHeader = true, au
     })
     // Account for rounding differences between per-segment and full-path lengths.
     if (cumulative) lengths.current = lengths.current.map((length) => length * total.current / cumulative)
-    console.info('[toc-diagnostic] path', geometry.nodes.length, Math.round(performance.now() - diagnosticStarted))
     sync()
     pose(distance.get())
   }, [geometry, sync, pose, distance])
