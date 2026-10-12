@@ -1,0 +1,51 @@
+---
+import ArticleContent from "../../src/components/ArticleContent.astro"
+import Disclaimer from "../../src/components/Disclaimer.astro"
+import "../../src/styles/global.css"
+import "../../src/styles/site-interior.css"
+import "../../src/styles/site-brand.css"
+
+const url = new URL("/__studio/data", Astro.url)
+url.searchParams.set("id", Astro.url.searchParams.get("id") || "")
+const response = await fetch(url)
+if (!response.ok) return new Response("预览已过期，请刷新预览。", { status: 404 })
+const draft = await response.json()
+const date = new Date(draft.meta.published || Date.now())
+const post = {
+  id: "studio-preview", slug: "studio-preview", collection: "posts", body: "",
+  data: {
+    ...draft.meta,
+    title: draft.meta.title || (draft.type === "thought" ? "碎碎念" : "未命名文章"),
+    published: Number.isNaN(date.getTime()) ? new Date() : date,
+    updated: draft.meta.updated ? new Date(draft.meta.updated) : undefined,
+    tags: Array.isArray(draft.meta.tags) ? draft.meta.tags : [],
+  },
+} as any
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{post.data.title} · 博客预览</title>
+    <link rel="icon" href="/favicon-orange.png" />
+  </head>
+  <body class="article-reading-page">
+    <ArticleContent {post} preview words={draft.frontmatter?.words} minutes={draft.frontmatter?.minutes}>
+      <div class="mb-8"><Disclaimer disclaimers={post.data.disclaimer} publishedDate={post.data.published} /></div>
+      <Fragment set:html={draft.html} />
+    </ArticleContent>
+    <script src="./preview-bridge.js"></script>
+  </body>
+</html>
+<style is:global>
+  /* Only remove surrounding site navigation; article typography is unchanged. */
+  .article-reading--preview { padding: 2rem 0 4rem; }
+  .article-reading--preview .article-reading__shell { width: min(calc(100% - 3rem), 50rem); }
+  .article-reading--preview .article-reading__layout { display: block; }
+  .article-reading--preview .article-reading__prose .expressive-code { content-visibility: visible; }
+  @media (max-width: 440px) {
+    .article-reading--preview .article-reading__shell { width: calc(100% - 2rem); }
+  }
+</style>

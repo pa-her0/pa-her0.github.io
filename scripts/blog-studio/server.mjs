@@ -6,9 +6,9 @@ import http from "node:http"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import matter from "gray-matter"
-import katex from "katex"
-import MarkdownIt from "markdown-it"
-import sanitizeHtml from "sanitize-html"
+import { createBlogPreview } from "./blog-preview.mjs"
+import { editorBundle } from "./editor-bundle.mjs"
+
 
 const studioDir = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(studioDir, "../..")
@@ -44,7 +44,7 @@ loadProjectEnvironment()
 const host = "127.0.0.1"
 const port = Number(process.env.BLOG_STUDIO_PORT || 4322)
 const maxBodyBytes = 25 * 1024 * 1024
-const markdown = new MarkdownIt({ html: false, linkify: true, typographer: true })
+const blogPreview = createBlogPreview(repoRoot)
 
 function resolvePnpmScript() {
   const candidates = [
@@ -77,83 +77,6 @@ function resolveCommand(command, args) {
     error: "工作台没有找到 pnpm。请从“启动博客工作台.cmd”重新启动，或确认 pnpm 已正确安装。",
   }
 }
-
-function installMathRenderer(md) {
-  md.inline.ruler.after("escape", "math_inline", (state, silent) => {
-    const start = state.pos
-    if (state.src[start] !== "$" || state.src[start + 1] === "$") return false
-
-    let end = start + 1
-    while ((end = state.src.indexOf("$", end)) !== -1) {
-      let backslashes = 0
-      for (let index = end - 1; index >= 0 && state.src[index] === "\\"; index -= 1) backslashes += 1
-      if (backslashes % 2 === 0) break
-      end += 1
-    }
-    if (end === -1 || end === start + 1) return false
-
-    const content = state.src.slice(start + 1, end)
-    if (/^\s|\s$/.test(content)) return false
-    if (!silent) {
-      const token = state.push("math_inline", "math", 0)
-      token.content = content
-    }
-    state.pos = end + 1
-    return true
-  })
-
-  md.block.ruler.after("blockquote", "math_block", (state, startLine, endLine, silent) => {
-    const lineStart = state.bMarks[startLine] + state.tShift[startLine]
-    const lineEnd = state.eMarks[startLine]
-    const openingLine = state.src.slice(lineStart, lineEnd).trim()
-    if (!openingLine.startsWith("$$")) return false
-    if (silent) return true
-
-    const contentLines = []
-    const firstLine = openingLine.slice(2)
-    if (firstLine.endsWith("$$")) {
-      contentLines.push(firstLine.slice(0, -2))
-      state.line = startLine + 1
-    } else {
-      if (firstLine) contentLines.push(firstLine)
-      let nextLine = startLine + 1
-      let closed = false
-      while (nextLine < endLine) {
-        const start = state.bMarks[nextLine] + state.tShift[nextLine]
-        const end = state.eMarks[nextLine]
-        const line = state.src.slice(start, end)
-        const trimmed = line.trim()
-        if (trimmed.endsWith("$$")) {
-          contentLines.push(trimmed.slice(0, -2))
-          closed = true
-          nextLine += 1
-          break
-        }
-        contentLines.push(line)
-        nextLine += 1
-      }
-      if (!closed) return false
-      state.line = nextLine
-    }
-
-    const token = state.push("math_block", "math", 0)
-    token.block = true
-    token.map = [startLine, state.line]
-    token.content = contentLines.join("\n").trim()
-    return true
-  }, { alt: ["paragraph", "reference", "blockquote", "list"] })
-
-  const renderMath = (content, displayMode) => katex.renderToString(content, {
-    displayMode,
-    throwOnError: false,
-    strict: "ignore",
-    output: "htmlAndMathml",
-  })
-  md.renderer.rules.math_inline = (tokens, index) => renderMath(tokens[index].content, false)
-  md.renderer.rules.math_block = (tokens, index) => `${renderMath(tokens[index].content, true)}\n`
-}
-
-installMathRenderer(markdown)
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -655,24 +578,6 @@ async function publish(message) {
   return { commit, log: logs.join("\n").trim() }
 }
 
-function previewMarkdown(source) {
-  return sanitizeHtml(markdown.render(String(source || "")), {
-    allowedTags: sanitizeHtml.defaults.allowedTags.concat([
-      "img", "h1", "h2", "math", "semantics", "mrow", "mi", "mo", "mn", "msup", "msub",
-      "mfrac", "mover", "munder", "munderover", "msqrt", "mroot", "mtext", "mspace", "mtable",
-      "mtr", "mtd", "annotation",
-    ]),
-    allowedAttributes: {
-      ...sanitizeHtml.defaults.allowedAttributes,
-      "*": ["class", "style", "aria-hidden"],
-      img: ["src", "alt", "title", "loading"],
-      math: ["xmlns", "display"],
-      annotation: ["encoding"],
-    },
-    allowedSchemes: ["http", "https", "data"],
-  })
-}
-
 async function api(req, res, url) {
   if (req.method === "GET" && url.pathname === "/api/upload/status") {
     const cloud = cloudImageConfig()
@@ -691,7 +596,7 @@ async function api(req, res, url) {
   }
   if (req.method === "POST" && url.pathname === "/api/content") return json(res, 200, await saveEntry(await readJson(req)))
   if (req.method === "POST" && url.pathname === "/api/upload") return json(res, 200, await uploadImage(await readJson(req)))
-  if (req.method === "POST" && url.pathname === "/api/preview") return json(res, 200, { html: previewMarkdown((await readJson(req)).body) })
+  if (req.method === "POST" && url.pathname === "/api/preview") return json(res, 200, await blogPreview.render(await readJson(req)))
   if (req.method === "GET" && url.pathname === "/api/git/status") return json(res, 200, await gitStatus())
   if (req.method === "POST" && url.pathname === "/api/check") {
     const body = await readJson(req)
@@ -724,6 +629,7 @@ async function api(req, res, url) {
 }
 
 async function serveStatic(res, url) {
+  if (url.pathname === "/editor-bundle.js") return text(res, 200, await editorBundle(), "text/javascript; charset=utf-8")
   const relative = url.pathname === "/" ? "index.html" : normalizeRelative(url.pathname)
   if (relative.startsWith("vendor/katex/")) {
     try {
@@ -752,6 +658,11 @@ async function serveStatic(res, url) {
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url || "/", `http://${host}:${port}`)
+    // The article preview runs on a separate loopback origin. Its content must
+    // never be able to save, upload, or publish through the editor's API.
+    if (req.method !== "GET" && req.headers.origin && req.headers.origin !== url.origin) {
+      return json(res, 403, { error: "请在工作台中执行此操作。" })
+    }
     if (url.pathname.startsWith("/api/")) await api(req, res, url)
     else await serveStatic(res, url)
   } catch (error) {
@@ -789,4 +700,6 @@ server.listen(port, host, () => {
   if (!process.argv.includes("--no-open")) openWorkbench(url)
 })
 
-process.on("SIGINT", () => server.close(() => process.exit(0)))
+const shutdown = async () => { await blogPreview.stop(); server.close(() => process.exit(0)) }
+process.on("SIGINT", shutdown)
+process.on("SIGTERM", shutdown)

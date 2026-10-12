@@ -1,3 +1,5 @@
+import { createEditor } from "/editor-bundle.js"
+
 const $ = (selector) => document.querySelector(selector)
 const $$ = (selector) => [...document.querySelectorAll(selector)]
 
@@ -9,7 +11,15 @@ const elements = {
   pinned: $("#pinnedInput"), preview: $("#preview"), wordCount: $("#wordCount"), saveState: $("#saveState"),
 }
 
-const state = { entries: [], filter: "post", selectedPath: "", type: "post", originalMeta: {}, dirty: false, previewTimer: null, imageStorage: "local", dragDepth: 0 }
+const state = { entries: [], filter: "post", selectedPath: "", type: "post", originalMeta: {}, dirty: false, previewTimer: null, imageStorage: "local", dragDepth: 0, previewRevision: 0, previewOrigin: "", frameReady: false, pendingPreview: null, resetPreview: false }
+
+const editor = createEditor({
+  parent: $("#markdownEditor"),
+  onChange(value) { elements.body.value = value; setDirty(true); updateWordCount(); refreshPreview() },
+  onSelection(line, column) { $("#cursorPosition").textContent = `第 ${line} 行，${column} 列` },
+  onScroll(ratio) { if ($("#syncScroll").checked && state.frameReady) elements.preview.contentWindow.postMessage({ type: "studio:scroll", ratio }, state.previewOrigin) },
+  onSave: save,
+})
 
 function readPreference(key) {
   try { return localStorage.getItem(key) === "true" } catch { return false }
@@ -20,28 +30,24 @@ function savePreference(key, value) {
 }
 
 function setLibraryCollapsed(collapsed) {
-  const workspace = $(".workspace")
-  const button = $("#toggleLibraryButton")
-  workspace.classList.toggle("library-collapsed", collapsed)
-  button.setAttribute("aria-expanded", String(!collapsed))
-  button.title = collapsed ? "展开文章列表" : "收起文章列表"
-  button.querySelector(".sr-only").textContent = button.title
-  $("#libraryToggleIcon").textContent = collapsed ? "›" : "‹"
-  savePreference("blogStudio.libraryCollapsed", collapsed)
+  const dialog = $("#libraryPanel")
+  if (collapsed) dialog.close()
+  else if (!dialog.open) { dialog.showModal(); elements.search.focus() }
 }
 
 function setFieldsCollapsed(collapsed) {
-  const panel = $("#fieldsPanel")
-  const button = $("#toggleFieldsButton")
-  panel.classList.toggle("collapsed", collapsed)
-  button.setAttribute("aria-expanded", String(!collapsed))
-  $("#fieldsToggleLabel").textContent = collapsed ? "展开" : "收起"
-  $("#fieldsToggleIcon").textContent = collapsed ? "⌄" : "⌃"
-  savePreference("blogStudio.fieldsCollapsed", collapsed)
+  const dialog = $("#fieldsPanel")
+  if (collapsed) dialog.close()
+  else if (!dialog.open) dialog.showModal()
 }
 
-setLibraryCollapsed(readPreference("blogStudio.libraryCollapsed"))
-setFieldsCollapsed(readPreference("blogStudio.fieldsCollapsed"))
+function setEditorDark(dark) {
+  editor.setTheme(dark ? "dark" : "light")
+  $("#editorThemeButton").textContent = dark ? "浅色编辑" : "深色编辑"
+  $("#editorThemeButton").setAttribute("aria-pressed", String(dark))
+  savePreference("blogStudio.editorDark", dark)
+}
+setEditorDark(readPreference("blogStudio.editorDark"))
 
 async function request(url, options = {}) {
   const response = await fetch(url, {
@@ -116,6 +122,7 @@ function escapeHtml(value) {
 function renderList() {
   const query = elements.search.value.trim().toLowerCase()
   const entries = state.entries.filter((entry) => entry.type === state.filter && [entry.title, entry.slug, ...(entry.tags || [])].join(" ").toLowerCase().includes(query))
+  $("#entryCount").textContent = `${entries.length} 篇`
   if (!entries.length) {
     elements.list.innerHTML = `<div class="empty-list">${query ? "没有匹配的内容" : state.filter === "post" ? "还没有文章" : "还没有碎碎念"}</div>`
     return
@@ -140,11 +147,13 @@ function setForm(type, meta = {}, body = "") {
   elements.tags.value = Array.isArray(meta.tags) ? meta.tags.join(", ") : ""
   elements.image.value = meta.image || ""
   elements.body.value = body || ""
+  editor.setValue(elements.body.value)
   elements.draft.checked = meta.draft !== false
   elements.pinned.checked = Boolean(meta.pinned)
   $$(".post-only").forEach((element) => element.toggleAttribute("hidden", type !== "post"))
   setDirty(false)
   updateWordCount()
+  state.resetPreview = true
   refreshPreview()
 }
 
@@ -153,7 +162,9 @@ async function loadEntries(selectFirst = false) {
   state.entries = data.entries
   renderList()
   if (selectFirst && !state.selectedPath) {
-    const first = state.entries.find((entry) => entry.type === state.filter)
+    let lastPath = ""
+    try { lastPath = localStorage.getItem("blogStudio.lastEntry") || "" } catch { /* Storage is optional. */ }
+    const first = state.entries.find((entry) => entry.path === lastPath) || state.entries.find((entry) => entry.type === state.filter)
     if (first) await loadEntry(first.path)
     else newEntry(state.filter)
   }
@@ -167,6 +178,8 @@ async function loadEntry(path) {
   syncFilterButtons()
   setForm(data.type, data.meta, data.body)
   renderList()
+  setLibraryCollapsed(true)
+  try { localStorage.setItem("blogStudio.lastEntry", path) } catch { /* Storage is optional. */ }
 }
 
 function newEntry(type) {
@@ -175,6 +188,7 @@ function newEntry(type) {
   state.filter = type
   syncFilterButtons()
   setForm(type, type === "post" ? { draft: true, section: "note", category: "学习", tags: ["学习"] } : { tags: ["日常"] }, "")
+  setLibraryCollapsed(true)
   elements.title.focus()
   renderList()
 }
@@ -200,11 +214,13 @@ async function save() {
   const button = $("#saveButton")
   button.disabled = true
   elements.saveState.textContent = "正在保存…"
+  const payload = JSON.stringify(formPayload())
   try {
-    const data = await request("/api/content", { method: "POST", body: JSON.stringify(formPayload()) })
+    const data = await request("/api/content", { method: "POST", body: payload })
+    const unchanged = JSON.stringify(formPayload()) === payload
     state.selectedPath = data.path
     state.originalMeta = data.meta
-    setDirty(false)
+    setDirty(!unchanged)
     await loadEntries()
     renderList()
     toast("内容已保存到本地")
@@ -217,13 +233,48 @@ async function save() {
 
 async function refreshPreview() {
   clearTimeout(state.previewTimer)
+  state.previewController?.abort()
+  const revision = ++state.previewRevision
+  $("#previewFreshness").textContent = "更新中…"
   state.previewTimer = setTimeout(async () => {
+    const controller = new AbortController()
+    state.previewController = controller
     try {
-      const { html } = await request("/api/preview", { method: "POST", body: JSON.stringify({ body: elements.body.value }) })
-      elements.preview.innerHTML = html || '<p class="preview-empty">正文会在这里显示。</p>'
-    } catch { elements.preview.innerHTML = '<p class="preview-empty">预览暂时不可用。</p>' }
-  }, 180)
+      const result = await request("/api/preview", { method: "POST", body: JSON.stringify(formPayload()), signal: controller.signal })
+      if (revision !== state.previewRevision) return
+      state.pendingPreview = { type: "studio:render", html: result.html, resetScroll: state.resetPreview }
+      state.resetPreview = false
+      state.previewOrigin = result.origin
+      $("#openPreview").href = result.previewUrl
+      $("#openPreview").hidden = false
+      if (!elements.preview.hasAttribute("src")) elements.preview.src = result.previewUrl
+      else if (state.frameReady) elements.preview.contentWindow.postMessage(state.pendingPreview, state.previewOrigin)
+      $("#previewStatus").textContent = "博客原样预览"
+    } catch (error) {
+      if (error.name === "AbortError" || revision !== state.previewRevision) return
+      $("#previewFreshness").textContent = "更新失败"
+      $("#previewStatus").textContent = "预览暂时不可用"
+      if (!state.frameReady) $("#previewLoading p").textContent = error.message
+      toast(error.message)
+    }
+  }, 400)
 }
+
+window.addEventListener("message", (event) => {
+  if (event.source !== elements.preview.contentWindow || event.origin !== state.previewOrigin) return
+  if (event.data?.type === "studio:ready") {
+    state.frameReady = true
+    $("#previewLoading").hidden = true
+    if (state.pendingPreview) elements.preview.contentWindow.postMessage(state.pendingPreview, state.previewOrigin)
+  }
+  if (event.data?.type === "studio:updated") $("#previewFreshness").textContent = "已更新"
+  if (event.data?.type === "studio:issues") {
+    const issues = event.data.issues || []
+    $("#previewIssues").hidden = !issues.length
+    $("#previewIssueCount").textContent = `${issues.length} 处显示提醒`
+    $("#previewIssueList").innerHTML = issues.map((issue, index) => `<button data-issue="${index}">${escapeHtml(issue)}</button>`).join("")
+  }
+})
 
 function updateWordCount() {
   const source = elements.body.value.trim()
@@ -275,12 +326,7 @@ function imageFromTransfer(transfer) {
 }
 
 function insertAtCursor(value) {
-  const area = elements.body
-  area.setRangeText(value, area.selectionStart, area.selectionEnd, "end")
-  area.focus()
-  setDirty(true)
-  updateWordCount()
-  refreshPreview()
+  editor.insert(value)
 }
 
 async function refreshGit() {
@@ -389,8 +435,8 @@ async function publish(event) {
 
 elements.list.addEventListener("click", (event) => { const button = event.target.closest("[data-path]"); if (button) loadEntry(button.dataset.path) })
 elements.search.addEventListener("input", renderList)
-$("#toggleLibraryButton").addEventListener("click", () => setLibraryCollapsed(!$(".workspace").classList.contains("library-collapsed")))
-$("#toggleFieldsButton").addEventListener("click", () => setFieldsCollapsed(!$("#fieldsPanel").classList.contains("collapsed")))
+$("#toggleLibraryButton").addEventListener("click", () => setLibraryCollapsed(false))
+$("#toggleFieldsButton").addEventListener("click", () => setFieldsCollapsed(false))
 $$("[data-filter]").forEach((button) => button.addEventListener("click", () => { if (!confirmDiscard()) return; state.filter = button.dataset.filter; syncFilterButtons(); renderList() }))
 $("#newButton").addEventListener("click", () => $("#newDialog").showModal())
 $("#newDialog").addEventListener("close", () => { const value = $("#newDialog").returnValue; if (["post", "thought"].includes(value)) newEntry(value) })
@@ -403,12 +449,12 @@ $("#coverButton").addEventListener("click", () => $("#coverFile").click())
 $("#imageButton").addEventListener("click", () => $("#bodyFile").click())
 $("#coverFile").addEventListener("change", (event) => upload(event.target.files[0], "cover"))
 $("#bodyFile").addEventListener("change", (event) => upload(event.target.files[0], "body"))
-elements.body.addEventListener("paste", (event) => {
+$("#editorDropZone").addEventListener("paste", (event) => {
   const file = imageFromTransfer(event.clipboardData)
   if (!file) return
   event.preventDefault()
   upload(file, "body")
-})
+}, true)
 const dropZone = $("#editorDropZone")
 dropZone.addEventListener("dragenter", (event) => {
   if (!imageFromTransfer(event.dataTransfer)) return
@@ -434,6 +480,32 @@ dropZone.addEventListener("drop", (event) => {
   upload(file, "body")
 })
 $$("[data-insert]").forEach((button) => button.addEventListener("click", () => insertAtCursor(button.dataset.insert)))
+$$("[data-wrap]").forEach((button) => button.addEventListener("click", () => editor.insert(button.dataset.wrap, button.dataset.wrap)))
+$$("[data-close]").forEach((button) => button.addEventListener("click", () => $(`#${button.dataset.close}`).close()))
+$("#editorThemeButton").addEventListener("click", () => setEditorDark($("#markdownEditor").dataset.theme !== "dark"))
+$$("button[data-layout]").forEach((button) => button.addEventListener("click", () => {
+  $(".workspace").dataset.layout = button.dataset.layout
+  $$("button[data-layout]").forEach((item) => { const active = item === button; item.classList.toggle("active", active); item.setAttribute("aria-pressed", String(active)) })
+}))
+$$("button[data-device]").forEach((button) => button.addEventListener("click", () => {
+  $(".preview-viewport").dataset.device = button.dataset.device
+  $$("button[data-device]").forEach((item) => { const active = item === button; item.classList.toggle("active", active); item.setAttribute("aria-pressed", String(active)) })
+}))
+$("#previewIssueList").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-issue]")
+  if (button) { elements.preview.contentWindow.postMessage({ type: "studio:issue", index: Number(button.dataset.issue) }, state.previewOrigin); $("#previewIssues").open = false }
+})
+const snippets = {
+  code: '\n~~~python\nprint("Hello, world!")\n~~~\n',
+  note: "\n> [!NOTE]\n> 在这里写下提示内容。\n",
+  quote: "\n> 在这里写下引用。\n",
+  table: "\n| 标题 | 说明 |\n| --- | --- |\n| 内容 | 内容 |\n",
+  list: "\n- [ ] 待完成\n- [x] 已完成\n",
+  math: "$E = mc^2$",
+  equation: "\n$$\nf(x) = \\sum_{i=1}^{n} x_i\n$$\n",
+  divider: "\n\n---\n\n",
+}
+$("#insertSelect").addEventListener("change", (event) => { const text = snippets[event.target.value]; if (text) insertAtCursor(text); event.target.value = "" })
 $("#cancelPublish").addEventListener("click", () => $("#publishDialog").close())
 $("#publishForm").addEventListener("submit", publish)
 $("#closeLog").addEventListener("click", () => $("#logDialog").close())
@@ -447,14 +519,14 @@ $("#diagnosticList").addEventListener("click", async (event) => {
 })
 
 for (const input of [elements.title, elements.slug, elements.published, elements.description, elements.section, elements.series, elements.category, elements.tags, elements.image, elements.body, elements.draft, elements.pinned]) {
-  input.addEventListener("input", () => { setDirty(true); if (input === elements.body) { updateWordCount(); refreshPreview() } })
+  input.addEventListener("input", () => { setDirty(true); if (input === elements.body) updateWordCount(); refreshPreview() })
 }
 window.addEventListener("beforeunload", (event) => { if (state.dirty) event.preventDefault() })
 window.addEventListener("keydown", (event) => {
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") { event.preventDefault(); save() }
-  if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === "l") {
+  if ((event.metaKey || event.ctrlKey) && (event.key.toLowerCase() === "k" || (event.shiftKey && event.key.toLowerCase() === "l"))) {
     event.preventDefault()
-    setLibraryCollapsed(!$(".workspace").classList.contains("library-collapsed"))
+    setLibraryCollapsed($("#libraryPanel").open)
   }
 })
 

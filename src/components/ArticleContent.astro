@@ -11,28 +11,29 @@ interface Props {
   Content?: any
   words?: number
   minutes?: number
+  preview?: boolean
 }
 
-const { post, Content, words, minutes } = Astro.props as Props
+const { post, Content, words, minutes, preview = false } = Astro.props as Props
 const hasSlot = Astro.slots.has("default")
 const data = post.data
 const formattedDate = data.published?.toISOString().slice(0, 10)
 const weekdayLabel = data.published
   ? new Intl.DateTimeFormat("zh-CN", { weekday: "long" }).format(data.published)
   : ""
-const effectiveUpdated = getGitModifiedDate(post.id) ?? data.updated ?? undefined
+const effectiveUpdated = (preview ? undefined : getGitModifiedDate(post.id)) ?? data.updated ?? undefined
 const formattedUpdated = effectiveUpdated?.toISOString().slice(0, 10)
 const showUpdated = formattedUpdated && formattedUpdated !== formattedDate
 const tags = data.tags ?? []
 const categoryLabel = data.category?.toString().trim() || "未分类"
 const groupLabel = data.series?.toString().trim() || categoryLabel
-const articleHref = await getLatestPublishedPostHref()
+const articleHref = preview ? "/articles/" : await getLatestPublishedPostHref()
 ---
 
-<main class="article-reading" data-pagefind-body>
+<main class:list={["article-reading", { "article-reading--preview": preview }]} data-pagefind-body>
   <div class="article-reading__shell">
     <div class="article-reading__layout">
-      <ArticleCollectionSidebar post={post} />
+      {!preview && <ArticleCollectionSidebar post={post} />}
 
       <div class="article-reading__main">
         <header class="article-reading__header">
@@ -70,7 +71,7 @@ const articleHref = await getLatestPublishedPostHref()
           </figure>
         )}
 
-        <div class="article-reading__toc-mobile">
+        {!preview && <div class="article-reading__toc-mobile">
           <details class="group">
             <summary>
               <span>目录</span>
@@ -80,13 +81,13 @@ const articleHref = await getLatestPublishedPostHref()
               <TableOfContents showHeader={false} client:load />
             </div>
           </details>
-        </div>
+        </div>}
 
         <article class="article-reading__prose prose" data-reference-style="bluelanm">
           {hasSlot ? <slot /> : Content ? <Content /> : null}
         </article>
 
-        <footer class="article-reading__footer">
+        {!preview && <footer class="article-reading__footer">
           <div class="article-reading__tags">
             <span>标签</span>
             {tags.length > 0 ? tags.map((tag: string) => (
@@ -105,14 +106,14 @@ const articleHref = await getLatestPublishedPostHref()
               <span>{data.nextTitle || "浏览更多文章"}</span>
             </a>
           </div>
-        </footer>
+        </footer>}
       </div>
 
-      <aside class="article-reading__aside" aria-label="文章目录">
+      {!preview && <aside class="article-reading__aside" aria-label="文章目录">
         <div class="toc-panel">
           <TableOfContents client:load />
         </div>
-      </aside>
+      </aside>}
     </div>
   </div>
 </main>

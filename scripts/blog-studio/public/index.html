@@ -1,151 +1,75 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="light" />
-    <title>鲸落博客工作台</title>
-    <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="/vendor/katex/katex.min.css" />
-    <link rel="stylesheet" href="/style.css" />
-  </head>
-  <body>
-    <div class="app-shell">
-      <header class="topbar">
-        <div class="topbar-left">
-          <button id="toggleLibraryButton" class="panel-toggle" type="button" aria-controls="libraryPanel" aria-expanded="true" title="收起文章列表">
-            <span id="libraryToggleIcon" aria-hidden="true">‹</span>
-            <span class="sr-only">收起文章列表</span>
-          </button>
-          <div class="brand">
-            <span class="brand-mark" aria-hidden="true">🐋</span>
-            <div><strong>鲸落博客工作台</strong><small>专注写作，安全发布</small></div>
-          </div>
-        </div>
-        <div class="top-actions">
-          <span class="local-status"><span aria-hidden="true"></span>本地运行</span>
-          <span id="saveState" class="save-state">已就绪</span>
-          <button id="checkButton" class="button secondary"><span aria-hidden="true">✓</span> 检查博客</button>
-          <button id="publishButton" class="button primary"><span aria-hidden="true">↗</span> 发布 GitHub</button>
-        </div>
-      </header>
-
-      <main class="workspace">
-        <aside id="libraryPanel" class="library">
-          <div class="library-head">
-            <div class="segmented" role="tablist" aria-label="内容类型">
-              <button class="active" data-filter="post">文章</button>
-              <button data-filter="thought">碎碎念</button>
-            </div>
-            <button id="newButton" class="icon-button" title="新建内容" aria-label="新建内容">＋</button>
-          </div>
-          <label class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="搜索标题、标签…" /></label>
-          <div id="entryList" class="entry-list" aria-live="polite"></div>
-          <div class="git-card">
-            <div><span class="status-dot"></span><strong id="gitBranch">读取状态…</strong></div>
-            <small id="gitSummary">正在查看本地改动</small>
-            <button id="refreshGit" class="link-button">刷新状态</button>
-          </div>
-        </aside>
-
-        <section class="editor-pane">
-          <div class="editor-head">
-            <div>
-              <span id="editorEyebrow" class="eyebrow">文章草稿</span>
-              <input id="titleInput" class="title-input" aria-label="标题" placeholder="给这篇文章一个标题" />
-            </div>
-            <button id="saveButton" class="button primary">保存</button>
-          </div>
-
-          <div class="content-grid">
-            <div class="writing-area">
-              <div id="fieldsPanel" class="fields-panel">
-                <div class="fields-panel-head">
-                  <span>文章属性</span>
-                  <button id="toggleFieldsButton" class="collapse-button" type="button" aria-controls="fieldsContent" aria-expanded="true">
-                    <span id="fieldsToggleLabel">收起</span><span id="fieldsToggleIcon" aria-hidden="true">⌃</span>
-                  </button>
-                </div>
-                <div id="fieldsContent" class="fields">
-                  <label><span>Slug</span><input id="slugInput" placeholder="my-new-post" /></label>
-                  <label><span>发布日期</span><input id="publishedInput" type="datetime-local" /></label>
-                  <label class="wide post-only"><span>摘要</span><input id="descriptionInput" placeholder="在文章列表中显示的简短摘要" /></label>
-                  <label class="post-only"><span>栏目</span><select id="sectionInput"><option value="note">笔记</option><option value="life">生活</option><option value="article">仅博客</option></select></label>
-                  <label class="post-only"><span>专题</span><input id="seriesInput" placeholder="例如：算法、HPC、课程笔记" /></label>
-                  <label class="post-only"><span>分类</span><input id="categoryInput" placeholder="学习" /></label>
-                  <label><span>标签</span><input id="tagsInput" placeholder="人工智能, 学习" /></label>
-                  <label class="wide cover-field post-only"><span>封面</span><input id="imageInput" placeholder="/post-covers/example.jpg" /><button id="coverButton" type="button">上传封面</button></label>
-                </div>
-              </div>
-              <div class="editor-toolbar">
-                <span class="editor-label">Markdown <small id="imageUploadStatus">正在检测图片存储…</small></span>
-                <div>
-                  <button type="button" data-insert="**粗体**" title="粗体"><b>B</b></button>
-                  <button type="button" data-insert="## 小标题" title="标题">H₂</button>
-                  <button type="button" data-insert="[链接文字](https://)" title="链接">↗</button>
-                  <button type="button" data-insert="$E = mc^2$" title="行内公式">∑</button>
-                  <button type="button" data-insert="$$&#10;f(x) = \\sum_{i=1}^{n} x_i&#10;$$" title="块级公式">∫</button>
-                  <button id="imageButton" type="button" title="上传图片并插入到光标位置">☁ 图片</button>
-                </div>
-              </div>
-              <div id="editorDropZone" class="editor-drop-zone">
-                <textarea id="bodyInput" spellcheck="true" placeholder="从这里开始写作…&#10;&#10;也可以直接粘贴截图，或把图片拖到这里。"></textarea>
-                <div class="drop-hint" aria-hidden="true"><strong>松开即可上传</strong><span>图片会自动上传并插入到当前光标位置</span></div>
-              </div>
-              <div class="editor-options">
-                <label class="post-only"><input id="draftInput" type="checkbox" checked /> 保存为草稿</label>
-                <label class="post-only"><input id="pinnedInput" type="checkbox" /> 置顶文章</label>
-                <span id="wordCount">0 字</span>
-              </div>
-            </div>
-
-            <aside class="preview-pane">
-              <div class="preview-head"><span><i aria-hidden="true"></i>实时预览</span><button id="refreshPreview" class="link-button">刷新</button></div>
-              <article id="preview" class="preview prose"><p class="preview-empty">正文会在这里显示。</p></article>
-            </aside>
-          </div>
-        </section>
-      </main>
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light" />
+<title>Jiely · 写作工作台</title><link rel="icon" href="/favicon-orange.png" /><link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand"><img src="/favicon-orange.png" alt="" /><strong>Jiely <span>/ 写作工作台</span></strong></div>
+      <button id="toggleLibraryButton" class="button quiet" aria-haspopup="dialog" aria-controls="libraryPanel">文章库 <kbd>Ctrl K</kbd></button>
+      <button id="newButton" class="button quiet" aria-label="新建内容"><span aria-hidden="true">＋</span> 新建</button>
     </div>
-
-    <input id="coverFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
-    <input id="bodyFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
-
-    <dialog id="newDialog">
-      <form method="dialog" class="dialog-card">
-        <span class="eyebrow">创建内容</span>
-        <h2>今天想记录什么？</h2>
-        <div class="choice-grid">
-          <button value="post" class="choice"><strong>新文章</strong><span>完整 Markdown 文章，默认保存为草稿</span></button>
-          <button value="thought" class="choice"><strong>新碎碎念</strong><span>快速记录一条短内容</span></button>
-        </div>
-        <button value="cancel" class="button secondary">取消</button>
-      </form>
-    </dialog>
-
-    <dialog id="publishDialog">
-      <form id="publishForm" class="dialog-card">
-        <span class="eyebrow">确认发布</span>
-        <h2>提交并推送到 GitHub</h2>
-        <p>工作台会先检查并构建博客。GitHub 上存在较新的内容时会自动停止，不会强制覆盖。</p>
-        <label><span>版本说明</span><input id="commitMessage" value="content: update blog" required /></label>
-        <pre id="publishChanges" class="change-list">正在读取改动…</pre>
-        <div class="dialog-actions"><button type="button" id="cancelPublish" class="button secondary">取消</button><button type="submit" class="button primary">确认发布</button></div>
-      </form>
-    </dialog>
-
-    <dialog id="logDialog">
-      <div class="dialog-card log-card">
-        <span id="logEyebrow" class="eyebrow">运行结果</span>
-        <h2 id="logTitle">处理中…</h2>
-        <p id="logHint" class="log-hint">工作台正在执行任务，完成后会显示结果。</p>
-        <section id="diagnosticList" class="diagnostic-list" aria-label="问题定位" hidden></section>
-        <pre id="logOutput" class="log-output">请稍候</pre>
-        <button id="closeLog" class="button secondary">关闭</button>
+    <div class="top-actions"><span id="saveState" class="save-state">已就绪</span><button id="checkButton" class="button quiet"><span aria-hidden="true">✓</span> 检查博客</button><button id="publishButton" class="button secondary"><span aria-hidden="true">↗</span> 发布 GitHub</button></div>
+  </header>
+  <main class="workspace" data-layout="split">
+    <section class="editor-pane">
+      <div class="editor-head">
+        <div class="document-title"><span id="editorEyebrow" class="eyebrow">文章草稿</span><input id="titleInput" class="title-input" aria-label="标题" placeholder="给这篇文章一个标题" /></div>
+        <div class="document-actions"><button id="toggleFieldsButton" class="button quiet" aria-haspopup="dialog" aria-controls="fieldsPanel">文章设置</button><button id="saveButton" class="button primary">保存 <kbd>Ctrl S</kbd></button></div>
       </div>
-    </dialog>
-
-    <div id="toast" class="toast" role="status"></div>
-    <script type="module" src="/app.js"></script>
-  </body>
+      <div class="workspace-tools">
+        <div class="segmented" role="group" aria-label="编辑布局"><button data-layout="write" aria-pressed="false">专注写作</button><button data-layout="split" aria-pressed="true" class="active">双栏对照</button><button data-layout="preview" aria-pressed="false">阅读全文</button></div>
+        <label class="sync-toggle"><input id="syncScroll" type="checkbox" /> 同步滚动</label>
+      </div>
+      <div class="content-grid">
+        <section class="writing-area" aria-label="Markdown 编辑器">
+          <div class="panel-heading"><span><i class="purple-dot"></i>Markdown</span><button id="editorThemeButton" class="link-button" aria-pressed="false" title="切换编辑器配色">深色编辑</button></div>
+          <div class="editor-toolbar" role="toolbar" aria-label="插入格式">
+            <button type="button" data-wrap="**" aria-label="粗体" title="粗体"><b>B</b></button><button type="button" data-wrap="*" aria-label="斜体" title="斜体"><i>I</i></button>
+            <button type="button" data-insert="## 小标题&#10;" title="二级标题">H₂</button><button type="button" data-insert="[链接文字](https://)" title="链接" aria-label="插入链接">↗</button>
+            <button id="imageButton" type="button" title="上传图片" aria-label="上传正文图片">图片</button>
+            <select id="insertSelect" aria-label="更多 Markdown 格式"><option value="">＋ 插入</option><option value="code">代码块</option><option value="note">提示块</option><option value="quote">引用</option><option value="table">表格</option><option value="list">任务清单</option><option value="math">行内公式</option><option value="equation">独立公式</option><option value="divider">分隔线</option></select>
+            <span class="toolbar-spacer"></span><small id="imageUploadStatus">检测图床…</small>
+          </div>
+          <div id="editorDropZone" class="editor-drop-zone"><div id="markdownEditor" data-theme="light"></div><textarea id="bodyInput" hidden aria-hidden="true"></textarea><div class="drop-hint" aria-hidden="true"><strong>松开，插入图片</strong><span>支持粘贴截图与拖放上传</span></div></div>
+          <div class="editor-options"><span id="cursorPosition">第 1 行，1 列</span><span id="wordCount">0 字</span></div>
+        </section>
+        <aside class="preview-pane" aria-label="博客原样预览">
+          <div class="panel-heading preview-head"><span><i class="status-dot"></i><span id="previewStatus">博客原样预览</span></span><div class="preview-actions"><div class="segmented small" role="group" aria-label="预览宽度"><button data-device="desktop" class="active" aria-pressed="true">桌面</button><button data-device="mobile" aria-pressed="false">手机</button></div><button id="refreshPreview" class="icon-button" title="刷新预览" aria-label="刷新预览">↻</button><a id="openPreview" class="icon-button" title="独立打开预览" aria-label="独立打开预览" target="_blank" rel="noopener" hidden>↗</a></div></div>
+          <div class="preview-viewport" data-device="desktop"><div id="previewLoading" class="preview-loading"><span class="loading-orbit"></span><p>正在打开博客预览…</p></div><iframe id="preview" title="博客文章实时预览" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe></div>
+          <div class="preview-footer"><span>与博客共用排版和渲染</span><details id="previewIssues" hidden><summary id="previewIssueCount"></summary><div id="previewIssueList"></div></details><span id="previewFreshness">等待预览</span></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+</div>
+<dialog id="libraryPanel" class="library-dialog" aria-labelledby="libraryTitle">
+  <div class="dialog-heading"><div><span class="eyebrow">所有文字，都在这里</span><h2 id="libraryTitle">文章库</h2></div><button data-close="libraryPanel" class="icon-button" aria-label="关闭文章库">×</button></div>
+  <div class="library-head"><div class="segmented" role="group" aria-label="内容类型"><button class="active" data-filter="post">文章</button><button data-filter="thought">碎碎念</button></div><span id="entryCount"></span></div>
+  <label class="search"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" aria-label="搜索文章" placeholder="搜索标题、标签…" /></label>
+  <div id="entryList" class="entry-list" aria-live="polite"></div>
+  <div class="git-card"><span><i class="status-dot"></i><strong id="gitBranch">读取状态…</strong></span><small id="gitSummary">正在查看本地改动</small><button id="refreshGit" class="link-button">刷新</button></div>
+</dialog>
+<dialog id="fieldsPanel" aria-labelledby="fieldsTitle">
+  <div class="dialog-heading"><h2 id="fieldsTitle">文章设置</h2><button data-close="fieldsPanel" class="icon-button" aria-label="关闭文章设置">×</button></div>
+  <div id="fieldsContent" class="fields">
+    <label><span>文章地址</span><input id="slugInput" placeholder="my-new-post" /></label><label><span>发布日期</span><input id="publishedInput" type="datetime-local" /></label>
+    <label class="wide post-only"><span>摘要</span><input id="descriptionInput" placeholder="文章列表中的简短摘要" /></label>
+    <label class="post-only"><span>栏目</span><select id="sectionInput"><option value="note">笔记</option><option value="life">生活</option><option value="article">仅博客</option></select></label>
+    <label class="post-only"><span>专题</span><input id="seriesInput" placeholder="例如：算法、课程笔记" /></label><label class="post-only"><span>分类</span><input id="categoryInput" placeholder="学习" /></label><label><span>标签</span><input id="tagsInput" placeholder="人工智能, 学习" /></label>
+    <label class="wide cover-field post-only"><span>封面</span><input id="imageInput" placeholder="图片地址" /><button id="coverButton" type="button">上传封面</button></label>
+    <div class="wide field-checks"><label class="post-only"><input id="draftInput" type="checkbox" checked /> 保存为草稿</label><label class="post-only"><input id="pinnedInput" type="checkbox" /> 置顶文章</label></div>
+  </div>
+  <div class="dialog-actions"><button data-close="fieldsPanel" class="button primary">完成</button></div>
+</dialog>
+<input id="coverFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden /><input id="bodyFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
+<dialog id="newDialog"><form method="dialog" class="dialog-card"><span class="eyebrow">新的一页</span><h2>今天想记录什么？</h2><div class="choice-grid"><button value="post" class="choice"><strong>新文章</strong><span>展开一个想法</span></button><button value="thought" class="choice"><strong>新碎碎念</strong><span>留住片刻灵感</span></button></div><button value="cancel" class="button secondary">取消</button></form></dialog>
+<dialog id="publishDialog"><form id="publishForm" class="dialog-card"><span class="eyebrow">确认发布</span><h2>提交并推送到 GitHub</h2><p>先检查并构建博客，再同步到源码和公开博客仓库。</p><label><span>版本说明</span><input id="commitMessage" value="content: update blog" required /></label><pre id="publishChanges" class="change-list">正在读取改动…</pre><div class="dialog-actions"><button type="button" id="cancelPublish" class="button secondary">取消</button><button type="submit" class="button primary">确认发布</button></div></form></dialog>
+<dialog id="logDialog"><div class="dialog-card log-card"><span id="logEyebrow" class="eyebrow">运行结果</span><h2 id="logTitle">处理中…</h2><p id="logHint" class="log-hint">完成后会显示结果。</p><section id="diagnosticList" class="diagnostic-list" aria-label="问题定位" hidden></section><pre id="logOutput" class="log-output">请稍候</pre><button id="closeLog" class="button secondary">关闭</button></div></dialog>
+<div id="toast" class="toast" role="status"></div>
+<script type="module" src="/app.js"></script>
+</body>
 </html>
