@@ -13,7 +13,7 @@ category: 学习
 series: LLM
 seriesOrder: 1
 lang: zh-CN
-updated: 2026-10-12T04:39:11.000Z
+updated: 2026-10-12T04:50:16.000Z
 pinned: false
 section: note
 ---
@@ -39,6 +39,8 @@ section: note
 3. 计算量(FLOPs)
 
 这三种手段体现了 AI 的底层基本能力，但是 这个 预训练方法的手段收益并不是 一个线性函数，而是随着你累的资源越多，可能模型的提升反而更不明显
+
+
 ### 学习资料
 
 ![学习链接](https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-reasoning-llms)
