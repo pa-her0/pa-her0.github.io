@@ -73,10 +73,16 @@ function resolveCommand(command, args) {
   if (command !== "pnpm") return { command, args }
   if (pnpmScript) return { command: process.execPath, args: [pnpmScript, ...args] }
 
+  const launcherName = process.platform === "darwin"
+    ? "启动博客工作台.command"
+    : process.platform === "win32"
+      ? "restart-启动博客工作台.cmd"
+      : "pnpm studio"
+
   return {
     command,
     args,
-    error: "工作台没有找到 pnpm。请从“启动博客工作台.cmd”重新启动，或确认 pnpm 已正确安装。",
+    error: `工作台没有找到 pnpm。请从“${launcherName}”重新启动，或确认 pnpm 已正确安装。`,
   }
 }
 
