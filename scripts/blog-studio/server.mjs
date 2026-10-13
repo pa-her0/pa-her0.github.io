@@ -1,5 +1,4 @@
 import { execFile, spawn } from "node:child_process"
-import { createHmac } from "node:crypto"
 import { existsSync, readFileSync } from "node:fs"
 import { access, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises"
 import http from "node:http"
@@ -8,6 +7,9 @@ import { fileURLToPath } from "node:url"
 import matter from "gray-matter"
 import { createBlogPreview } from "./blog-preview.mjs"
 import { editorBundle } from "./editor-bundle.mjs"
+import { cloudImageConfig, createQiniuUploader } from "./qiniu-upload.mjs"
+
+const uploadCloudImage = createQiniuUploader()
 
 
 const studioDir = path.dirname(fileURLToPath(import.meta.url))
@@ -43,7 +45,7 @@ loadProjectEnvironment()
 
 const host = "127.0.0.1"
 const port = Number(process.env.BLOG_STUDIO_PORT || 4322)
-const maxBodyBytes = 25 * 1024 * 1024
+const maxBodyBytes = 30 * 1024 * 1024
 const blogPreview = createBlogPreview(repoRoot)
 
 function resolvePnpmScript() {
@@ -114,7 +116,7 @@ async function readJson(req) {
   let size = 0
   for await (const chunk of req) {
     size += chunk.length
-    if (size > maxBodyBytes) throw new Error("请求内容过大，单次最多上传 25 MB。")
+    if (size > maxBodyBytes) throw new Error("请求内容过大，单次请求不能超过 30 MB。")
     chunks.push(chunk)
   }
   const raw = Buffer.concat(chunks).toString("utf8")
@@ -298,6 +300,7 @@ async function uploadImage(payload) {
   const match = String(payload.data || "").match(/^data:(image\/(?:png|jpeg|webp|gif));base64,(.+)$/)
   if (!match) throw new Error("只支持 PNG、JPEG、WebP 或 GIF 图片。")
   const bytes = Buffer.from(match[2], "base64")
+  if (!bytes.length) throw new Error("图片为空，请重新复制或选择图片。")
   if (bytes.length > 20 * 1024 * 1024) throw new Error("单张图片不能超过 20 MB。")
   const extension = { "image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp", "image/gif": ".gif" }[match[1]]
   const requestedStorage = ["cloud", "local"].includes(payload.storage) ? payload.storage : "auto"
@@ -323,102 +326,6 @@ async function uploadImage(payload) {
   }
   await writeFile(path.join(directory, finalName), bytes, { flag: "wx" })
   return { path: `/${folder}/${finalName}`, storage: "local" }
-}
-
-function cloudImageConfig() {
-  const region = process.env.QINIU_REGION || "z0"
-  const accessKey = process.env.QINIU_ACCESS_KEY || ""
-  const secretKey = process.env.QINIU_SECRET_KEY || ""
-  const bucket = process.env.QINIU_BUCKET || ""
-  const regionUploadUrls = {
-    z0: "https://up-z0.qiniup.com",
-    "cn-east-2": "https://up-cn-east-2.qiniup.com",
-    z1: "https://up-z1.qiniup.com",
-    z2: "https://up-z2.qiniup.com",
-    na0: "https://up-na0.qiniup.com",
-    as0: "https://up-as0.qiniup.com",
-    "ap-southeast-2": "https://up-ap-southeast-2.qiniup.com",
-    "ap-southeast-3": "https://up-ap-southeast-3.qiniup.com",
-  }
-  const uploadUrl = process.env.QINIU_UPLOAD_URL || regionUploadUrls[region] || ""
-  const publicBaseUrl = String(process.env.IMAGE_CDN_BASE_URL || "https://dns.whalefall.top").replace(/\/+$/, "")
-  const prefix = String(process.env.QINIU_PREFIX || "").replace(/^\/+|\/+$/g, "")
-  return {
-    accessKey,
-    secretKey,
-    bucket,
-    region,
-    uploadUrl,
-    publicBaseUrl,
-    prefix,
-    configured: Boolean(accessKey && secretKey && bucket && uploadUrl),
-  }
-}
-
-function cleanImageBase(value, fallback) {
-  const base = String(value || "").normalize("NFKC")
-    .replace(/[\\/:*?"<>|#%&{}$!'@+=`]/g, "-")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^[-.]+|[-.]+$/g, "")
-  return base || fallback
-}
-
-function encodeObjectUrl(baseUrl, key) {
-  return `${baseUrl}/${key.split("/").map(encodeURIComponent).join("/")}`
-}
-
-function qiniuBase64(value) {
-  const bytes = Buffer.isBuffer(value) ? value : Buffer.from(value)
-  return bytes.toString("base64").replaceAll("+", "-").replaceAll("/", "_")
-}
-
-function qiniuUploadToken({ accessKey, secretKey, bucket }, key) {
-  const policy = qiniuBase64(JSON.stringify({
-    scope: `${bucket}:${key}`,
-    deadline: Math.floor(Date.now() / 1000) + 3600,
-    insertOnly: 1,
-    returnBody: '{"key":"$(key)","hash":"$(etag)","size":$(fsize),"mimeType":"$(mimeType)"}',
-  }))
-  const signature = qiniuBase64(createHmac("sha1", secretKey).update(policy).digest())
-  return `${accessKey}:${signature}:${policy}`
-}
-
-async function uploadCloudImage({ payload, bytes, mimeType, extension, cloud }) {
-  const originalBase = path.basename(String(payload.name || "image"), path.extname(String(payload.name || "")))
-  const articleBase = cleanSlug(payload.slug, "article")
-  const genericName = /^(?:image|clipboard|pasted-image|screenshot|blob)$/i.test(originalBase.trim())
-  const fallback = `${articleBase}-${Date.now()}`
-  const base = cleanImageBase(genericName ? fallback : originalBase, fallback)
-  let counter = 1
-  while (counter <= 100) {
-    const suffix = counter === 1 ? "" : `-${counter}`
-    const fileName = `${base}${suffix}${extension}`
-    const key = cloud.prefix ? `${cloud.prefix}/${fileName}` : fileName
-    const form = new FormData()
-    form.set("token", qiniuUploadToken(cloud, key))
-    form.set("key", key)
-    form.set("file", new Blob([bytes], { type: mimeType }), fileName)
-
-    let response
-    let result
-    try {
-      response = await fetch(cloud.uploadUrl, { method: "POST", body: form })
-      result = await response.json().catch(() => ({}))
-    } catch (error) {
-      throw new Error(`连接七牛云失败：${error?.message || "请检查网络和上传域名"}`)
-    }
-
-    if (response.ok) {
-      return { path: encodeObjectUrl(cloud.publicBaseUrl, key), storage: "cloud", key }
-    }
-    if (response.status === 614 || /file exists/i.test(result?.error || "")) {
-      counter += 1
-      continue
-    }
-    throw new Error(`上传七牛图床失败（${response.status}）：${result?.error || "请检查 AccessKey、SecretKey、空间名称和区域"}`)
-  }
-  throw new Error("同名图片过多，请修改图片文件名后重试。")
 }
 
 function run(command, args, options = {}) {
@@ -583,7 +490,7 @@ async function api(req, res, url) {
     const cloud = cloudImageConfig()
     return json(res, 200, {
       storage: cloud.configured ? "cloud" : "local",
-      label: cloud.configured ? "七牛图床已连接" : "本地图片模式",
+      label: cloud.configured ? "七牛图床已配置" : "本地图片模式",
       publicBaseUrl: cloud.configured ? cloud.publicBaseUrl : "",
     })
   }

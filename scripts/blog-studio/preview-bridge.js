@@ -22,6 +22,7 @@ window.addEventListener("message", (event) => {
     const current = document.querySelector(".article-reading__main")
     if (!next || !current) return
     const scroll = window.scrollY
+    document.title = incoming.title
     current.replaceWith(next)
     // Expressive Code can add a stylesheet the first time a fence is inserted.
     for (const script of next.querySelectorAll("script")) {
@@ -51,7 +52,7 @@ document.addEventListener("click", async (event) => {
   const copy = event.target.closest(".copy-btn")
   if (copy) {
     const code = copy.closest("pre")?.querySelector("code")?.textContent || ""
-    try { await navigator.clipboard.writeText(code); copy.classList.add("success"); setTimeout(() => copy.classList.remove("success"), 1600) } catch { /* Clipboard may be unavailable in an embedded preview. */ }
+    try { await navigator.clipboard.writeText(code); copy.classList.add("copied"); setTimeout(() => copy.classList.remove("copied"), 1600) } catch { copy.setAttribute("aria-label", "复制失败，请选择代码后复制") }
     return
   }
   const link = event.target.closest("a")
