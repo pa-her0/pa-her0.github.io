@@ -22,8 +22,6 @@ interface PetAction { id: string; name: string; icon: LucideIcon; action?: () =>
 interface PetPrompt { id: string; question: string; detail: string; icon: LucideIcon; kind: PetPromptKind; href?: string }
 
 const STORAGE_KEY = "jiely-pet-tools-position-v2"
-const PET_WIDTH = 88
-const PET_HEIGHT = 94
 const HORIZONTAL_GAP = 66
 const TOP_GAP = 64
 const BOTTOM_GAP = 8
@@ -32,17 +30,6 @@ const isMobileViewport = () => window.innerWidth <= 600
 const positionStorageKey = () => `${STORAGE_KEY}:${isMobileViewport() ? "mobile" : "desktop"}`
 const musicStatusText: Record<MusicStatus, string> = {
   idle: "准备播放", loading: "正在加载", playing: "正在播放", paused: "已暂停", error: "播放失败",
-}
-
-const clampPosition = (point: Point): Point => {
-  const mobile = isMobileViewport()
-  const width = mobile ? 76 : PET_WIDTH
-  const height = mobile ? 82 : PET_HEIGHT
-  const horizontalGap = mobile ? 8 : HORIZONTAL_GAP
-  return {
-    x: Math.min(Math.max(horizontalGap, point.x), Math.max(horizontalGap, window.innerWidth - width - horizontalGap)),
-    y: Math.min(Math.max(TOP_GAP, point.y), Math.max(TOP_GAP, window.innerHeight - height - BOTTOM_GAP)),
-  }
 }
 
 const formatTime = (seconds: number) => {
@@ -90,6 +77,18 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
   const promptStopped = useRef(false)
   const currentTrack: HomeTrack = homeDashboard.tracks[trackIndex]
 
+  const clampPetPosition = (point: Point): Point => {
+    const mobile = isMobileViewport()
+    const petBounds = root.current?.getBoundingClientRect()
+    const width = petBounds?.width ?? (mobile ? 80 : 112)
+    const height = petBounds?.height ?? (mobile ? 87 : 121)
+    const horizontalGap = mobile ? 8 : HORIZONTAL_GAP
+    return {
+      x: Math.min(Math.max(horizontalGap, point.x), Math.max(horizontalGap, window.innerWidth - width - horizontalGap)),
+      y: Math.min(Math.max(TOP_GAP, point.y), Math.max(TOP_GAP, window.innerHeight - height - BOTTOM_GAP)),
+    }
+  }
+
   const updateDirections = (point: Point) => {
     setLabelsRight(point.x < window.innerWidth / 2)
     setPanelBelow(point.y < Math.min(window.innerHeight * 0.42, 340))
@@ -103,7 +102,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
       try {
         const saved = JSON.parse(localStorage.getItem(positionStorageKey()) || "null") as Point | null
         if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) {
-          const next = clampPosition(saved)
+          const next = clampPetPosition(saved)
           setPosition(next)
           updateDirections(next)
         } else {
@@ -122,7 +121,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
       }
       setPosition((current) => {
         if (!current) return current
-        const next = clampPosition(current)
+        const next = clampPetPosition(current)
         updateDirections(next)
         return next
       })
@@ -438,7 +437,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     current.moved = true
     setOpen(false); setPlayerOpen(false); setPlaylistOpen(false)
     setPose(reducedMotion ? "idle" : dx < 0 ? "running-left" : "running-right")
-    const next = clampPosition({ x: current.originX + dx, y: current.originY + dy })
+    const next = clampPetPosition({ x: current.originX + dx, y: current.originY + dy })
     dragPosition.current = next
     setPosition(next); updateDirections(next)
   }

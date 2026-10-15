@@ -1022,3 +1022,165 @@ a.card-github:hover .github-logo {
 .thoughts-timeline-body li + li { margin-top: 4px; }
 .thoughts-timeline-body li > ul,
 .thoughts-timeline-body li > ol { margin: 4px 0; }
+
+/* Frosted shortcut capsules. Their variants are shared through the UI Button. */
+.gradient-menu {
+  --glass-accent: var(--home-accent, var(--primary));
+  --glass-ink: color-mix(in srgb, var(--glass-accent) 78%, var(--foreground));
+  --glass-highlight: #fff;
+  --glass-ease: cubic-bezier(.22, 1.35, .36, 1);
+  --glass-expanded-width: 180px;
+}
+.gradient-menu__list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gradient-menu__item { display: flex; }
+.gradient-menu__button-size { width: 60px; height: 60px; padding: 0; }
+.gradient-menu__button {
+  --gradient-from: var(--glass-accent);
+  --gradient-to: color-mix(in srgb, var(--glass-accent) 72%, var(--primary));
+  position: relative;
+  isolation: isolate;
+  justify-content: center;
+  gap: 0;
+  border: 1px solid color-mix(in srgb, var(--glass-highlight) 80%, var(--border));
+  border-radius: 999px;
+  background: linear-gradient(145deg,
+    color-mix(in srgb, var(--glass-highlight) 80%, transparent),
+    color-mix(in srgb, var(--background) 58%, transparent) 55%,
+    color-mix(in srgb, var(--glass-accent) 7%, var(--background)));
+  color: var(--glass-ink);
+  box-shadow:
+    inset 0 2px 2px color-mix(in srgb, var(--glass-highlight) 96%, transparent),
+    inset 0 -2px 4px color-mix(in srgb, var(--glass-accent) 5%, transparent),
+    0 2px 3px color-mix(in srgb, var(--foreground) 5%, transparent),
+    0 12px 30px -14px color-mix(in srgb, var(--glass-accent) 24%, transparent);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  touch-action: manipulation;
+  cursor: pointer;
+  transition: width .5s var(--glass-ease), transform .38s var(--glass-ease), box-shadow .5s ease;
+}
+.gradient-menu__button[data-menu-item="about"] {
+  --gradient-from: color-mix(in srgb, var(--glass-accent) 85%, var(--foreground));
+  --gradient-to: var(--glass-accent);
+}
+.gradient-menu__button[data-menu-item="cv"] {
+  --gradient-from: color-mix(in srgb, var(--glass-accent) 68%, var(--primary));
+  --gradient-to: var(--glass-accent);
+}
+.gradient-menu__button::before {
+  position: absolute;
+  z-index: -1;
+  inset: 10px 0 -10px;
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(45deg, var(--gradient-from), var(--gradient-to));
+  filter: blur(15px);
+  opacity: 0;
+  transition: opacity .5s ease;
+}
+.gradient-menu__surface {
+  position: absolute;
+  inset: 1px;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 28% 0, color-mix(in srgb, var(--glass-highlight) 90%, transparent), transparent 68%);
+}
+.gradient-menu__surface::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  border-radius: inherit;
+  background: linear-gradient(45deg, var(--gradient-from), var(--gradient-to));
+  box-shadow: inset 0 2px 2px color-mix(in srgb, var(--glass-highlight) 30%, transparent);
+  opacity: 0;
+  transition: opacity .5s ease;
+}
+.gradient-menu__surface::after {
+  position: absolute;
+  inset: -50% auto -50% -95%;
+  width: 65%;
+  content: "";
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--glass-highlight) 85%, transparent), transparent);
+  transform: skewX(-22deg);
+  transition: transform .7s ease;
+}
+.gradient-menu__icon,
+.gradient-menu__label { position: relative; pointer-events: none; }
+.gradient-menu__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  height: 32px;
+  filter: drop-shadow(0 2px 2px color-mix(in srgb, var(--glass-accent) 12%, transparent));
+  transition: transform .5s var(--glass-ease), opacity .25s ease;
+}
+.gradient-menu__icon svg { width: 32px; height: 32px; }
+.gradient-menu__label {
+  position: absolute;
+  color: var(--glass-highlight);
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity .25s ease, transform .5s var(--glass-ease);
+}
+.gradient-menu__button:focus-visible {
+  outline: 2px solid var(--glass-accent);
+  outline-offset: 5px;
+  width: var(--glass-expanded-width);
+  box-shadow: none;
+}
+.gradient-menu__button:focus-visible::before { opacity: .4; }
+.gradient-menu__button:focus-visible .gradient-menu__surface::before { opacity: 1; }
+.gradient-menu__button:focus-visible .gradient-menu__icon { transform: scale(0); opacity: 0; }
+.gradient-menu__button:focus-visible .gradient-menu__label { transform: scale(1); opacity: 1; transition-delay: .15s; }
+@media (hover: hover) and (pointer: fine) {
+  .gradient-menu__button:hover {
+    width: var(--glass-expanded-width);
+    transform: translateY(-3px);
+    box-shadow: none;
+  }
+  .gradient-menu__button:hover::before { opacity: .4; }
+  .gradient-menu__button:hover .gradient-menu__surface::before { opacity: 1; }
+  .gradient-menu__button:hover .gradient-menu__icon { transform: scale(0); opacity: 0; }
+  .gradient-menu__button:hover .gradient-menu__label { transform: scale(1); opacity: 1; transition-delay: .15s; }
+  .gradient-menu__button:hover .gradient-menu__surface::after { transform: translateX(380%) skewX(-22deg); }
+}
+.gradient-menu__button:active {
+  transform: translateY(1px) scale(.94);
+  box-shadow:
+    inset 0 2px 7px color-mix(in srgb, var(--glass-accent) 13%, transparent),
+    inset 0 -1px 2px var(--glass-highlight),
+    0 3px 10px -6px color-mix(in srgb, var(--glass-accent) 20%, transparent);
+  transition-duration: .12s;
+}
+@media (max-width: 640px) {
+  .gradient-menu { --glass-expanded-width: min(180px, calc(100vw - 184px)); }
+  .gradient-menu__list { gap: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gradient-menu *, .gradient-menu *::before, .gradient-menu *::after { transition: none !important; }
+  .gradient-menu .gradient-menu__button:is(:hover, :focus-visible, :active) { transform: none; }
+  .gradient-menu__surface::after { display: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .gradient-menu__button { background: var(--background); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .gradient-menu__surface { background: none; }
+  .gradient-menu__button::before, .gradient-menu__surface::after { display: none; }
+}

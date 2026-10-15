@@ -36,23 +36,20 @@ body:has(.jiely-home) { overflow: hidden; }
   overflow: hidden;
   background: radial-gradient(ellipse at 50% 43%, rgb(108 99 255 / 4%), transparent 65%);
 }
-.jiely-hero__copy { position: absolute; z-index: 2; inset: auto 0 clamp(2.5rem, 6svh, 4.5rem); text-align: center; pointer-events: none; }
-.jiely-hero__signature { position: relative; width: clamp(16rem, 24vw, 20rem); margin-inline: auto; }
-.jiely-hero__wordmark { margin: 0; line-height: 0; user-select: none; }
-.jiely-hero__wordmark img { display: block; width: 100%; height: auto; }
-.jiely-hero__motto { position: absolute; top: -1.25rem; right: -1.1rem; margin: 0; color: var(--home-muted); font-family: var(--font-sans); font-size: clamp(0.68rem, 0.8vw, 0.78rem); font-weight: 450; line-height: 1.2; text-align: right; letter-spacing: -0.01em; }
-.jiely-hero__links { display: flex; align-items: center; justify-content: center; gap: 2.5rem; margin-top: 1.25rem; }
-.jiely-hero__links a { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 48px; color: var(--home-ink); font-size: clamp(1.05rem, 1.55vw, 1.3rem); font-weight: 600; text-decoration: none; transition: color 180ms ease, transform 180ms ease; pointer-events: auto; }
-.jiely-hero__links svg { width: 1.1em; height: 1.1em; }
-.jiely-hero__links a:first-child { color: var(--home-accent); }
-.jiely-hero__links a:hover { color: var(--home-accent); transform: translateY(-2px); }
-.jiely-hero__links a:active { transform: translateY(0); }
-.jiely-hero__links a:focus-visible { outline: 2px solid var(--home-accent); outline-offset: 5px; border-radius: 4px; }
+.jiely-hero__copy {
+  position: absolute;
+  z-index: 2;
+  inset: auto 1rem clamp(4.5rem, 10svh, 7rem);
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.jiely-hero__copy .gradient-menu { pointer-events: auto; }
 .voxel-playground { position: absolute; inset: 0; }
 .voxel-playground__canvas,
 .voxel-playground__fallback {
   position: absolute;
-  inset: 5.5rem 0 clamp(17rem, 35svh, 22rem);
+  inset: 4.75rem 0 clamp(12rem, 24svh, 16rem);
   display: block;
   width: 100%;
   height: auto;
@@ -73,22 +70,14 @@ body:has(.jiely-home) { overflow: hidden; }
   body:has(.jiely-home) .article-actions__prompt { display: none; }
   .jiely-home .site-header { background: color-mix(in srgb, var(--home-bg) 94%, transparent) !important; }
   .jiely-hero__copy { bottom: max(7rem, env(safe-area-inset-bottom)); }
-  .jiely-hero__signature { width: clamp(12.5rem, 58vw, 17rem); }
-  .jiely-hero__motto { font-size: 0.66rem; top: -1.15rem; right: 0; }
-  .jiely-hero__links { gap: clamp(1.1rem, 5vw, 2rem); margin-top: 1.15rem; }
-  .jiely-hero__links a { font-size: 1rem; }
-  .voxel-playground__canvas, .voxel-playground__fallback { inset: 4rem 0 18rem; }
+  .voxel-playground__canvas, .voxel-playground__fallback { inset: 4rem 0 14rem; }
 }
 @media (max-height: 540px) and (min-width: 641px) {
-  .jiely-hero__copy { bottom: 1rem; }
-  .jiely-hero__signature { width: 11.5rem; }
-  .jiely-hero__links { margin-top: 0.2rem; }
-  .voxel-playground__canvas, .voxel-playground__fallback { inset: 3.5rem 0 11rem; }
+  .jiely-hero__copy { bottom: 1.75rem; }
+  .voxel-playground__canvas, .voxel-playground__fallback { inset: 3.5rem 0 8rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .jiely-hero__links a, .voxel-playground__canvas { transition: none; }
-  .jiely-hero__links a:hover,
-  .jiely-hero__links a:active { transform: none; }
+  .voxel-playground__canvas { transition: none; }
 }
 @media (prefers-reduced-transparency: reduce) {
   .jiely-home .site-header { background: var(--home-bg) !important; backdrop-filter: none; }
