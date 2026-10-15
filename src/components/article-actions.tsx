@@ -1,11 +1,13 @@
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import {
-  ArrowUp, ChevronDown, Disc3, ExternalLink, FileDown, House, ListMusic, LoaderCircle,
+  ArrowLeft, ArrowUp, ChevronDown, Disc3, ExternalLink, FileDown, House, ListMusic, LoaderCircle,
   Music2, Newspaper, Pause, Play, Shuffle, SkipBack, SkipForward, UserRound, X,
   type LucideIcon,
 } from "lucide-react"
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react"
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from "react"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { homeDashboard, type HomeTrack } from "@/data/home-dashboard"
 import "@/styles/article-actions.css"
 
@@ -16,7 +18,7 @@ type MusicStatus = "idle" | "loading" | "playing" | "paused" | "error"
 type Point = { x: number; y: number }
 type PetPromptKind = "music" | "link"
 interface ArticleActionsProps { articleMode?: boolean; latestPostHref?: string; pagePath?: string }
-interface PetAction { name: string; icon: LucideIcon; action?: () => void | Promise<void>; href?: string }
+interface PetAction { id: string; name: string; icon: LucideIcon; action?: () => void | Promise<void>; href?: string }
 interface PetPrompt { id: string; question: string; detail: string; icon: LucideIcon; kind: PetPromptKind; href?: string }
 
 const STORAGE_KEY = "jiely-pet-tools-position-v2"
@@ -26,7 +28,6 @@ const HORIZONTAL_GAP = 66
 const TOP_GAP = 64
 const BOTTOM_GAP = 8
 const fallbackCover = "/home-gallery/hero-avatar.webp"
-const petSource = (pose: PetPose) => `/pet-tools/savage-codex-hacker-${pose}.gif`
 const isMobileViewport = () => window.innerWidth <= 600
 const positionStorageKey = () => `${STORAGE_KEY}:${isMobileViewport() ? "mobile" : "desktop"}`
 const musicStatusText: Record<MusicStatus, string> = {
@@ -52,12 +53,18 @@ const formatTime = (seconds: number) => {
 }
 
 export function ArticleActions({ articleMode = false, latestPostHref = "/articles/", pagePath = "/" }: ArticleActionsProps) {
+  const instanceId = useId()
+  const menuId = `pet-tools-${instanceId}`
+  const playerId = `pet-player-${instanceId}`
+  const playlistId = `pet-playlist-${instanceId}`
   const [open, setOpen] = useState(false)
   const [playerOpen, setPlayerOpen] = useState(false)
   const [playlistOpen, setPlaylistOpen] = useState(false)
   const [panelBelow, setPanelBelow] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
   const [printing, setPrinting] = useState(false)
+  const [feedback, setFeedback] = useState("")
+  const [activeTool, setActiveTool] = useState<string | null>(null)
   const [pose, setPose] = useState<PetPose>("idle")
   const [position, setPosition] = useState<Point | null>(null)
   const [labelsRight, setLabelsRight] = useState(false)
@@ -69,11 +76,15 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
   const [promptVisible, setPromptVisible] = useState(false)
   const root = useRef<HTMLDivElement>(null)
   const toggle = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<HTMLDivElement>(null)
   const playlistRef = useRef<HTMLDivElement>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
   const drag = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number; moved: boolean } | null>(null)
   const poseTimer = useRef<number | null>(null)
+  const feedbackTimer = useRef<number | null>(null)
+  const playbackRequest = useRef(0)
+  const dragPosition = useRef<Point | null>(null)
   const promptShowTimer = useRef<number | null>(null)
   const promptHideTimer = useRef<number | null>(null)
   const promptStopped = useRef(false)
@@ -100,7 +111,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
           setLabelsRight(false)
           setPanelBelow(false)
         }
-      } catch { localStorage.removeItem(positionStorageKey()) }
+      } catch { /* Position persistence is optional when browser storage is unavailable. */ }
     }
     const keepOnScreen = () => {
       const nextMobileViewport = isMobileViewport()
@@ -124,6 +135,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
       media.removeEventListener("change", syncMotion)
       window.removeEventListener("resize", keepOnScreen)
       if (poseTimer.current) window.clearTimeout(poseTimer.current)
+      if (feedbackTimer.current) window.clearTimeout(feedbackTimer.current)
     }
   }, [])
 
@@ -150,25 +162,76 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     const audio = audioRef.current
     const stopForAnotherPlayer = (event: Event) => {
       if (event instanceof CustomEvent && event.detail === audio) return
+      playbackRequest.current += 1
       audio?.pause()
       setMusicStatus((current) => current === "playing" || current === "loading" ? "paused" : current)
     }
-    const halt = () => audio?.pause()
+    const halt = () => { playbackRequest.current += 1; audio?.pause() }
     window.addEventListener("jiely:audio-play", stopForAnotherPlayer)
     document.addEventListener("astro:before-swap", halt)
     window.addEventListener("pagehide", halt)
     return () => {
-      audio?.pause()
+      halt()
       window.removeEventListener("jiely:audio-play", stopForAnotherPlayer)
       document.removeEventListener("astro:before-swap", halt)
       window.removeEventListener("pagehide", halt)
     }
   }, [])
 
+  useLayoutEffect(() => {
+    const container = root.current
+    if (!container) return
+    const panels = container.querySelectorAll<HTMLElement>("[data-pet-panel]")
+    const header = document.querySelector<HTMLElement>(".site-header")
+    const placePanels = () => {
+      const anchor = container.getBoundingClientRect()
+      const edge = 16
+      const topEdge = Math.max(edge, (header?.getBoundingClientRect().bottom ?? 0) + 12)
+      container.style.setProperty("--pet-panel-max-height", `${Math.max(0, window.innerHeight - topEdge - edge)}px`)
+      panels.forEach((panel) => {
+        const width = panel.offsetWidth
+        const height = panel.offsetHeight
+        const desiredLeft = anchor.left < window.innerWidth / 2 ? anchor.left : anchor.right - width
+        const left = Math.max(edge, Math.min(desiredLeft, window.innerWidth - width - edge))
+        const spaceAbove = anchor.top - topEdge - 12
+        const spaceBelow = window.innerHeight - anchor.bottom - edge - 12
+        const below = spaceAbove < height && spaceBelow > spaceAbove
+        const desiredTop = below ? anchor.bottom + 12 : anchor.top - height - 12
+        const top = Math.max(topEdge, Math.min(desiredTop, window.innerHeight - height - edge))
+        panel.style.setProperty("--panel-left", `${left - anchor.left}px`)
+        panel.style.setProperty("--panel-top", `${top - anchor.top}px`)
+        panel.style.setProperty("--panel-origin", `${Math.max(0, Math.min(width, anchor.left + anchor.width / 2 - left))}px ${below ? "0%" : "100%"}`)
+      })
+    }
+    placePanels()
+    const observer = new ResizeObserver(placePanels)
+    panels.forEach((panel) => observer.observe(panel))
+    if (header) observer.observe(header)
+    window.addEventListener("resize", placePanels)
+    return () => { observer.disconnect(); window.removeEventListener("resize", placePanels) }
+  }, [open, playerOpen, playlistOpen, position, musicStatus, promptVisible, feedback])
+
+  useGSAP(() => {
+    const menu = menuRef.current
+    if (!menu) return
+    const cards = menu.querySelectorAll(".article-actions__satellite")
+    gsap.killTweensOf([menu, ...cards])
+    if (open) gsap.set(menu, { visibility: "visible" })
+    if (reducedMotion) {
+      gsap.set(menu, { autoAlpha: open ? 1 : 0, scale: 1, y: 0 })
+      gsap.set(cards, { opacity: 1, y: 0, scale: 1, rotate: 0 })
+      return
+    }
+    gsap.to(menu, { autoAlpha: open ? 1 : 0, y: open ? 0 : 8, scale: open ? 1 : .96, duration: open ? .24 : .16, ease: "power2.out" })
+    gsap.to(cards, { opacity: open ? 1 : 0, y: open ? 0 : 8, scale: open ? 1 : .94, rotate: 0,
+      duration: open ? .32 : .14, stagger: open ? .03 : .015, ease: open ? "back.out(1.25)" : "power2.in" })
+  }, { scope: root, dependencies: [open, reducedMotion] })
+
   useGSAP(() => {
     const panel = playerRef.current
     if (!panel) return
     gsap.killTweensOf(panel)
+    if (playerOpen) gsap.set(panel, { visibility: "visible" })
     if (reducedMotion) {
       gsap.set(panel, { autoAlpha: playerOpen ? 1 : 0, y: 0, scale: 1 })
       return
@@ -183,6 +246,11 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     })
   }, { scope: root, dependencies: [playerOpen, panelBelow, reducedMotion] })
 
+  useLayoutEffect(() => {
+    if (open) menuRef.current?.focus({ preventScroll: true })
+    if (playerOpen) playerRef.current?.focus({ preventScroll: true })
+  }, [open, playerOpen])
+
   useGSAP(() => {
     const list = playlistRef.current
     if (!playlistOpen || !list || reducedMotion) return
@@ -194,12 +262,29 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
   useGSAP(() => {
     if (!playerOpen || reducedMotion) return
     gsap.fromTo(".article-actions__artwork", { scale: 0.96, rotation: -1 }, { scale: 1, rotation: 0, duration: 0.36, ease: "back.out(1.5)" })
+    gsap.fromTo(".article-actions__track-copy", { opacity: 0, y: 7 }, { opacity: 1, y: 0, duration: .3, ease: "power2.out" })
   }, { scope: root, dependencies: [trackIndex, playerOpen, reducedMotion], revertOnUpdate: true })
 
   const flashPose = (nextPose: PetPose, timeout = 650) => {
     if (poseTimer.current) window.clearTimeout(poseTimer.current)
     setPose(reducedMotion ? "idle" : nextPose)
     poseTimer.current = window.setTimeout(() => setPose("idle"), timeout)
+  }
+
+  const announce = (message: string) => {
+    if (feedbackTimer.current) window.clearTimeout(feedbackTimer.current)
+    setFeedback(message)
+    feedbackTimer.current = window.setTimeout(() => setFeedback(""), 2600)
+  }
+
+  const onToolKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return
+    const items = Array.from(event.currentTarget.querySelectorAll<HTMLElement>("[data-pet-action]"))
+    const current = items.indexOf(document.activeElement as HTMLElement)
+    if (!items.length) return
+    event.preventDefault()
+    const next = event.key === "Home" ? 0 : event.key === "End" ? items.length - 1 : current < 0 ? (event.key === "ArrowRight" ? 0 : items.length - 1) : (current + (event.key === "ArrowRight" ? 1 : -1) + items.length) % items.length
+    items[next]?.focus()
   }
 
   const isHomePage = pagePath === "/"
@@ -270,6 +355,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     if (!audio || homeDashboard.tracks.length === 0) return
     const nextIndex = (index + homeDashboard.tracks.length) % homeDashboard.tracks.length
     const nextTrack: HomeTrack = homeDashboard.tracks[nextIndex]
+    const request = ++playbackRequest.current
     setTrackIndex(nextIndex); setPlayerOpen(true); setOpen(false); setPlaylistOpen(false)
     document.querySelectorAll("audio").forEach((item) => { if (item !== audio) item.pause() })
     window.dispatchEvent(new CustomEvent("jiely:audio-play", { detail: audio }))
@@ -278,8 +364,11 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
       audio.src = nextTrack.src; audio.load(); setProgress(0); setDuration(0)
     }
     try {
-      await audio.play(); setMusicStatus("playing"); flashPose("waving", 720)
+      await audio.play()
+      if (request !== playbackRequest.current) return
+      setMusicStatus("playing"); flashPose("waving", 720)
     } catch {
+      if (request !== playbackRequest.current) return
       setMusicStatus("error"); flashPose("failed", 1100)
     }
   }
@@ -297,8 +386,10 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     const audio = audioRef.current
     if (!audio) return
     if (musicStatus === "playing" || musicStatus === "loading") {
+      playbackRequest.current += 1
       audio.pause(); setMusicStatus("paused"); return
     }
+    const request = ++playbackRequest.current
     document.querySelectorAll("audio").forEach((item) => { if (item !== audio) item.pause() })
     window.dispatchEvent(new CustomEvent("jiely:audio-play", { detail: audio }))
     setMusicStatus("loading")
@@ -306,19 +397,23 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
       audio.src = currentTrack.src; audio.load()
     }
     try {
-      await audio.play(); setMusicStatus("playing"); flashPose("waving", 700)
+      await audio.play()
+      if (request !== playbackRequest.current) return
+      setMusicStatus("playing"); flashPose("waving", 700)
     } catch {
+      if (request !== playbackRequest.current) return
       setMusicStatus("error"); flashPose("failed", 1100)
     }
   }
 
   const printPage = async () => {
     if (printing) return
+    announce("正在准备文章，随后可另存为 PDF")
     setPrinting(true); setOpen(false); flashPose("review", 900); toggle.current?.focus()
     try {
       await Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, 1500))])
       window.print()
-    } catch { flashPose("failed", 1100) } finally { setPrinting(false) }
+    } catch { announce("打印窗口未能打开，请重试"); flashPose("failed", 1100) } finally { setPrinting(false) }
   }
 
   const closeWithJump = () => { setOpen(false); flashPose("jumping") }
@@ -326,9 +421,11 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
   const onPointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (event.button !== 0 && event.pointerType === "mouse") return
     dismissPromptSequence()
+    if (poseTimer.current) window.clearTimeout(poseTimer.current)
     const rect = root.current?.getBoundingClientRect()
     if (!rect) return
     drag.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, originX: rect.left, originY: rect.top, moved: false }
+    dragPosition.current = { x: rect.left, y: rect.top }
     event.currentTarget.setPointerCapture(event.pointerId)
   }
 
@@ -342,6 +439,7 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     setOpen(false); setPlayerOpen(false); setPlaylistOpen(false)
     setPose(reducedMotion ? "idle" : dx < 0 ? "running-left" : "running-right")
     const next = clampPosition({ x: current.originX + dx, y: current.originY + dy })
+    dragPosition.current = next
     setPosition(next); updateDirections(next)
   }
 
@@ -350,31 +448,34 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
     if (!current || current.pointerId !== event.pointerId) return
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
     if (current.moved) {
-      const next = position || { x: current.originX, y: current.originY }
-      localStorage.setItem(positionStorageKey(), JSON.stringify(next)); setPose("idle")
+      const next = dragPosition.current || { x: current.originX, y: current.originY }
+      try { localStorage.setItem(positionStorageKey(), JSON.stringify(next)) } catch { /* Dragging still works without storage. */ }
+      setPose("idle")
     }
   }
 
   const onToggleClick = () => {
     if (drag.current?.moved) { drag.current = null; return }
     drag.current = null
+    dismissPromptSequence()
     if (playerOpen) { setPlayerOpen(false); setPlaylistOpen(false); setPose("idle"); return }
-    setOpen((value) => {
-      const next = !value; setPose(reducedMotion ? "idle" : next ? "waving" : "idle"); return next
-    })
+    setOpen(!open)
+    setActiveTool(null)
+    if (!open) flashPose("waving", 850)
+    else setPose("idle")
   }
 
   const articleActions: PetAction[] = [
-    { name: "音乐", icon: Music2, action: openMusicPlayer },
-    { name: "导出 PDF", icon: FileDown, action: printPage },
-    { name: "回到顶部", icon: ArrowUp, action: () => { window.scrollTo({ top: 0, behavior: reducedMotion ? "instant" : "smooth" }); closeWithJump(); toggle.current?.focus() } },
-    { name: "返回首页", icon: House, href: "/#home-main" },
+    { id: "music", name: "音乐", icon: Music2, action: openMusicPlayer },
+    { id: "pdf", name: "导出 PDF", icon: FileDown, action: printPage },
+    { id: "top", name: "回到顶部", icon: ArrowUp, action: () => { window.scrollTo({ top: 0, behavior: reducedMotion ? "instant" : "smooth" }); closeWithJump(); announce("回到文章开头"); toggle.current?.focus({ preventScroll: true }) } },
+    { id: "home", name: "返回首页", icon: House, href: "/#home-main" },
   ]
   const siteActions: PetAction[] = [
-    { name: "音乐", icon: Music2, action: openMusicPlayer },
-    { name: "返回首页", icon: House, href: "/#home-main" },
-    { name: "最新文章", icon: Newspaper, href: latestPostHref },
-    { name: "关于我", icon: UserRound, href: "/about/" },
+    { id: "music", name: "音乐", icon: Music2, action: openMusicPlayer },
+    { id: "home", name: "返回首页", icon: House, href: "/#home-main" },
+    { id: "latest", name: "最新文章", icon: Newspaper, href: latestPostHref },
+    { id: "about", name: "关于我", icon: UserRound, href: "/about/" },
   ]
   const actions = articleMode ? articleActions : siteActions
   const progressPercent = duration > 0 ? Math.min(100, Math.max(0, progress / duration * 100)) : 0
@@ -392,31 +493,34 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
       aria-label={articleMode ? "文章快捷操作" : "网站快捷导航"}
       onBlur={(event) => { if (!(event.relatedTarget instanceof Node && event.currentTarget.contains(event.relatedTarget))) setOpen(false) }}
     >
-      <div className="article-actions__menu">
-        {actions.map(({ name, icon: Icon, action, href }) => (
-          <div className="article-actions__satellite" key={name} aria-hidden={!open} inert={!open ? true : undefined}>
-            {href ? (
-              <a href={href} data-astro-prefetch="hover" className="article-actions__button" aria-label={name} tabIndex={open ? 0 : -1} onClick={closeWithJump}>
-                <Icon aria-hidden="true" /><span className="article-actions__label">{name}</span>
-              </a>
-            ) : (
-              <button type="button" className="article-actions__button" aria-label={name} onClick={action} tabIndex={open ? 0 : -1} disabled={!open || (name === "导出 PDF" && printing)}>
-                <Icon aria-hidden="true" /><span className="article-actions__label">{name}</span>
-              </button>
-            )}
-          </div>
-        ))}
+      <div ref={menuRef} id={menuId} className="article-actions__menu" data-pet-panel tabIndex={-1} role="group" aria-label="宠物快捷工具" aria-hidden={!open} inert={!open ? true : undefined} onKeyDown={onToolKeyDown}>
+        <div className="article-actions__deck" onPointerLeave={() => setActiveTool(null)}>
+          {actions.map(({ id, name, icon: Icon, action, href }) => {
+            const contents = <><span className="article-actions__tile-icon" aria-hidden="true"><Icon data-icon="inline-start" />{id === "music" ? <span className="article-actions__tile-bars"><i /><i /><i /></span> : null}</span><span className="article-actions__label">{id === "pdf" && printing ? "准备中…" : name}</span></>
+            return (
+              <div className={cn("article-actions__satellite", activeTool === id && "is-active")} key={id} data-tool={id}
+                onPointerEnter={(event) => { if (event.pointerType !== "touch") setActiveTool(id) }} onFocus={() => setActiveTool(id)} onBlur={() => setActiveTool(null)}>
+                {href ? (
+                  <Button asChild variant="petCard" size="petCard"><a href={href} data-pet-action data-astro-prefetch="hover" aria-label={name} tabIndex={open ? 0 : -1} onClick={closeWithJump}>{contents}</a></Button>
+                ) : (
+                  <Button type="button" variant="petCard" size="petCard" data-pet-action aria-label={name} aria-expanded={id === "music" ? playerOpen : undefined} aria-controls={id === "music" ? playerId : undefined} onClick={action} tabIndex={open ? 0 : -1} disabled={!open || (id === "pdf" && printing)}>{contents}</Button>
+                )}
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       <button ref={toggle} type="button" className="article-actions__pet" aria-expanded={open || playerOpen}
+        aria-controls={playerOpen ? playerId : menuId}
         aria-label={playerOpen ? "收起音乐播放器" : open ? "收起宠物工具" : "展开宠物工具，也可以拖动它"}
         onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
         onPointerCancel={() => { drag.current = null; setPose("idle") }} onClick={onToggleClick}>
-        <img src={petSource(pose)} alt="" draggable="false" width="88" height="94" />
+        <span className={`article-actions__pet-sprite is-${pose}`} aria-hidden="true" />
       </button>
 
       {showPrompt ? (
-        <div className="article-actions__prompt" role="status">
+        <div className="article-actions__prompt" role="status" data-pet-panel>
           {currentPrompt.kind === "music" ? (
             <button type="button" onClick={() => { dismissPromptSequence(); void shuffleTrack() }} aria-label={`同意，${currentPrompt.question}`}>
               <span className="article-actions__prompt-icon" aria-hidden="true"><PromptIcon /></span>
@@ -431,8 +535,8 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
         </div>
       ) : null}
 
-      {hasCollapsedPlayer ? (
-        <div className="article-actions__now-playing">
+      {hasCollapsedPlayer && !open ? (
+        <div className="article-actions__now-playing" data-pet-panel>
           <button type="button" className="article-actions__now-copy" onClick={openMusicPlayer} aria-label={`打开播放器，当前歌曲 ${currentTrack.title}`}>
             <span className="article-actions__mini-bars" aria-hidden="true"><i /><i /><i /></span>
             <span><strong>{currentTrack.title}</strong><small>{currentTrack.artist}</small></span>
@@ -443,9 +547,10 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
         </div>
       ) : null}
 
-      <div ref={playerRef} className="article-actions__player" role="region" aria-label="音乐播放器" aria-hidden={!playerOpen} inert={!playerOpen ? true : undefined}>
+      <div ref={playerRef} id={playerId} className="article-actions__player" data-pet-panel tabIndex={-1} role="region" aria-label="音乐播放器" aria-hidden={!playerOpen} inert={!playerOpen ? true : undefined}>
         <div className="article-actions__player-head">
-          <span className="article-actions__player-state" aria-live="polite"><Disc3 aria-hidden="true" />{musicStatusText[musicStatus]}</span>
+          <button type="button" className="article-actions__icon-button" aria-label="返回快捷工具" onClick={() => { setPlayerOpen(false); setPlaylistOpen(false); setActiveTool(null); setOpen(true) }}><ArrowLeft aria-hidden="true" /></button>
+          <span className="article-actions__player-state" aria-live="polite"><Disc3 aria-hidden="true" />{musicStatus === "idle" ? "音乐" : musicStatusText[musicStatus]}</span>
           <button type="button" className="article-actions__icon-button" onClick={() => { setPlayerOpen(false); setPlaylistOpen(false); toggle.current?.focus() }} aria-label="收起播放器"><X aria-hidden="true" /></button>
         </div>
 
@@ -478,14 +583,14 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
         </div>
 
         <div className="article-actions__player-nav">
-          <button type="button" className={playlistOpen ? "is-active" : ""} aria-expanded={playlistOpen} aria-controls="pet-music-playlist" onClick={() => setPlaylistOpen((value) => !value)}>
+          <button type="button" className={playlistOpen ? "is-active" : ""} aria-expanded={playlistOpen} aria-controls={playlistId} onClick={() => setPlaylistOpen((value) => !value)}>
             <ListMusic aria-hidden="true" /><span>歌单</span><small>{homeDashboard.tracks.length} 首</small><ChevronDown aria-hidden="true" />
           </button>
           <a href={homeDashboard.playlist.href} target="_blank" rel="noreferrer" aria-label="在网易云音乐打开完整歌单">网易云 <ExternalLink aria-hidden="true" /></a>
         </div>
 
         {playlistOpen ? (
-          <div ref={playlistRef} id="pet-music-playlist" className="article-actions__playlist" aria-label="歌曲列表">
+          <div ref={playlistRef} id={playlistId} className="article-actions__playlist" aria-label="歌曲列表">
             {homeDashboard.tracks.map((track, index) => (
               <button type="button" key={`${track.title}-${track.artist}`} className={`article-actions__track ${index === trackIndex ? "is-current" : ""}`}
                 aria-current={index === trackIndex ? "true" : undefined} onClick={() => void playTrack(index)}>
@@ -497,8 +602,10 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
           </div>
         ) : null}
 
-        {musicStatus === "error" ? <p className="article-actions__error">当前音源暂时无法播放，可在网易云音乐继续收听。</p> : null}
+        {musicStatus === "error" ? <div className="article-actions__error" role="status"><span>暂时无法播放</span><button type="button" onClick={() => void toggleMusic()}>重新播放</button><button type="button" onClick={() => void changeTrack(1)}>换一首</button></div> : null}
       </div>
+
+      {feedback ? <div className="article-actions__feedback" data-pet-panel role="status">{feedback}</div> : null}
 
       <audio ref={audioRef} preload="metadata" playsInline crossOrigin="anonymous"
         onTimeUpdate={() => setProgress(audioRef.current?.currentTime || 0)}
