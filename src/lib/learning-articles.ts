@@ -2,13 +2,11 @@ import type { PostEntry } from "@/lib/posts"
 import { getPostSection, getPostSeries, toSeriesSlug } from "@/lib/content-sections"
 import { toPostMeta } from "@/lib/posts"
 import type { LearningArticles } from "@/lib/learning-progress"
-import { learningTrackIds, type LearningTrackId } from "@/data/learning-plan"
+import { learningTrackIds, resolveLearningTrackId, type LearningTrackId } from "@/data/learning-plan"
 
 const trackMatchers: Record<LearningTrackId, RegExp> = {
-  nowcoder: /牛客|nowcoder|ac\.nowcoder\.com/i,
-  hdu: /杭电|\bhdu\b|acm\.hdu\.edu\.cn/i,
-  "ai-infra": /ai\s*infra|aiinfra/i,
-  "regional-vp": /区域赛|\bicpc\b|\bccpc\b|virtual participation/i,
+  algorithm: /算法竞赛|牛客|nowcoder|ac\.nowcoder\.com|杭电|\bhdu\b|acm\.hdu\.edu\.cn|区域赛|\bicpc\b|\bccpc\b|virtual participation/i,
+  "ai-infra": /ai\s*infra|aiinfra|\bcs\s*336\b/i,
   agent: /\b(?:ai|llm)[ -]?agents?\b|agentic|智能体|langgraph|langchain|工具调用/i,
 }
 
@@ -23,7 +21,7 @@ export function buildLearningArticles(posts: PostEntry[]): LearningArticles {
   const articles = Object.fromEntries(learningTrackIds.map((id) => [id, []])) as unknown as LearningArticles
 
   posts.forEach((post) => {
-    const explicitTrack = post.data.learningTrack as LearningTrackId | undefined
+    const explicitTrack = resolveLearningTrackId(post.data.learningTrack)
     const metadata = [
       post.data.title,
       post.data.description,

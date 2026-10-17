@@ -80,8 +80,8 @@ export function ArticleActions({ articleMode = false, latestPostHref = "/article
   const clampPetPosition = (point: Point): Point => {
     const mobile = isMobileViewport()
     const petBounds = root.current?.getBoundingClientRect()
-    const width = petBounds?.width ?? (mobile ? 80 : 112)
-    const height = petBounds?.height ?? (mobile ? 87 : 121)
+    const width = petBounds?.width ?? (mobile ? 120 : 168)
+    const height = petBounds?.height ?? (mobile ? 130.5 : 181.5)
     const horizontalGap = mobile ? 8 : HORIZONTAL_GAP
     return {
       x: Math.min(Math.max(horizontalGap, point.x), Math.max(horizontalGap, window.innerWidth - width - horizontalGap)),

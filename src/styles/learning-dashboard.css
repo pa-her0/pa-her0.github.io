@@ -551,8 +551,8 @@
   --border: #e5e2f0;
   --input: #e5e2f0;
   --ring: #6c63ff;
-  display: grid;
-  grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   width: min(calc(100vw - 2rem), 68rem);
   max-width: 68rem;
   height: min(86vh, 48rem);
@@ -703,6 +703,7 @@
   color: var(--content-secondary);
   font-size: 0.78rem;
   line-height: 1.7;
+  white-space: pre-line;
 }
 
 .learning-detail-dialog__note textarea {
@@ -723,6 +724,21 @@
   padding: 0.15rem 0.4rem 0.2rem 0;
   scrollbar-color: var(--border) transparent;
   scrollbar-width: thin;
+}
+
+.learning-detail-dialog > :not(.learning-detail-dialog__tabs) {
+  flex-shrink: 0;
+}
+
+.learning-detail-dialog__tabs {
+  min-height: 0;
+  flex: 1;
+  gap: 0.85rem;
+}
+
+.learning-detail-dialog__tabs > [data-slot="tabs-list"] {
+  flex-shrink: 0;
+  max-width: 100%;
 }
 
 .learning-detail-dialog__units {
@@ -754,8 +770,43 @@
 
 .learning-detail-unit h3 {
   margin: 0;
+  flex: 1;
   font-size: 0.86rem;
   font-weight: 600;
+}
+
+.learning-detail-unit--course {
+  grid-column: 1 / -1;
+}
+
+.learning-detail-unit--course ul {
+  grid-template-columns: 1fr;
+}
+
+.learning-detail-unit--course .learning-detail-task {
+  min-height: 2.8rem;
+  padding-block: 0.6rem;
+}
+
+.learning-detail-unit--course .learning-detail-task__label {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.learning-detail-unit__source {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  justify-self: start;
+  color: var(--primary);
+  font-size: 0.75rem;
+}
+
+.learning-detail-unit__source svg {
+  width: 0.85rem;
+  height: 0.85rem;
 }
 
 .learning-detail-unit > header span {

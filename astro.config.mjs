@@ -23,6 +23,7 @@ import { remarkExcerpt } from "./src/plugins/remark-excerpt.js"
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs"
 import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badge"
 import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button"
+import { normalizeLearningProgress } from "./src/lib/learning-progress.ts"
 
 const createAdmonitionComponent = (type) => (properties = {}, children = []) => {
   const normalizedChildren = Array.isArray(children) ? children : []
@@ -30,40 +31,11 @@ const createAdmonitionComponent = (type) => (properties = {}, children = []) => 
 }
 
 const learningProgressFile = fileURLToPath(new URL("./src/data/learning-progress.json", import.meta.url))
-const learningTrackIds = new Set(["nowcoder", "hdu", "regional-vp", "ai-infra", "agent"])
-const safeTaskId = /^[a-z0-9][a-z0-9-]{0,95}$/i
-const safeDate = /^\d{4}-\d{2}-\d{2}$/
-
-const sanitizeLearningProgress = (payload) => {
-  const source = payload && typeof payload === "object" ? payload : {}
-  const completedAt = {}
-  Object.entries(source.completedAt && typeof source.completedAt === "object" ? source.completedAt : {})
-    .slice(0, 1000)
-    .forEach(([taskId, date]) => {
-      if (safeTaskId.test(taskId) && typeof date === "string" && safeDate.test(date)) completedAt[taskId] = date
-    })
-
-  const currentTaskByTrack = {}
-  Object.entries(source.currentTaskByTrack && typeof source.currentTaskByTrack === "object" ? source.currentTaskByTrack : {})
-    .forEach(([trackId, taskId]) => {
-      if (learningTrackIds.has(trackId) && typeof taskId === "string" && safeTaskId.test(taskId)) currentTaskByTrack[trackId] = taskId
-    })
-
-  const statusNoteByTrack = {}
-  Object.entries(source.statusNoteByTrack && typeof source.statusNoteByTrack === "object" ? source.statusNoteByTrack : {})
-    .forEach(([trackId, note]) => {
-      if (learningTrackIds.has(trackId) && typeof note === "string") statusNoteByTrack[trackId] = note.slice(0, 240)
-    })
-
-  return {
-    version: 1,
-    updatedAt: new Date().toISOString(),
-    dailyGoal: Math.max(1, Math.min(20, Number(source.dailyGoal) || 1)),
-    completedAt,
-    currentTaskByTrack,
-    statusNoteByTrack,
-  }
-}
+// Share migration and validation with the dashboard so saves retain merged tracks.
+const sanitizeLearningProgress = (payload) => ({
+  ...normalizeLearningProgress(payload),
+  updatedAt: new Date().toISOString(),
+})
 
 const readJsonBody = (request) => new Promise((resolve, reject) => {
   let body = ""

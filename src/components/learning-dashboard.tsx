@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import {
   learningTracks,
+  learningNoteMaxLength,
+  resolveLearningTrackId,
+  legacyCompetitionTrackIds,
   type LearningTask,
   type LearningTrack,
   type LearningTrackId,
@@ -28,6 +31,7 @@ import {
 } from "@/lib/learning-progress";
 import { buildLearningInsights } from "@/lib/learning-insights";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   DraggableWidgetGrid,
   type WidgetItem,
@@ -59,7 +63,6 @@ type SaveState = "idle" | "saving" | "saved" | "error";
 const localApiPath = "/__local/learning-progress";
 const draftStorageKey = "jiely-learning-progress-draft-v1";
 const orderStorageKey = "jiely-learning-widget-order-v2";
-const defaultTrackOrder = learningTracks.map((track) => track.id);
 
 function isLocalHostname(hostname: string) {
   return (
@@ -167,7 +170,7 @@ function UnitGroup({
 
   return (
     <section
-      className="learning-detail-unit"
+      className={cn("learning-detail-unit", unit.layout === "list" && "learning-detail-unit--course")}
       aria-labelledby={`unit-${unit.id}`}
     >
       <header>
@@ -176,7 +179,17 @@ function UnitGroup({
           <span>
             {completed}/{unit.tasks.length}
           </span>
+          <Button asChild variant="ghost" size="icon-sm">
+            <a href={unit.href} target="_blank" rel="noreferrer" aria-label={`${unit.title} · ${unit.sourceLabel ?? "打开题单"}`} title={unit.sourceLabel ?? "打开题单"}>
+              <ArrowUpRight />
+            </a>
+          </Button>
         </div>
+        {unit.layout === "list" ? (
+          <a className="learning-detail-unit__source" href={unit.href} target="_blank" rel="noreferrer">
+            {unit.description} <ArrowUpRight aria-hidden="true" />
+          </a>
+        ) : null}
         <ProgressBar value={percentage} label={`${unit.title}进度`} />
       </header>
       <ul>
@@ -205,6 +218,7 @@ function TrackDialog({
   onToggle,
   onSetCurrent,
   onNoteChange,
+  initialGroupId,
 }: {
   track?: LearningTrack;
   progress: LearningProgress;
@@ -214,9 +228,24 @@ function TrackDialog({
   onToggle: (taskId: string) => void;
   onSetCurrent: (trackId: LearningTrackId, taskId: string) => void;
   onNoteChange: (trackId: LearningTrackId, note: string) => void;
+  initialGroupId?: string;
 }) {
   const stats = track ? getTrackStats(track.id, progress) : null;
   const currentTask = track ? getCurrentTask(track.id, progress) : undefined;
+  const groups = track?.groups ?? [{ id: "all", label: "全部任务", unitIds: track?.units.map((unit) => unit.id) ?? [] }];
+  const [groupId, setGroupId] = useState(() =>
+    initialGroupId ?? groups.find((group) => currentTask && group.unitIds.includes(currentTask.unitId))?.id ?? groups[0].id,
+  );
+  const activeGroup = groups.find((group) => group.id === groupId) ?? groups[0];
+  const sourceUnit = track?.units.find((unit) => activeGroup.unitIds.includes(unit.id));
+  const renderUnits = (unitIds: string[]) => track ? (
+    <div className="learning-detail-dialog__units">
+      {track.units.filter((unit) => unitIds.includes(unit.id)).map((unit) => (
+        <UnitGroup key={unit.id} track={track} unit={unit} progress={progress}
+          canEdit={canEdit} onToggle={onToggle} onSetCurrent={onSetCurrent} />
+      ))}
+    </div>
+  ) : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -241,12 +270,12 @@ function TrackDialog({
               <span>正在进行</span>
               <strong>{currentTask?.label ?? "全部完成"}</strong>
               <small>
-                {currentTask ? "继续完成当前任务" : "这一方向已经完成"}
+                {currentTask ? track.units.find((unit) => unit.id === currentTask.unitId)?.title : "这一方向已经完成"}
               </small>
             </div>
             <Button asChild variant="outline" size="sm">
-              <a href={track.sourceHref} target="_blank" rel="noreferrer">
-                {track.sourceLabel}
+              <a href={sourceUnit?.href ?? track.sourceHref} target="_blank" rel="noreferrer">
+                {sourceUnit?.sourceLabel ?? track.sourceLabel}
                 <ArrowUpRight data-icon="inline-end" />
               </a>
             </Button>
@@ -263,7 +292,7 @@ function TrackDialog({
               {canEdit ? (
                 <textarea
                   value={progress.statusNoteByTrack[track.id] ?? ""}
-                  maxLength={240}
+                  maxLength={learningNoteMaxLength}
                   rows={2}
                   aria-label={`${track.title}进度说明`}
                   placeholder="记录当前阶段或下一步……"
@@ -277,21 +306,24 @@ function TrackDialog({
             </div>
           )}
 
-          <div className="learning-detail-dialog__scroll">
-            <div className="learning-detail-dialog__units">
-              {track.units.map((unit) => (
-                <UnitGroup
-                  key={unit.id}
-                  track={track}
-                  unit={unit}
-                  progress={progress}
-                  canEdit={canEdit}
-                  onToggle={onToggle}
-                  onSetCurrent={onSetCurrent}
-                />
+          {groups.length > 1 ? (
+            <Tabs value={activeGroup.id} onValueChange={setGroupId} className="learning-detail-dialog__tabs">
+              <TabsList aria-label={`${track.title}任务分类`}>
+                {groups.map((group) => (
+                  <TabsTrigger key={group.id} value={group.id}>{group.label}</TabsTrigger>
+                ))}
+              </TabsList>
+              {groups.map((group) => (
+                <TabsContent key={group.id} value={group.id} className="learning-detail-dialog__scroll">
+                  {renderUnits(group.unitIds)}
+                </TabsContent>
               ))}
+            </Tabs>
+          ) : (
+            <div className="learning-detail-dialog__tabs learning-detail-dialog__scroll">
+              {renderUnits(activeGroup.unitIds)}
             </div>
-          </div>
+          )}
         </DialogContent>
       ) : null}
     </Dialog>
@@ -314,6 +346,7 @@ export function LearningDashboard({
   const [activityDay, setActivityDay] = useState<string | null>(null);
   const [selectedTrackId, setSelectedTrackId] =
     useState<LearningTrackId | null>(null);
+  const [initialGroupId, setInitialGroupId] = useState<string | undefined>();
   const [isLocal, setIsLocal] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [dirty, setDirty] = useState(false);
@@ -357,8 +390,9 @@ export function LearningDashboard({
     }
 
     const syncTrackFromHash = () => {
-      const hash = window.location.hash.slice(1) as LearningTrackId;
-      setSelectedTrackId(defaultTrackOrder.includes(hash) ? hash : null);
+      const hash = window.location.hash.slice(1);
+      setSelectedTrackId(resolveLearningTrackId(hash) ?? null);
+      setInitialGroupId(legacyCompetitionTrackIds.some((id) => id === hash) ? hash : undefined);
     };
     syncTrackFromHash();
     window.addEventListener("hashchange", syncTrackFromHash);
@@ -428,6 +462,7 @@ export function LearningDashboard({
   };
 
   const openTrack = (trackId: LearningTrackId) => {
+    setInitialGroupId(undefined);
     setSelectedTrackId(trackId);
     window.history.pushState(null, "", `#${trackId}`);
   };
@@ -664,7 +699,9 @@ export function LearningDashboard({
       />
 
       <TrackDialog
+        key={`${selectedTrackId ?? "closed"}:${initialGroupId ?? "default"}`}
         track={selectedTrack}
+        initialGroupId={initialGroupId}
         progress={progress}
         canEdit={canEdit}
         open={Boolean(selectedTrack)}

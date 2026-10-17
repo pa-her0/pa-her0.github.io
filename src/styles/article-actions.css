@@ -7,8 +7,8 @@
   --muted: #f0eeff;
   --muted-foreground: #777286;
   --border: #e5e2f0;
-  --pet-width: clamp(112px, 7.4vw, 128px);
-  --pet-height: clamp(121px, 8.02vw, 139px);
+  --pet-width: clamp(168px, 11.1vw, 192px);
+  --pet-height: clamp(181.5px, 12.03vw, 208.5px);
   position: fixed;
   right: max(66px, env(safe-area-inset-right));
   bottom: max(14px, env(safe-area-inset-bottom));
@@ -361,15 +361,15 @@
 
 @media (min-width: 601px) and (max-width: 960px) {
   .article-actions {
-    --pet-width: clamp(98px, 11vw, 108px);
-    --pet-height: clamp(106px, 11.92vw, 117px);
+    --pet-width: clamp(147px, 16.5vw, 162px);
+    --pet-height: clamp(159px, 17.88vw, 175.5px);
   }
 }
 
 @media (max-width: 600px) {
   .article-actions {
-    --pet-width: clamp(80px, 22vw, 88px);
-    --pet-height: clamp(87px, 23.8vw, 95px);
+    --pet-width: clamp(120px, 33vw, 132px);
+    --pet-height: clamp(130.5px, 35.7vw, 142.5px);
     right: max(8px, env(safe-area-inset-right));
     bottom: max(8px, env(safe-area-inset-bottom));
   }

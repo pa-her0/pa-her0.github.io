@@ -46,6 +46,31 @@ body:has(.jiely-home) { overflow: hidden; }
 }
 .jiely-hero__copy .gradient-menu { pointer-events: auto; }
 .voxel-playground { position: absolute; inset: 0; }
+.brick-backpack {
+  --glass-expanded-width: 132px;
+  position: absolute;
+  z-index: 3;
+  top: 6rem;
+  left: max(1.5rem, calc((100% - 1280px) / 2));
+}
+.voxel-playground__feedback {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(10rem, 21svh, 14rem);
+  max-width: calc(100% - 3rem);
+  padding: .6rem 1rem;
+  border: 1px solid rgb(108 99 255 / 8%);
+  border-radius: 999px;
+  background: rgb(250 251 252 / 90%);
+  color: var(--home-muted);
+  font-size: 12px;
+  text-align: center;
+  transform: translate(-50%, 4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease, transform .35s ease;
+}
+.voxel-playground__feedback[data-visible="true"] { opacity: 1; transform: translate(-50%, 0); }
 .voxel-playground__canvas,
 .voxel-playground__fallback {
   position: absolute;
@@ -65,16 +90,27 @@ body:has(.jiely-home) { overflow: hidden; }
 .voxel-playground[data-status="ready"] .voxel-playground__fallback { display: none; }
 .voxel-playground[data-status="fallback"] .voxel-playground__canvas { display: none; }
 .voxel-playground[data-status="fallback"] .voxel-playground__fallback { opacity: 0.8; }
+@media (max-width: 960px) {
+  .jiely-hero__copy { bottom: calc(12rem + env(safe-area-inset-bottom)); }
+  .voxel-playground__canvas, .voxel-playground__fallback { bottom: 18rem; }
+}
 @media (max-width: 640px) {
+  .brick-backpack { top: 5rem; left: 1.25rem; --glass-expanded-width: 132px; }
+  .brick-backpack .gradient-menu__button-size { width: 52px; height: 52px; }
+  .brick-backpack .gradient-menu__icon svg { width: 28px; height: 28px; }
+  .brick-backpack .gradient-menu__button:focus-visible { width: var(--glass-expanded-width); }
+  .voxel-playground__feedback { bottom: 17rem; }
   html:has(.jiely-home) { scrollbar-gutter: auto; }
   body:has(.jiely-home) .article-actions__prompt { display: none; }
   .jiely-home .site-header { background: color-mix(in srgb, var(--home-bg) 94%, transparent) !important; }
-  .jiely-hero__copy { bottom: max(7rem, env(safe-area-inset-bottom)); }
-  .voxel-playground__canvas, .voxel-playground__fallback { inset: 4rem 0 14rem; }
+  .voxel-playground__canvas, .voxel-playground__fallback { top: 4rem; }
 }
 @media (max-height: 540px) and (min-width: 641px) {
   .jiely-hero__copy { bottom: 1.75rem; }
   .voxel-playground__canvas, .voxel-playground__fallback { inset: 3.5rem 0 8rem; }
+}
+@media (max-height: 540px) and (min-width: 641px) and (max-width: 960px) {
+  .jiely-hero__copy { right: 15.25rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .voxel-playground__canvas { transition: none; }

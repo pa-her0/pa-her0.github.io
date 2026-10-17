@@ -1,5 +1,16 @@
-export const learningTrackIds = ["nowcoder", "hdu", "regional-vp", "ai-infra", "agent"] as const
+export const learningTrackIds = ["algorithm", "ai-infra", "agent"] as const
 export type LearningTrackId = typeof learningTrackIds[number]
+export const legacyCompetitionTrackIds = ["nowcoder", "hdu", "regional-vp"] as const
+export const acceptedLearningTrackIds = [...learningTrackIds, ...legacyCompetitionTrackIds] as const
+
+// Old bookmarks, article frontmatter and local drafts still use these three IDs.
+export function resolveLearningTrackId(value: unknown): LearningTrackId | undefined {
+  if (typeof value !== "string") return undefined
+  if (learningTrackIds.some((id) => id === value)) return value as LearningTrackId
+  if (legacyCompetitionTrackIds.some((id) => id === value)) return "algorithm"
+}
+
+export const learningNoteMaxLength = 1000
 
 export interface LearningTask {
   id: string
@@ -14,6 +25,8 @@ export interface LearningUnit {
   description: string
   href: string
   tasks: LearningTask[]
+  layout?: "list"
+  sourceLabel?: string
 }
 
 export interface LearningTrack {
@@ -24,6 +37,7 @@ export interface LearningTrack {
   sourceLabel: string
   sourceHref: string
   units: LearningUnit[]
+  groups?: { id: string; label: string; unitIds: string[] }[]
 }
 
 const nowcoderContests = [
@@ -83,6 +97,38 @@ const hduUnits: LearningUnit[] = hduContests.map((contest) => {
 })
 
 export const aiInfraGuideHref = "https://caomaolufei.github.io/AIInfraGuide/guides/ai-infra%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/"
+
+const cs336Descriptions = [
+  "Overview, tokenization [Percy]",
+  "PyTorch (einops), resource accounting (FLOPs, memory, arithmetic intensity) [Percy]",
+  "Architectures, hyperparameters [Tatsu]",
+  "Attention alternatives and mixture of experts [Tatsu]",
+  "GPUs, TPUs [Tatsu]",
+  "Kernels, Triton [Percy]",
+  "Parallelism [Percy]",
+  "Parallelism [Tatsu]",
+  "Scaling laws [Tatsu]",
+  "Inference [Percy]",
+  "Scaling laws [Tatsu]",
+  "Evaluation [Percy]",
+  "Data (sources, datasets) [Percy]",
+  "Data (filtering, deduplication, mixing, synthetic data) [Percy]",
+  "Mid/post-training (SFT/RLHF) [Tatsu]",
+  "Post-training - RLVR [Tatsu]",
+] as const
+
+const cs336Unit: LearningUnit = {
+  id: "ai-infra-cs336",
+  title: "CS336 · Language Modeling from Scratch",
+  description: "Schedule · YouTube playlist",
+  href: "https://www.youtube.com/watch?list=PLoROMvodv4rMqXOcazWaTUHhq-yembLCV&v=JuoVZkPBiKk",
+  sourceLabel: "YouTube playlist",
+  layout: "list",
+  tasks: cs336Descriptions.map((description, index) => ({
+    id: `ai-infra-cs336-${String(index + 1).padStart(2, "0")}`,
+    label: `${String(index + 1).padStart(2, "0")} · ${description}`,
+  })),
+}
 
 const aiInfraUnits: LearningUnit[] = [
   {
@@ -202,31 +248,18 @@ const agentUnits: LearningUnit[] = [
 
 export const learningTracks: LearningTrack[] = [
   {
-    id: "nowcoder",
-    title: "牛客多校训练",
-    shortTitle: "牛客",
-    description: "十场训练、逐题补齐。完成后把思路与易错点同步进算法笔记。",
-    sourceLabel: "打开牛客训练",
+    id: "algorithm",
+    title: "算法竞赛",
+    shortTitle: "算法竞赛",
+    description: "牛客多校、HDU 多校与区域赛 VP，按场次训练、补题与复盘。",
+    sourceLabel: "打开训练题单",
     sourceHref: nowcoderUnits[0].href,
-    units: nowcoderUnits,
-  },
-  {
-    id: "hdu",
-    title: "杭电 HDU 多校",
-    shortTitle: "HDU",
-    description: "按场次推进 HDU 题单，记录关键算法、补题状态与复盘。",
-    sourceLabel: "打开 HDU 训练",
-    sourceHref: hduUnits[0].href,
-    units: hduUnits,
-  },
-  {
-    id: "regional-vp",
-    title: "区域赛VP练习题",
-    shortTitle: "区域赛 VP",
-    description: "从一场完整的模拟赛开始，连接限时训练、赛后补题与复盘。具体赛站和题单记在下方进度说明中。",
-    sourceLabel: "选择 VP 比赛",
-    sourceHref: regionalVpHref,
-    units: regionalVpUnits,
+    units: [...nowcoderUnits, ...hduUnits, ...regionalVpUnits],
+    groups: [
+      { id: "nowcoder", label: "牛客多校", unitIds: nowcoderUnits.map((unit) => unit.id) },
+      { id: "hdu", label: "HDU 多校", unitIds: hduUnits.map((unit) => unit.id) },
+      { id: "regional-vp", label: "区域赛 VP", unitIds: regionalVpUnits.map((unit) => unit.id) },
+    ],
   },
   {
     id: "ai-infra",
@@ -235,7 +268,11 @@ export const learningTracks: LearningTrack[] = [
     description: "从前置基础到推理部署，按章节建立可检验、可复盘的知识树。",
     sourceLabel: "查看原始学习路线",
     sourceHref: aiInfraGuideHref,
-    units: aiInfraUnits,
+    units: [...aiInfraUnits, cs336Unit],
+    groups: [
+      { id: "roadmap", label: "学习路线", unitIds: aiInfraUnits.map((unit) => unit.id) },
+      { id: "cs336", label: "CS336", unitIds: [cs336Unit.id] },
+    ],
   },
   {
     id: "agent",

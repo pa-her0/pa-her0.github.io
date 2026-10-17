@@ -1,4 +1,4 @@
-import { learningTasks, learningTracks, type LearningTrackId } from "@/data/learning-plan"
+import { learningTasks, learningTrackIds, legacyCompetitionTrackIds, learningNoteMaxLength, type LearningTrackId } from "../data/learning-plan"
 
 export interface LearningProgress {
   version: 1
@@ -17,7 +17,8 @@ export interface LearningArticleLink {
 export type LearningArticles = Record<LearningTrackId, LearningArticleLink[]>
 
 const taskIds = new Set(learningTasks.map((task) => task.id))
-const trackIds = new Set<LearningTrackId>(learningTracks.map((track) => track.id))
+const taskTrackById = new Map(learningTasks.map((task) => [task.id, task.trackId]))
+const legacyTrackLabels = { nowcoder: "牛客多校", hdu: "HDU 多校", "regional-vp": "区域赛 VP" }
 
 export function toLocalDateKey(date = new Date()) {
   const year = date.getFullYear()
@@ -43,21 +44,36 @@ export function normalizeLearningProgress(value: unknown): LearningProgress {
     ? source.currentTaskByTrack as Record<string, unknown>
     : {}
   const currentTaskByTrack: Partial<Record<LearningTrackId, string>> = {}
-  Object.entries(currentSource).forEach(([trackId, taskId]) => {
-    if (trackIds.has(trackId as LearningTrackId) && typeof taskId === "string" && taskIds.has(taskId)) {
-      currentTaskByTrack[trackId as LearningTrackId] = taskId
+  learningTrackIds.forEach((trackId) => {
+    const taskId = currentSource[trackId]
+    if (typeof taskId === "string" && taskTrackById.get(taskId) === trackId) {
+      currentTaskByTrack[trackId] = taskId
     }
   })
+  if (!currentTaskByTrack.algorithm) {
+    const previousTasks = legacyCompetitionTrackIds.map((id) => currentSource[id])
+      .filter((id): id is string => typeof id === "string" && taskTrackById.get(id) === "algorithm")
+    const current = previousTasks.find((id) => !completedAt[id]) ?? previousTasks[0]
+    if (current) currentTaskByTrack.algorithm = current
+  }
 
   const noteSource = source.statusNoteByTrack && typeof source.statusNoteByTrack === "object"
     ? source.statusNoteByTrack as Record<string, unknown>
     : {}
   const statusNoteByTrack: Partial<Record<LearningTrackId, string>> = {}
-  Object.entries(noteSource).forEach(([trackId, note]) => {
-    if (trackIds.has(trackId as LearningTrackId) && typeof note === "string") {
-      statusNoteByTrack[trackId as LearningTrackId] = note.slice(0, 240)
+  learningTrackIds.forEach((trackId) => {
+    const note = noteSource[trackId]
+    if (typeof note === "string") {
+      statusNoteByTrack[trackId] = note.slice(0, learningNoteMaxLength)
     }
   })
+  if (typeof noteSource.algorithm !== "string") {
+    const notes = legacyCompetitionTrackIds.flatMap((id) => {
+      const note = noteSource[id]
+      return typeof note === "string" && note.trim() ? [`${legacyTrackLabels[id]}：${note.slice(0, 240)}`] : []
+    })
+    if (notes.length) statusNoteByTrack.algorithm = notes.join("\n")
+  }
 
   return {
     version: 1,
