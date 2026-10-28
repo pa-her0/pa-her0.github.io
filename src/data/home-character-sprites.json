@@ -1,0 +1,274 @@
+{
+  "source": "https://github.com/QCYTSN/ds-local-pet",
+  "revision": "d78094b2cf04e1cc3be5d14a31cfedd8ed059579",
+  "assets": {
+    "idle_blink": {
+      "frames": [
+        "idle_blink_00.webp",
+        "idle_blink_01.webp",
+        "idle_blink_02.webp",
+        "idle_blink_03.webp",
+        "idle_blink_04.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "idle_glance": {
+      "frames": [
+        "idle_glance_00.webp",
+        "idle_glance_01.webp",
+        "idle_glance_02.webp",
+        "idle_glance_03.webp",
+        "idle_glance_04.webp",
+        "idle_glance_05.webp",
+        "idle_glance_06.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "idle_think": {
+      "frames": [
+        "idle_think.webp"
+      ],
+      "crop": {
+        "x": 0.19376714513556617,
+        "y": 0.03268261562998405,
+        "width": 0.7017799043062202,
+        "height": 0.9378245614035088
+      }
+    },
+    "happy": {
+      "frames": [
+        "happy.webp"
+      ],
+      "crop": {
+        "x": 0.23204465709728866,
+        "y": 0.019923444976076555,
+        "width": 0.6858309409888357,
+        "height": 0.9282551834130781
+      }
+    },
+    "head_pat": {
+      "frames": [
+        "head_pat_00.webp",
+        "head_pat_01.webp",
+        "head_pat_02.webp",
+        "head_pat_03.webp",
+        "head_pat_04.webp",
+        "head_pat_05.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "talk": {
+      "frames": [
+        "talk.webp"
+      ],
+      "crop": {
+        "x": 0.22407017543859648,
+        "y": 0,
+        "width": 0.6858309409888357,
+        "height": 0.9099011164274322
+      }
+    },
+    "angry": {
+      "frames": [
+        "angry.webp"
+      ],
+      "crop": {
+        "x": 0.11561722488038277,
+        "y": 0.03427751196172249,
+        "width": 0.6906156299840511,
+        "height": 0.9362296650717704
+      }
+    },
+    "poke_react": {
+      "frames": [
+        "poke_react_00.webp",
+        "poke_react_01.webp",
+        "poke_react_02.webp",
+        "poke_react_03.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "tail_react": {
+      "frames": [
+        "tail_react_00.webp",
+        "tail_react_01.webp",
+        "tail_react_02.webp",
+        "tail_react_03.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "eat": {
+      "frames": [
+        "eat_00.webp",
+        "eat_01.webp",
+        "eat_02.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "sweep": {
+      "frames": [
+        "sweep.webp"
+      ],
+      "crop": {
+        "x": 0.20493141945773524,
+        "y": 0.0007846889952153107,
+        "width": 0.6874258373205742,
+        "height": 0.945799043062201
+      }
+    },
+    "sleep": {
+      "frames": [
+        "sleep.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "sleep_enter": {
+      "frames": [
+        "sleep_enter_00.webp",
+        "sleep_enter_01.webp",
+        "sleep_enter_02.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "sleep_wake": {
+      "frames": [
+        "sleep_wake_00.webp",
+        "sleep_wake_01.webp",
+        "sleep_wake_02.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "dizzy": {
+      "frames": [
+        "dizzy.webp"
+      ],
+      "crop": {
+        "x": 0.2527783094098884,
+        "y": 0.12359170653907495,
+        "width": 0.6379840510366825,
+        "height": 0.7799298245614036
+      }
+    },
+    "walk_side": {
+      "frames": [
+        "walk_side_00.webp",
+        "walk_side_01.webp",
+        "walk_side_02.webp",
+        "walk_side_03.webp"
+      ],
+      "crop": {
+        "x": 0.23044976076555024,
+        "y": 0,
+        "width": 0.6140606060606061,
+        "height": 0.8843827751196173
+      }
+    },
+    "walk_start_left": {
+      "frames": [
+        "walk_start_left_00.webp",
+        "walk_start_left_01.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "walk_stop_left": {
+      "frames": [
+        "walk_stop_left_00.webp",
+        "walk_stop_left_01.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "walk_side_right": {
+      "frames": [
+        "walk_side_right_00.webp",
+        "walk_side_right_01.webp",
+        "walk_side_right_02.webp",
+        "walk_side_right_03.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "walk_start_right": {
+      "frames": [
+        "walk_start_right_00.webp",
+        "walk_start_right_01.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "walk_stop_right": {
+      "frames": [
+        "walk_stop_right_00.webp",
+        "walk_stop_right_01.webp"
+      ],
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      }
+    }
+  }
+}

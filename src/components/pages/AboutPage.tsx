@@ -2,18 +2,22 @@
 
 import {
   IconArrowUpRight,
+  IconBrain,
   IconBrandGithub,
+  IconChecklist,
   IconChevronDown,
   IconChevronUp,
   IconMail,
   IconMapPin,
   IconPlayerPause,
   IconPlayerPlay,
+  IconPlugConnected,
   IconRadio,
+  IconUsersGroup,
 } from "@tabler/icons-react"
 import { useEffect, useRef, useState } from "react"
 import { ActivitySnake } from "@/components/activity-snake"
-import { HomeGlobe } from "@/components/home-globe"
+import { InteractiveHomeCharacter } from "@/components/interactive-home-character"
 import { homeDashboard, type HomeTrack } from "@/data/home-dashboard"
 import type { ActivityDay } from "@/lib/home-activity"
 
@@ -247,95 +251,127 @@ function MusicStory() {
   )
 }
 
+const journalTabs = [
+  { id: "me", title: "About me", subtitle: "个人介绍", image: "about-black" },
+  { id: "making", title: "Making", subtitle: "技术与近况", image: "updates" },
+  { id: "life", title: "Life", subtitle: "照片与音乐", image: "cv" },
+] as const
+type JournalTab = typeof journalTabs[number]["id"]
+
+const agentInterests = [
+  { name: "Tool use & MCP", icon: IconPlugConnected },
+  { name: "RAG & Memory", icon: IconBrain },
+  { name: "Multi-agent", icon: IconUsersGroup },
+  { name: "Agent evaluation", icon: IconChecklist },
+] as const
+
 export default function AboutPage({ activity }: AboutPageProps) {
+  const [selected, setSelected] = useState<JournalTab>("me")
+  const [catGreeting, setCatGreeting] = useState(0)
+  const tabs = useRef<(HTMLButtonElement | null)[]>([])
+
   return (
-    <main className="about-archive">
-      <section className="about-intro" aria-labelledby="about-title">
-        <div className="about-intro__copy">
-          <p className="about-section__eyebrow">JIELY / ABOUT</p>
-          <h1 id="about-title" className="about-intro__title">
-            <span className="sr-only">你好，我是 Jiely。</span>
-            <img
-              src="/brand/jiely-about-brush-v1.png"
-              alt=""
-              width={1536}
-              height={1024}
-              decoding="async"
-            />
-          </h1>
-          <p className="about-intro__lead">保持好奇，学习一切有趣的事物。</p>
-          <div className="about-intro__notes">
-            {homeDashboard.intro.lines.map((line) => <p key={line}>{line}</p>)}
-          </div>
-          <div className="about-intro__links">
-            <a href="https://github.com/pa-her0" target="_blank" rel="noreferrer">
-              <IconBrandGithub size={18} stroke={1.5} /> GitHub
-            </a>
-            <a href="mailto:2799620892@qq.com">
-              <IconMail size={18} stroke={1.5} /> Email
-            </a>
-          </div>
+    <main className="about-scrapbook" aria-labelledby="about-title">
+      <h1 id="about-title" className="sr-only">关于 Jiely</h1>
+      <div className="about-scrapbook__board">
+        <div className="about-scrapbook__scene">
+          <p className="about-scrapbook__note" aria-hidden="true">a little bit of <span>my world.</span></p>
+          <div className="about-scrapbook__character"><InteractiveHomeCharacter /></div>
+          <button type="button" className="scrapbook-cat" aria-label="摸摸橘猫"
+            onPointerEnter={(event) => { if (event.pointerType !== "touch") setCatGreeting((n) => n + 1) }}
+            onClick={() => setCatGreeting((n) => n + 1)}>
+            <img key={catGreeting} data-petted={catGreeting > 0 ? "true" : undefined}
+              src="/images/home-scrapbook/cat.webp" width="1280" height="1280" alt="" draggable="false" decoding="async" />
+            <span aria-hidden="true">♡</span>
+          </button>
+          <svg className="about-scrapbook__star" viewBox="0 0 60 60" aria-hidden="true"><path d="m30 4 6 18 19 1-15 12 5 19-16-11-16 10 6-19L4 22l19 1Z" /></svg>
+          <p className="about-scrapbook__aside" aria-hidden="true">stay curious <span>✦</span></p>
         </div>
 
-        <div className="about-intro__mark" aria-hidden="true">
-          <span>01</span>
-          <strong>保持<br />好奇</strong>
-          <small>STAY CURIOUS</small>
-        </div>
-      </section>
-
-      <section className="about-coordinates" aria-label="坐标与技术栈">
-        <div className="about-place">
-          <div className="about-section__heading">
-            <p className="about-section__eyebrow">WHERE I AM</p>
-            <h2><IconMapPin size={24} stroke={1.45} />{homeDashboard.location}</h2>
-          </div>
-          <div className="about-place__globe">
-            <HomeGlobe />
-          </div>
-        </div>
-
-        <div className="about-stack">
-          <div className="about-section__heading">
-            <p className="about-section__eyebrow">WHAT I USE</p>
-            <h2>Stacks</h2>
-          </div>
-          <div className="about-stack__items" role="list" aria-label="技术栈">
-            {homeDashboard.stack.map((item, index) => (
-              <div key={item.name} role="listitem">
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <img src={item.icon} alt="" width={42} height={42} />
-                <strong>{item.name}</strong>
-              </div>
+        <div className="about-journal">
+          <div className="about-journal__tabs" role="tablist" aria-label="关于我的栏目">
+            {journalTabs.map((tab, index) => (
+              <button key={tab.id} ref={(element) => { tabs.current[index] = element }}
+                type="button" role="tab" id={`about-tab-${tab.id}`}
+                aria-controls={`about-panel-${tab.id}`} aria-selected={selected === tab.id}
+                tabIndex={selected === tab.id ? 0 : -1} aria-label={`${tab.title} · ${tab.subtitle}`}
+                className="about-journal__tab" onClick={() => setSelected(tab.id)}
+                onKeyDown={(event) => {
+                  let next = index
+                  if (event.key === "ArrowRight") next = (index + 1) % journalTabs.length
+                  else if (event.key === "ArrowLeft") next = (index + journalTabs.length - 1) % journalTabs.length
+                  else if (event.key === "Home") next = 0
+                  else if (event.key === "End") next = journalTabs.length - 1
+                  else return
+                  event.preventDefault()
+                  setSelected(journalTabs[next].id)
+                  tabs.current[next]?.focus()
+                }}>
+                <img src={`/images/home-scrapbook/${tab.image}.webp`} width="1280" height="1280" alt="" draggable="false" decoding="async" />
+                <span lang="en">{tab.title}</span>
+                <small>{tab.subtitle}</small>
+              </button>
             ))}
           </div>
-        </div>
-      </section>
 
-      <section className="about-memory" aria-labelledby="about-memory-title">
-        <div className="about-section__heading about-section__heading--wide">
-          <p className="about-section__eyebrow">LIFE IN FRAGMENTS</p>
-          <h2 id="about-memory-title">日常的一些切片</h2>
-          <p>照片会记住一些瞬间，音乐会记住当时的情绪。</p>
-        </div>
-        <div className="about-memory__grid">
-          <GalleryStory />
-          <MusicStory />
-        </div>
-      </section>
+          <div className="about-sheet">
+            <span className="about-sheet__tape" aria-hidden="true" />
+            <section id="about-panel-me" role="tabpanel" aria-labelledby="about-tab-me" tabIndex={0} hidden={selected !== "me"}>
+              {selected === "me" && <div className="about-sheet__content">
+                <span className="about-sheet__index" aria-hidden="true">01 / ME</span>
+                <h2 className="about-sheet__title" lang="en">Hi, I'm Jiely<span>.</span></h2>
+                <p className="about-sheet__lead">保持好奇，学习一切有趣的事物。</p>
+                <div className="about-sheet__prose">
+                  <p>兴趣是 HPC 高性能计算、AI Infra 与 AI Agent，喜欢探索前沿技术和 GitHub 开源项目。</p>
+                  <p>这里记录生活，也记录学习。把学到的知识写下来，把想做的事情一步步实现。</p>
+                </div>
+                <div className="about-sheet__interests" aria-label="兴趣方向"><span>AI Agent</span><span>HPC</span><span>AI Infra</span><span>Open source</span></div>
+                <p className="about-sheet__location"><IconMapPin size={16} stroke={1.5} />{homeDashboard.location}</p>
+                <div className="about-sheet__links">
+                  <a href="https://github.com/pa-her0" target="_blank" rel="noreferrer"><IconBrandGithub size={18} stroke={1.5} />GitHub</a>
+                  <a href="mailto:2799620892@qq.com"><IconMail size={18} stroke={1.5} />Email</a>
+                  <a href="/acad-homepage/index.html" data-astro-reload className="about-sheet__resume">Resume<IconArrowUpRight size={17} stroke={1.5} /></a>
+                </div>
+              </div>}
+            </section>
 
-      <section className="about-current" aria-labelledby="about-writing-title">
-        <section className="about-writing">
-          <div className="about-section__heading">
-            <h2 id="about-writing-title">更新轨迹</h2>
+            <section id="about-panel-making" role="tabpanel" aria-labelledby="about-tab-making" tabIndex={0} hidden={selected !== "making"}>
+              {selected === "making" && <div className="about-sheet__content">
+                <span className="about-sheet__index" aria-hidden="true">02 / MAKING</span>
+                <h2 className="about-sheet__title" lang="en">Always learning<span>.</span></h2>
+                <p className="about-sheet__lead">以学求知，以行作答。</p>
+                <div className="about-journal__stack" role="list" aria-label="技术栈与技术兴趣">
+                  {homeDashboard.stack.map((item) => <div key={item.name} role="listitem">
+                    <img src={item.icon} alt="" width={25} height={25} /><span>{item.name}</span>
+                  </div>)}
+                  {agentInterests.map(({ name, icon: Icon }) => <div key={name} role="listitem">
+                    <Icon size={25} stroke={1.5} aria-hidden="true" /><span>{name}</span>
+                  </div>)}
+                </div>
+                <div className="about-journal__activity">
+                  <ActivitySnake days={activity.days} />
+                  <p><strong>{activity.total}</strong> 次记录，写下探索的痕迹。</p>
+                </div>
+                <div className="about-sheet__links">
+                  <a href="/projects/" data-astro-prefetch="hover">研究与实践<IconArrowUpRight size={17} stroke={1.5} /></a>
+                  <a href="/learning/" data-astro-prefetch="hover">学习进度<IconArrowUpRight size={17} stroke={1.5} /></a>
+                  <a href="/notes/" data-astro-prefetch="hover">学习笔记<IconArrowUpRight size={17} stroke={1.5} /></a>
+                </div>
+              </div>}
+            </section>
+
+            <section id="about-panel-life" role="tabpanel" aria-labelledby="about-tab-life" tabIndex={0} hidden={selected !== "life"}>
+              {selected === "life" && <div className="about-sheet__content">
+                <span className="about-sheet__index" aria-hidden="true">03 / LIFE</span>
+                <h2 className="about-sheet__title" lang="en">Little moments<span>.</span></h2>
+                <GalleryStory />
+                <MusicStory />
+              </div>}
+            </section>
+            <span className="about-sheet__page" aria-hidden="true">{String(journalTabs.findIndex(tab => tab.id === selected) + 1).padStart(2, "0")} / 03</span>
           </div>
-          <p className="about-writing__intro">文章与碎碎念，共同组成这条不完全规律的轨迹。</p>
-          <div className="about-writing__activity">
-            <ActivitySnake days={activity.days} />
-            <p>{activity.total} 次内容更新，继续生长。</p>
-          </div>
-        </section>
-      </section>
+        </div>
+      </div>
     </main>
   )
 }

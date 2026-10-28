@@ -19,7 +19,8 @@ const activity = buildHomeActivity([
 ---
 
 <BaseLayout {title} {description} fontProfile="interface">
-  <div class="site-page">
+  <link slot="head" rel="preload" as="image" href="/images/home-scrapbook/character-hello.webp" />
+  <div class="site-page about-page">
     <SiteHeader />
     <AboutPage client:load {activity} />
     <Footer />
