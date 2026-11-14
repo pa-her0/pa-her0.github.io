@@ -1,5 +1,5 @@
-export type BrickForm = "box" | "stair" | "eye"
-export type BrickTone = "violet" | "lilac" | "plum" | "ivory" | "ink"
+export type BrickForm = "box" | "stair" | "eye" | "cheek" | "mouth"
+export type BrickTone = "violet" | "lilac" | "plum" | "ivory" | "ink" | "cream" | "blush" | "sun"
 export type QuarterTurn = 0 | 1 | 2 | 3
 
 export const BRICK_KIT = [
@@ -17,8 +17,12 @@ export const BRICK_KIT = [
   { id: "pillar", name: "立柱", size: "1 × 2 × 1", width: 1, height: 2, depth: 1, form: "box" },
 ] as const
 
-// A painted square eye belongs to the model; the backpack offers building primitives.
-const DECORATIONS = [{ id: "eye", name: "像素眼", size: "1 × 1", width: 1, height: 1, depth: 0.25, form: "eye" }] as const
+// Painted face details belong to the model; the backpack offers building primitives.
+const DECORATIONS = [
+  { id: "eye", name: "大眼睛", size: "1.5 × 1.5", width: 1.5, height: 1.5, depth: 0.25, form: "eye" },
+  { id: "cheek", name: "腮红", size: "1 × 1", width: 1, height: 1, depth: 0.25, form: "cheek" },
+  { id: "mouth", name: "微笑", size: "1 × 1", width: 1, height: 1, depth: 0.25, form: "mouth" },
+] as const
 export type BrickDefinition = (typeof BRICK_KIT)[number] | (typeof DECORATIONS)[number]
 export type BrickKind = BrickDefinition["id"]
 export type BrickPiece = {
@@ -32,7 +36,8 @@ export type BrickPiece = {
 
 export const BRICK_DEFINITIONS = Object.fromEntries([...BRICK_KIT, ...DECORATIONS].map((brick) => [brick.id, brick])) as Record<BrickKind, BrickDefinition>
 export const BRICK_PALETTE: Record<BrickTone, string> = {
-  violet: "#6258e8", lilac: "#aaa2ff", plum: "#4d45b8", ivory: "#fffaf0", ink: "#26223a",
+  violet: "#7468ff", lilac: "#bdb6ff", plum: "#5a4fd6", ivory: "#fffaf0", ink: "#26223a",
+  cream: "#fff8e8", blush: "#ff9db8", sun: "#ffc547",
 }
 export const BRICK_GRID = { half: 14, height: 20, limit: 440 }
 
