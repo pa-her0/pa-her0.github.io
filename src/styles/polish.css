@@ -27,15 +27,9 @@
   /* Nav underline overshoots slightly, like a rubber band. */
   .site-header nav a > span.absolute { transition-timing-function: cubic-bezier(.34, 1.56, .64, 1) !important; transition-duration: 380ms !important; }
 
-  /* Home hint pill gently bobs. */
-  .voxel-playground__hint { animation: polish-bob 3.2s ease-in-out infinite; }
 }
 
 @keyframes polish-rise {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: none; }
-}
-@keyframes polish-bob {
-  0%, 100% { translate: 0 0; }
-  50% { translate: 0 -4px; }
 }

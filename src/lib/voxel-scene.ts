@@ -61,7 +61,7 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
   const light = new DirectionalLight(0xffffff, 2.5)
   light.position.set(-300, 850, 600)
   light.castShadow = true
-  light.shadow.mapSize.set(2048, 2048)
+  light.shadow.mapSize.set(1024, 1024)
   Object.assign(light.shadow.camera, { left: -650, right: 650, top: 650, bottom: -650, near: 1, far: 1800 })
   light.shadow.bias = -0.0004
   light.shadow.normalBias = 0.35
@@ -131,13 +131,8 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
   let lastPointer: { x: number; y: number } | null = null
   let keyboardMode = false
   let yaw = 0.85
-  let sway = 0
-  let idleWeight = 1
-  let pointerInside = false
-  let hopStart = -1
-  let blinkAt = 0
   let blinkStart = -1
-  let lastPaint = 0
+  let blinkTimer = 0
   let pitch = 0.3
   let zoom = 1
   let frame = 0
@@ -148,52 +143,30 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)")
   const arrivals = new Map<Group, number>()
 
-  const hop = () => { if (!motion.matches) hopStart = performance.now() }
   const tick = (now: number) => {
     frame = 0
     if (disposed) return
-    const alive = !motion.matches && renderer instanceof WebGLRenderer
-    // Reduced motion keeps the scene fully still; otherwise it idles at ~30fps.
-    if (alive && lastPaint && now - lastPaint < 30 && !arrivals.size && hopStart < 0) { frame = requestAnimationFrame(tick); return }
-    lastPaint = now
     arrivals.forEach((start, group) => {
       const t = Math.min(1, (now - start) / 360)
       group.scale.setScalar(1 + 0.55 * (2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2)))
       if (t >= 1) { group.scale.setScalar(1); arrivals.delete(group) }
     })
-    let settling = false
-    if (alive) {
-      const engaged = pointerInside || press !== null || document.activeElement === canvas
-      const target = engaged ? 0 : 1
-      idleWeight += (target - idleWeight) * 0.12
-      if (Math.abs(target - idleWeight) < 0.003) idleWeight = target
-      else settling = true
-      // Breathing, a squash-and-stretch hop after each placement, and a slow camera sway.
-      let squash = Math.sin(now * 0.0022) * 0.012 * idleWeight
-      let lift = 0
-      if (hopStart >= 0 && now >= hopStart) {
-        const t = (now - hopStart) / 520
-        if (t >= 1) hopStart = -1
-        else { squash += Math.sin(t * Math.PI * 3) * 0.045 * (1 - t); lift = Math.sin(Math.min(1, t * 1.4) * Math.PI) * 0.22 * BRICK_UNIT }
-      }
-      world.scale.set(1 - squash * 0.5, 1 + squash, 1 - squash * 0.5)
-      world.position.y = lift
-      const nextSway = Math.sin(now * 0.00045) * 0.07 * idleWeight
-      if (Math.abs(nextSway - sway) > 1e-5) { sway = nextSway; placeCamera() }
-      // Blink every few seconds.
-      if (!blinkAt) blinkAt = now + 2200
-      let eyeScale = 1
-      if (blinkStart < 0 && now > blinkAt) blinkStart = now
-      if (blinkStart >= 0) {
-        const t = (now - blinkStart) / 190
-        if (t >= 1) { blinkStart = -1; blinkAt = now + 2600 + Math.random() * 2600 }
-        else eyeScale = 1 - 0.88 * Math.sin(t * Math.PI)
-      }
+    // The only idle motion: a quick blink every few seconds, painted just for those ~180ms.
+    if (blinkStart >= 0) {
+      const t = (now - blinkStart) / 180
+      if (t >= 1) blinkStart = -1
+      const eyeScale = t >= 1 ? 1 : 1 - 0.88 * Math.sin(t * Math.PI)
       blocks.forEach(({ piece, group }) => { if (piece.kind === "eye") group.scale.y = eyeScale })
-    } else if (world.scale.y !== 1) { world.scale.set(1, 1, 1); world.position.y = 0; sway = 0; placeCamera() }
+    }
     scene.updateMatrixWorld()
     renderer.render(scene, camera)
-    if (arrivals.size || settling || (alive && active && !document.hidden)) frame = requestAnimationFrame(tick)
+    if (arrivals.size || blinkStart >= 0) frame = requestAnimationFrame(tick)
+  }
+  const scheduleBlink = () => {
+    blinkTimer = window.setTimeout(() => {
+      if (!disposed && active && !document.hidden && !motion.matches) { blinkStart = performance.now(); invalidate() }
+      scheduleBlink()
+    }, 3200 + Math.random() * 3000)
   }
   const invalidate = () => {
     if (frame || disposed || !active || document.hidden) return
@@ -205,8 +178,7 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
     const fitWidth = projectedWidth * BRICK_UNIT / (2 * halfFov * camera.aspect * 0.85)
     const fitHeight = (DINOSAUR_SIZE.height + DINOSAUR_SIZE.depth * 0.35) * BRICK_UNIT / (2 * halfFov * 0.86)
     const radius = Math.max(860, fitWidth, fitHeight) * zoom
-    const angle = yaw + sway
-    camera.position.set(CENTER_X + Math.sin(angle) * Math.cos(pitch) * radius, LOOK_HEIGHT + Math.sin(pitch) * radius, Math.cos(angle) * Math.cos(pitch) * radius)
+    camera.position.set(CENTER_X + Math.sin(yaw) * Math.cos(pitch) * radius, LOOK_HEIGHT + Math.sin(pitch) * radius, Math.cos(yaw) * Math.cos(pitch) * radius)
     camera.lookAt(CENTER_X, LOOK_HEIGHT, 0)
     camera.updateMatrixWorld()
   }
@@ -254,14 +226,9 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
   const hitTest = (clientX: number, clientY: number, remove = false) => {
     const bounds = canvas.getBoundingClientRect()
     pointer.set(((clientX - bounds.left) / bounds.width) * 2 - 1, -((clientY - bounds.top) / bounds.height) * 2 + 1)
-    const poseScale = world.scale.clone(), posePosition = world.position.clone()
-    world.scale.set(1, 1, 1)
-    world.position.set(0, 0, 0)
     scene.updateMatrixWorld()
     raycaster.setFromCamera(pointer, camera)
     const hit = raycaster.intersectObjects([...blocks.map(({ group }) => group), floor], true)[0]
-    world.scale.copy(poseScale)
-    world.position.copy(posePosition)
     selectedBlock = blocks.find(({ group }) => group === hit?.object.parent)
     selectedPiece = null
     if (hit) {
@@ -274,7 +241,6 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
   const applySelection = (remove: boolean) => {
     if (remove && selectedBlock) {
       remember()
-      hop()
       world.remove(selectedBlock.group)
       arrivals.delete(selectedBlock.group)
       blocks = blocks.filter((block) => block !== selectedBlock)
@@ -287,7 +253,6 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
         return
       }
       remember()
-      hop()
       add(selectedPiece, true)
       preview.visible = false
       publish()
@@ -403,8 +368,6 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
   }
   canvas.addEventListener("pointerdown", onPointerDown, { signal: events.signal })
   canvas.addEventListener("pointermove", onPointerMove, { signal: events.signal })
-  canvas.addEventListener("pointerenter", () => { pointerInside = true }, { signal: events.signal })
-  canvas.addEventListener("pointerleave", () => { pointerInside = false; invalidate() }, { signal: events.signal })
   canvas.addEventListener("pointerup", onPointerUp, { signal: events.signal })
   canvas.addEventListener("pointercancel", release, { signal: events.signal })
   canvas.addEventListener("lostpointercapture", release, { signal: events.signal })
@@ -421,13 +384,13 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
   intersectionObserver.observe(canvas)
   replace(DINOSAUR_BRICKS)
   resize()
-  // A friendly hello hop once the scene appears.
-  if (!motion.matches) hopStart = performance.now() + 700
+  scheduleBlink()
 
   return {
     setBrush, undo,
     dispose: () => {
       disposed = true
+      clearTimeout(blinkTimer)
       release(); events.abort(); resizeObserver.disconnect(); intersectionObserver.disconnect(); cancelAnimationFrame(frame)
       geometries.forEach((parts) => parts.forEach(({ geometry }) => geometry.dispose()))
       materials.forEach((material) => material.dispose())

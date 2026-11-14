@@ -71,26 +71,6 @@ body:has(.jiely-home) { overflow: hidden; }
   transition: opacity .25s ease, transform .35s ease;
 }
 .voxel-playground__feedback[data-visible="true"] { opacity: 1; transform: translate(-50%, 0); }
-.voxel-playground__hint {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(9rem, 19svh, 12.5rem);
-  margin: 0;
-  padding: .4rem .9rem;
-  border-radius: 999px;
-  background: rgb(108 99 255 / 7%);
-  color: var(--home-accent);
-  font-size: 12px;
-  letter-spacing: .04em;
-  white-space: nowrap;
-  transform: translateX(-50%);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .5s ease .9s;
-}
-.voxel-playground__hint[data-visible="true"] { opacity: 1; }
-@media (max-width: 960px) { .voxel-playground__hint { bottom: 18.6rem; } }
-@media (max-width: 640px) { .voxel-playground__hint { font-size: 11px; } }
 .voxel-playground__canvas,
 .voxel-playground__fallback {
   position: absolute;

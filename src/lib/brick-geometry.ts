@@ -55,7 +55,7 @@ export function createBrickGeometry(kind: BrickKind): BrickGeometryPart[] {
     const studs: BufferGeometry[] = []
     for (let i = 0; i < Math.floor(w); i++) {
       for (let j = 0; j < Math.floor(d); j++) {
-        studs.push(scaled(new CylinderGeometry(0.29, 0.31, 0.15, 14).translate(-w / 2 + 0.5 + i, h / 2 + 0.07, -d / 2 + 0.5 + j)))
+        studs.push(scaled(new CylinderGeometry(0.29, 0.31, 0.15, 10).translate(-w / 2 + 0.5 + i, h / 2 + 0.07, -d / 2 + 0.5 + j)))
       }
     }
     parts.push({ geometry: mergeGeometries(studs)!, stud: true })

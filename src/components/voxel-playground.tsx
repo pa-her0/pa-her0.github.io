@@ -6,8 +6,6 @@ import { DINOSAUR_BRICKS, DINOSAUR_CENTER_X } from "@/data/voxel-dinosaur"
 import { BRICK_PALETTE, brickVolumes, type BrickKind, type QuarterTurn } from "@/data/brick-kit"
 import { BrickBackpack } from "@/components/ui/brick-backpack"
 
-const CHEERS = ["再来一块！小恐龙更帅了", "咔哒，装好啦 ✨", "越搭越可爱了", "小恐龙在偷偷开心"]
-
 // Rendered before WebGL is ready, and retained when graphics are unavailable.
 const VoxelBackdrop = memo(function VoxelBackdrop() {
   return (
@@ -48,9 +46,6 @@ export function VoxelPlayground() {
   const [count, setCount] = useState(DINOSAUR_BRICKS.length)
   const [brush, setBrush] = useState<{ kind: BrickKind; turn: QuarterTurn }>({ kind: "cube", turn: 0 })
   const [feedback, setFeedback] = useState("")
-  const [touched, setTouched] = useState(false)
-  const placed = useRef(0)
-  const countRef = useRef(DINOSAUR_BRICKS.length)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -65,14 +60,7 @@ export function VoxelPlayground() {
         background: style.getPropertyValue("--home-bg").trim(),
         accent: style.getPropertyValue("--home-accent").trim(),
         grid: style.getPropertyValue("--home-line").trim(),
-        onChange: (next) => {
-          const previous = countRef.current
-          countRef.current = next
-          setCount(next)
-          if (next === previous) return
-          setTouched(true)
-          if (next > previous && ++placed.current % 6 === 0) setFeedback(CHEERS[(placed.current / 6 - 1) % CHEERS.length])
-        },
+        onChange: setCount,
         onBrushChange: (kind, turn) => setBrush({ kind, turn }),
         onFeedback: setFeedback,
       })
@@ -122,7 +110,6 @@ export function VoxelPlayground() {
         aria-hidden={status === "fallback" ? true : undefined}
       />
       <span className="sr-only" role="status" aria-live="polite" aria-atomic="true">{count} 块积木</span>
-      <p className="voxel-playground__hint" data-visible={status === "ready" && !touched} aria-hidden="true">点一点，给小恐龙加块积木 · 拖动可以转一转</p>
       <span className="voxel-playground__feedback" role="status" aria-live="polite" data-visible={Boolean(feedback)}>{feedback}</span>
       <p id="voxel-keyboard-instructions" className="sr-only">打开左上角的积木背包选择形状。鼠标左键添加积木，右键移除，拖动旋转，滚轮缩放。方向键选择格子，回车或空格添加，Delete 移除，R 旋转积木，Ctrl + Z 撤销，加减键缩放，W A S D 旋转场景，Escape 退出画布。触屏轻点添加，长按移除，滑动旋转。</p>
     </div>
