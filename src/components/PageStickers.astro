@@ -1,0 +1,342 @@
+---
+interface Props {
+  reading: boolean
+}
+
+const { reading } = Astro.props
+const page = Astro.url.pathname.replace(/\/+$/, "") || "/"
+const section = page.split("/")[1] || "home"
+
+const names = {
+  calico: "眨眼猫",
+  "orange-cat": "橘猫",
+  "blue-cat": "蓝猫",
+  star: "小星星",
+  bolt: "闪电",
+  nice: "Nice 气泡",
+  "cheering-cat": "举爪猫",
+  banana: "香蕉",
+  "shooting-star": "拖尾星星",
+  terminal: "小终端",
+  planet: "小行星",
+  "paper-plane": "纸飞机",
+}
+
+type Sticker = keyof typeof names
+
+const sets: Record<string, Sticker[]> = {
+  home: ["cheering-cat", "shooting-star", "banana"],
+  about: ["calico", "planet"],
+  friends: ["nice", "paper-plane"],
+  articles: ["terminal", "bolt"],
+  notes: ["terminal", "star"],
+  learning: ["banana", "bolt"],
+  projects: ["planet", "terminal"],
+  life: ["blue-cat", "banana"],
+  timeline: ["shooting-star", "paper-plane"],
+  thoughts: ["orange-cat", "star"],
+}
+
+const readingStickers: Sticker[] = ["star", "blue-cat", "banana", "shooting-star"]
+const readingIndex = [...page].reduce((sum, letter) => sum + letter.charCodeAt(0), 0) % readingStickers.length
+const stickers = reading ? [readingStickers[readingIndex]] : sets[section] ?? ["star"]
+const layout = reading ? "reading" : section === "about" || section === "home" ? section : "page"
+---
+
+<blog-stickers class="page-stickers" data-page={page} data-layout={layout} role="group" aria-label="可拖动的贴纸">
+  <span id="sticker-instructions" class="sr-only">拖动或用方向键移动，按 Home 恢复原位。</span>
+  {stickers.slice(0, 3).map((id) => (
+    <button
+      type="button"
+      class="page-sticker"
+      data-sticker={id}
+      aria-label={`${names[id]}贴纸`}
+      aria-describedby="sticker-instructions"
+    >
+      <img src={`/images/stickers/${id}.webp`} alt="" draggable="false" decoding="async" />
+    </button>
+  ))}
+</blog-stickers>
+
+<script>
+  type Point = { x: number; y: number }
+
+  class BlogStickers extends HTMLElement {
+    #ready = false
+
+    connectedCallback() {
+      if (this.#ready) return
+      this.#ready = true
+      this.querySelectorAll<HTMLButtonElement>("[data-sticker]").forEach((sticker) => this.#bind(sticker))
+    }
+
+    #bind(sticker: HTMLButtonElement) {
+      const key = `blog-stickers-v1:${this.dataset.page}:${sticker.dataset.sticker}`
+      const artwork = sticker.querySelector("img")
+      const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)")
+      let position: Point | undefined
+      let drag: { id: number; start: Point; center: Point; moved: boolean } | undefined
+      let suppressClick = false
+      let wiggle: Animation | undefined
+
+      const setPosition = (point?: Point) => {
+        position = point
+        if (point) {
+          sticker.style.setProperty("--sticker-x", `${point.x * 100}%`)
+          sticker.style.setProperty("--sticker-y", `${point.y * 100}%`)
+        } else {
+          sticker.style.removeProperty("--sticker-x")
+          sticker.style.removeProperty("--sticker-y")
+        }
+      }
+
+      const savePosition = () => {
+        try {
+          if (position) localStorage.setItem(key, JSON.stringify(position))
+          else localStorage.removeItem(key)
+        } catch {
+          // Dragging still works when storage is blocked.
+        }
+      }
+
+      try {
+        const saved = localStorage.getItem(key)
+        const point = saved ? JSON.parse(saved) : null
+        const valid = (n: unknown) => typeof n === "number" && Number.isFinite(n) && n >= 0 && n <= 1
+        if (valid(point?.x) && valid(point?.y)) setPosition(point)
+      } catch {
+        // A stale value should not affect the default position.
+      }
+
+      const center = (): Point => {
+        const bounds = sticker.getBoundingClientRect()
+        return { x: bounds.left + bounds.width / 2, y: bounds.top + bounds.height / 2 }
+      }
+
+      const move = (target: Point) => {
+        const bounds = this.getBoundingClientRect()
+        const radius = sticker.offsetWidth / 2 + 6
+        const limit = (value: number, size: number) => Math.max(radius, Math.min(size - radius, value)) / size
+        if (bounds.width < radius * 2 || bounds.height < radius * 2) return
+        setPosition({ x: limit(target.x - bounds.left, bounds.width), y: limit(target.y - bounds.top, bounds.height) })
+      }
+
+      sticker.addEventListener("pointerdown", (event) => {
+        if (event.button !== 0 || drag) return
+        wiggle?.cancel()
+        suppressClick = false
+        drag = { id: event.pointerId, start: { x: event.clientX, y: event.clientY }, center: center(), moved: false }
+        sticker.setPointerCapture(event.pointerId)
+      })
+
+      sticker.addEventListener("pointermove", (event) => {
+        if (!drag || drag.id !== event.pointerId) return
+
+        const dx = event.clientX - drag.start.x
+        const dy = event.clientY - drag.start.y
+        if (!drag.moved && Math.hypot(dx, dy) < 4) return
+
+        drag.moved = true
+        sticker.dataset.dragging = ""
+        move({ x: drag.center.x + dx, y: drag.center.y + dy })
+      })
+
+      const stopDrag = (event: PointerEvent) => {
+        if (!drag || drag.id !== event.pointerId) return
+        suppressClick = drag.moved
+        if (drag.moved) savePosition()
+        drag = undefined
+        delete sticker.dataset.dragging
+      }
+
+      sticker.addEventListener("pointerup", stopDrag)
+      sticker.addEventListener("pointercancel", stopDrag)
+      sticker.addEventListener("lostpointercapture", stopDrag)
+
+      sticker.addEventListener("click", (event) => {
+        if ((suppressClick && event.detail !== 0) || reducedMotion.matches) return
+        wiggle?.cancel()
+        wiggle = artwork?.animate([
+          { rotate: "0deg", scale: 1 },
+          { rotate: "12deg", scale: 1.13, offset: .28 },
+          { rotate: "-7deg", scale: 1.04, offset: .6 },
+          { rotate: "0deg", scale: 1 },
+        ], { duration: 430, easing: "ease-out" })
+      })
+
+      const arrows: Record<string, Point> = {
+        ArrowLeft: { x: -1, y: 0 },
+        ArrowRight: { x: 1, y: 0 },
+        ArrowUp: { x: 0, y: -1 },
+        ArrowDown: { x: 0, y: 1 },
+      }
+
+      sticker.addEventListener("keydown", (event) => {
+        if (event.key === "Home") {
+          event.preventDefault()
+          setPosition()
+        } else {
+          const arrow = arrows[event.key]
+          if (!arrow) return
+          event.preventDefault()
+          const origin = center()
+          const step = event.shiftKey ? 36 : 12
+          move({ x: origin.x + step * arrow.x, y: origin.y + step * arrow.y })
+        }
+        savePosition()
+      })
+    }
+  }
+
+  if (!customElements.get("blog-stickers")) customElements.define("blog-stickers", BlogStickers)
+</script>
+
+<style>
+  .page-stickers {
+    --sticker-top: clamp(3.65rem, 10svh, 5.75rem);
+    position: absolute;
+    z-index: 30;
+    inset: var(--sticker-top) 0 auto;
+    display: block;
+    height: max(13rem, calc(100svh - var(--sticker-top) - 2rem));
+    overflow: clip;
+    pointer-events: none;
+  }
+
+  .page-sticker {
+    --sticker-size: clamp(3rem, 4.4vw, 5rem);
+    --sticker-edge: calc(var(--sticker-size) / 2 + 6px);
+    --rest-x: 96%;
+    --rest-y: 21%;
+    --tilt: 8deg;
+    position: absolute;
+    left: clamp(var(--sticker-edge), var(--sticker-x, var(--rest-x)), calc(100% - var(--sticker-edge)));
+    top: clamp(var(--sticker-edge), var(--sticker-y, var(--rest-y)), calc(100% - var(--sticker-edge)));
+    width: var(--sticker-size);
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    border-radius: 1rem;
+    background: transparent;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    cursor: grab;
+  }
+
+  .page-sticker:nth-of-type(2) {
+    --rest-x: 4%;
+    --rest-y: 51%;
+    --tilt: -12deg;
+  }
+
+  .page-sticker:nth-of-type(3) {
+    --rest-x: 27%;
+    --rest-y: 72%;
+    --tilt: -9deg;
+    --sticker-size: clamp(3rem, 4.8vw, 4.75rem);
+  }
+
+  .page-stickers[data-layout="home"] {
+    .page-sticker:first-of-type {
+      --rest-x: 84%;
+      --rest-y: 27%;
+      --sticker-size: clamp(3.5rem, 7.2vw, 7rem);
+    }
+
+    .page-sticker:nth-of-type(2) {
+      --rest-x: 13%;
+      --rest-y: 49%;
+      --sticker-size: clamp(3.35rem, 6vw, 5.5rem);
+    }
+  }
+
+  .page-stickers[data-layout="about"] {
+    .page-sticker:first-of-type {
+      --rest-x: calc(50% + 23rem);
+      --rest-y: 30%;
+      --sticker-size: clamp(3.1rem, 6.2vw, 5.75rem);
+    }
+
+    .page-sticker:nth-of-type(2) {
+      --rest-x: calc(50% - 23rem);
+      --rest-y: 63%;
+      --sticker-size: clamp(2.8rem, 5vw, 4.65rem);
+    }
+  }
+
+  .page-stickers[data-layout="reading"] .page-sticker {
+    --rest-x: calc(100% - 1.9rem);
+    --rest-y: 14%;
+    --sticker-size: 2.9rem;
+  }
+
+  .page-sticker img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    transform: rotate(var(--tilt));
+    filter: drop-shadow(0 3px 3px rgb(17 30 53 / 16%));
+    transition: transform .24s cubic-bezier(.2, .7, .35, 1.4), filter .24s ease;
+  }
+
+  .page-sticker:focus-visible {
+    outline: 2px dashed var(--ring);
+    outline-offset: 3px;
+  }
+
+  @media (hover: hover) {
+    .page-sticker:hover img {
+      transform: translateY(-3px) rotate(calc(var(--tilt) + 8deg)) scale(1.07);
+    }
+  }
+
+  .page-sticker[data-dragging] {
+    z-index: 1;
+    cursor: grabbing;
+  }
+
+  .page-sticker[data-dragging] img {
+    transform: rotate(calc(var(--tilt) - 9deg)) scale(1.12);
+    filter: drop-shadow(0 7px 6px rgb(17 30 53 / 23%));
+  }
+
+  @media (max-width: 1199px) {
+    .page-stickers[data-layout="page"] .page-sticker:nth-of-type(2),
+    .page-sticker:nth-of-type(3) {
+      display: none;
+    }
+
+    .page-stickers[data-layout="page"] .page-sticker:first-of-type {
+      --rest-y: 2rem;
+      --sticker-size: 2.75rem;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .page-stickers { --sticker-top: 3.55rem; }
+
+    .page-stickers[data-layout] .page-sticker:first-of-type {
+      --rest-x: calc(100% - 1.85rem);
+      --rest-y: 1.75rem;
+      --sticker-size: 2.75rem;
+    }
+
+    .page-stickers .page-sticker:nth-of-type(n + 2) {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page-sticker img { transition: none; }
+    .page-sticker:is(:hover, [data-dragging]) img { transform: rotate(var(--tilt)); }
+  }
+
+  @media print {
+    .page-stickers { display: none; }
+  }
+</style>

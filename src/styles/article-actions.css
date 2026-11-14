@@ -99,7 +99,7 @@
   background: transparent;
   cursor: grab;
   touch-action: none;
-  filter: drop-shadow(0 8px 12px color-mix(in srgb, var(--primary) 17%, transparent));
+  filter: drop-shadow(0 5px 8px color-mix(in srgb, var(--primary) 11%, transparent));
 }
 .article-actions__pet:active { cursor: grabbing; }
 .article-actions__pet { transition: transform .35s cubic-bezier(.22, 1.4, .36, 1); }
@@ -109,7 +109,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  background-image: url("/pet-tools/zero-spritesheet.webp");
+  background-image: url("/pet-tools/zero-spritesheet-hd.webp");
   background-repeat: no-repeat;
   background-position: 0 0;
   background-size: 800% 900%;
@@ -377,6 +377,10 @@
   .article-actions__artwork { width: 74px; height: 74px; }
   .article-actions__prompt { right: 52px; bottom: 68px; width: min(226px, calc(100vw - 92px)); }
   .article-actions__now-playing { width: min(222px, calc(100vw - 94px)); }
+}
+
+@media (max-width: 767px) {
+  body:has(.about-page) .article-actions__prompt { display: none; }
 }
 
 .article-actions > [data-pet-panel] {

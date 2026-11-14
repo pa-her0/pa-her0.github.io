@@ -1,26 +1,10 @@
 ---
-import SiteHeader from "@/components/site-header.astro"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
 import friendsData from "@/data/friends.json"
-import { ExternalLink, Heart, Copy, Check, Mail } from "lucide-react"
+import { ArrowUpRight, ChevronDown, Copy, Mail } from "lucide-react"
 
-type FriendLink = {
-  title: string
-  imgurl?: string
-  desc?: string
-  siteurl: string
-  rss?: string
-}
-
-type FriendCategory = {
-  categoryTitle: string
-  categoryDesc?: string
-  links: FriendLink[]
-}
-
-const friends = friendsData as FriendCategory[]
-const allFriends = friends.flatMap((category) => category.links)
-
-const getInitial = (name: string) => name.trim().charAt(0).toUpperCase() || "?"
+const friends = friendsData.flatMap((category) => category.links)
 
 const siteInfo = {
   name: "Jiely 的博客",
@@ -40,638 +24,265 @@ const siteInfoText = [
 ].join("\n")
 ---
 
-<div class="bg-background dark:bg-surface-subtle overflow-x-hidden">
-  <SiteHeader />
-  <main class="pt-24 sm:pt-32 pb-8">
-    <div class="max-w-6xl mx-auto px-6">
-      <section class="mb-10 max-w-2xl">
-        <p class="mb-2 font-mono text-xs uppercase tracking-[0.18em] text-primary">Jiely / Friends</p>
-        <h1 class="mb-3 text-3xl font-bold tracking-[-0.035em] text-foreground sm:text-4xl">友情链接</h1>
-        <p class="text-base leading-7 text-muted-foreground sm:text-lg">
-          这些是我欣赏的创作者们，他们在各自的领域持续输出优质内容。
-        </p>
-      </section>
+<ul class="friend-links" role="list">
+  {friends.map((friend) => (
+    <li>
+      <a href={friend.siteurl} target="_blank" rel="noopener noreferrer" class="friend-link">
+        <span class="friend-link__avatar" aria-hidden="true">
+          {friend.title.trim().slice(0, 1).toUpperCase() || "?"}
+          {friend.imgurl && (
+            <img src={friend.imgurl} alt="" width="56" height="56" loading="lazy" decoding="async" onerror="this.remove()" />
+          )}
+        </span>
+        <span class="friend-link__copy">
+          <strong>{friend.title}</strong>
+          <span>{friend.desc?.trim() || "暂无描述"}</span>
+        </span>
+        <ArrowUpRight className="friend-link__arrow" aria-hidden="true" />
+      </a>
+    </li>
+  ))}
+</ul>
 
-      <section class="mb-16">
-        <div class="friends-bento-grid" data-friends-grid>
-          {allFriends.map((friend, index) => {
-            const desc = friend.desc?.trim() ? friend.desc : "暂无描述"
-
-            return (
-              <article
-                class="friend-bento-card"
-                data-friend-card
-                data-index={index}
-                style="--friend-tint: var(--primary)"
-              >
-                <a
-                  href={friend.siteurl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="friend-card-surface"
-                  aria-label={`访问 ${friend.title}`}
-                >
-                  <span class="friend-card-media" aria-hidden="true">
-                    <span class="friend-card-initial">{getInitial(friend.title)}</span>
-                    {friend.imgurl ? (
-                      <img
-                        src={friend.imgurl}
-                        alt=""
-                        width={320}
-                        height={320}
-                        loading="lazy"
-                        decoding="async"
-                        onerror="this.remove()"
-                      />
-                    ) : null}
-                  </span>
-                  <span class="friend-card-shade" aria-hidden="true" />
-                  <span class="friend-card-copy">
-                    <span class="friend-card-name">{friend.title}</span>
-                    <span class="friend-card-desc">{desc}</span>
-                  </span>
-                  <span
-                    class="friend-card-link"
-                    aria-hidden="true"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </span>
-                </a>
-              </article>
-            )
-          })}
-        </div>
-      </section>
-
-      <section class="space-y-6">
-        <div class="flex items-center gap-3">
-          <div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary">
-            <Heart className="w-5 h-5" />
-          </div>
+<details class="friend-exchange">
+  <summary>
+    <span>申请友链</span>
+    <ChevronDown className="friend-exchange__chevron" aria-hidden="true" />
+  </summary>
+  <div class="friend-exchange__content">
+    <Separator />
+    <div class="friend-exchange__body">
+      <dl class="friend-exchange__info">
+        {[
+          { label: "站点名称", value: siteInfo.name },
+          { label: "站点地址", value: siteInfo.url },
+          { label: "站点头像", value: siteInfo.avatar },
+          { label: "站点描述", value: siteInfo.desc },
+          { label: "RSS", value: siteInfo.rss },
+        ].map(({ label, value }) => (
           <div>
-            <h2 class="text-xl font-semibold text-foreground">申请友链</h2>
-            <p class="text-sm text-muted-foreground">如果你也有一个持续更新的博客，欢迎互换友链</p>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
           </div>
-        </div>
-
-        <div>
-          <div class="friends-info-card p-6 rounded-xl border border-border bg-card relative">
-            <h3 class="text-sm font-medium text-foreground mb-4">本站信息</h3>
-            <button
-              type="button"
-              data-copy-all
-              data-copy-text={siteInfoText}
-              class="absolute right-6 top-6 inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md border border-border hover:border-primary/60 hover:text-primary transition-colors"
-              title="一键复制全部友链信息"
-            >
-              <Copy className="w-3.5 h-3.5" data-copy-icon />
-              <Check className="w-3.5 h-3.5 text-green-500 hidden" data-check-icon />
-              <span data-copy-label>复制全部</span>
-            </button>
-            <div class="space-y-3">
-              {[
-                { label: "站点名称", value: siteInfo.name },
-                { label: "站点地址", value: siteInfo.url, mono: true },
-                { label: "站点头像", value: siteInfo.avatar, mono: true },
-                { label: "站点描述", value: siteInfo.desc },
-                { label: "RSS", value: siteInfo.rss, mono: true },
-              ].map((item) => (
-                <div class="flex flex-col gap-1 group sm:grid sm:grid-cols-[96px_1fr] sm:items-start sm:gap-x-4 sm:gap-y-1">
-                  <span class="text-sm text-muted-foreground shrink-0">{item.label}</span>
-                  <span class={`text-sm text-foreground break-words ${item.mono ? "font-mono text-xs" : ""}`}>
-                    {item.value}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div class="friends-info-card p-5 rounded-xl border border-primary/20 bg-primary/5">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div class="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-primary mt-0.5" />
-              <div>
-                <p class="text-sm text-foreground font-medium">通过邮件申请</p>
-                <p class="text-xs text-muted-foreground mt-0.5">
-                  您也可以使用邮件来提交友链申请
-                </p>
-              </div>
-            </div>
-            <a
-              href={`mailto:${siteInfo.email}`}
-              class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors shrink-0"
-            >
-              <Mail className="w-4 h-4" />
-              {siteInfo.email}
-            </a>
-          </div>
-        </div>
-      </section>
+        ))}
+      </dl>
+      <div class="friend-exchange__actions">
+        <Button type="button" variant="outline" data-copy-friend-info={siteInfoText}>
+          <Copy data-icon="inline-start" aria-hidden="true" />
+          <span data-copy-status aria-live="polite">复制资料</span>
+        </Button>
+        <Button asChild>
+          <a href={`mailto:${siteInfo.email}`} title={siteInfo.email}>
+            <Mail data-icon="inline-start" aria-hidden="true" />
+            邮件申请
+          </a>
+        </Button>
+      </div>
     </div>
-  </main>
+  </div>
+</details>
 
-  <style>
-    .friends-bento-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
-      grid-auto-rows: 132px;
-      gap: 12px;
+<script>
+  let resetCopyStatus = 0
+
+  document.addEventListener("click", async (event) => {
+    if (!(event.target instanceof Element)) return
+    const button = event.target.closest<HTMLButtonElement>("[data-copy-friend-info]")
+    const text = button?.dataset.copyFriendInfo
+    const label = button?.querySelector("[data-copy-status]")
+    if (!text || !label) return
+
+    try {
+      await navigator.clipboard.writeText(text)
+      label.textContent = "已复制"
+    } catch {
+      label.textContent = "复制失败"
     }
 
-    .friend-bento-card {
-      position: relative;
-      overflow: hidden;
-      min-height: 0;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: var(--card);
-      transition: transform 250ms cubic-bezier(.2,.8,.2,1), box-shadow 250ms ease;
-    }
+    window.clearTimeout(resetCopyStatus)
+    resetCopyStatus = window.setTimeout(() => { label.textContent = "复制资料" }, 2000)
+  })
+</script>
 
-    .friend-bento-card:hover,
-    .friend-bento-card.is-open,
-    .friend-bento-card:focus-within {
-      z-index: 2;
-      transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 20px 42px -18px rgba(108, 99, 255, 0.24);
-    }
+<style>
+  .friend-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .8rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
 
-    .friend-card-surface {
-      position: absolute;
-      inset: 0;
-      display: block;
-      width: 100%;
-      height: 100%;
-      padding: 0;
-      border: 0;
-      color: #fff;
-      text-align: left;
-      background: transparent;
-      cursor: pointer;
-    }
+  .friend-links > li {
+    flex: 1 1 16rem;
+    min-width: 0;
+  }
 
-    .friend-card-surface:focus-visible {
-      outline: 2px solid color-mix(in oklab, var(--primary), white 35%);
-      outline-offset: -4px;
-    }
+  .friend-link,
+  .friend-exchange {
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
+    background: var(--panel-background);
+  }
 
-    .friend-card-media,
-    .friend-card-shade {
-      position: absolute;
-      inset: 0;
-    }
+  .friend-link {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: .85rem;
+    min-height: 6.45rem;
+    height: 100%;
+    padding: .85rem 1rem;
+    color: var(--foreground);
+    transition: border-color .2s ease, background-color .2s ease;
+  }
 
-    .friend-card-media {
-      background: color-mix(in oklab, var(--friend-tint), var(--card) 72%);
-    }
+  .friend-link:hover {
+    border-color: color-mix(in oklab, var(--primary) 36%, var(--border));
+    background: var(--paper-warm);
+  }
 
-    .friend-card-media img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform: scale(1.02);
-      transition: transform 350ms cubic-bezier(.2,.8,.2,1), filter 250ms ease;
-    }
+  .friend-link__avatar {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 3.4rem;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: .8rem;
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
 
-    .friend-card-initial {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: color-mix(in oklab, var(--friend-tint), var(--foreground) 12%);
-      font-size: 26px;
-      font-weight: 800;
-    }
+  .friend-link__avatar img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
-    .friend-bento-card.is-featured .friend-card-initial {
-      font-size: 48px;
-    }
+  .friend-link__copy {
+    display: grid;
+    gap: .24rem;
+    overflow-wrap: anywhere;
+  }
 
-    .friend-card-shade {
-      background:
-        linear-gradient(to top, rgb(0 0 0 / 76%), rgb(0 0 0 / 28%) 46%, rgb(0 0 0 / 4%) 78%),
-        radial-gradient(circle at 18% 85%, color-mix(in oklab, var(--friend-tint), transparent 54%), transparent 44%);
-      transition: background 250ms ease;
-    }
+  .friend-link__copy strong {
+    font-size: .95rem;
+    font-weight: 650;
+    line-height: 1.4;
+  }
 
-    .friend-card-copy {
-      position: absolute;
-      right: 14px;
-      bottom: 14px;
-      left: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      text-shadow: 0 1px 14px rgb(0 0 0 / 45%);
-    }
+  .friend-link__copy > span {
+    color: var(--muted-foreground);
+    font-size: .81rem;
+    line-height: 1.55;
+  }
 
-    .friend-card-name {
-      display: -webkit-box;
-      overflow: hidden;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
-      font-size: 12.5px;
-      font-weight: 800;
-      line-height: 1.25;
-    }
+  .friend-link__arrow {
+    align-self: start;
+    margin-top: .15rem;
+    color: var(--muted-foreground);
+    width: 1rem;
+    height: 1rem;
+  }
 
-    .friend-bento-card.is-featured .friend-card-copy {
-      right: 20px;
-      bottom: 20px;
-      left: 20px;
-      gap: 8px;
-    }
+  .friend-link:hover .friend-link__arrow {
+    color: var(--primary);
+  }
 
-    .friend-bento-card.is-featured .friend-card-name {
-      font-size: 18px;
-    }
+  .friend-exchange {
+    margin-block-start: .8rem;
+  }
 
-    .friend-bento-card.is-wide .friend-card-name,
-    .friend-bento-card.is-tall .friend-card-name {
-      font-size: 16px;
-    }
+  .friend-exchange > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .85rem;
+    min-height: 3rem;
+    padding: .65rem 1rem;
+    border-radius: inherit;
+    font-size: .86rem;
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+  }
 
-    .friend-card-desc {
-      display: -webkit-box;
-      max-height: 0;
-      overflow: hidden;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
-      font-size: 11.5px;
-      line-height: 1.5;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity 200ms ease, transform 200ms ease;
-    }
+  .friend-exchange > summary::-webkit-details-marker {
+    display: none;
+  }
 
-    .friend-bento-card.is-featured .friend-card-desc,
-    .friend-bento-card:hover .friend-card-desc,
-    .friend-bento-card.is-open .friend-card-desc,
-    .friend-bento-card:focus-within .friend-card-desc {
-      max-height: 5.2em;
-      opacity: .9;
-      transform: none;
-    }
+  .friend-exchange > summary:hover {
+    color: var(--primary);
+  }
 
-    .friend-bento-card:hover .friend-card-copy,
-    .friend-bento-card.is-open .friend-card-copy,
-    .friend-bento-card:focus-within .friend-card-copy {
-      gap: 6px;
-    }
+  .friend-link:focus-visible,
+  .friend-exchange > summary:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
 
-    .friend-bento-card.is-featured:hover .friend-card-copy,
-    .friend-bento-card.is-featured.is-open .friend-card-copy,
-    .friend-bento-card.is-featured:focus-within .friend-card-copy {
-      gap: 8px;
-    }
+  .friend-exchange__chevron {
+    width: 1rem;
+    height: 1rem;
+    color: var(--muted-foreground);
+    transition: transform .2s ease;
+  }
 
-    .friend-bento-card:hover .friend-card-media img,
-    .friend-bento-card.is-open .friend-card-media img,
-    .friend-bento-card:focus-within .friend-card-media img {
-      filter: saturate(.9) brightness(.72);
-      transform: scale(1.1);
-    }
+  .friend-exchange[open] .friend-exchange__chevron {
+    transform: rotate(180deg);
+  }
 
-    .friend-bento-card:hover .friend-card-shade,
-    .friend-bento-card.is-open .friend-card-shade,
-    .friend-bento-card:focus-within .friend-card-shade {
-      background: linear-gradient(to top, rgb(0 0 0 / 86%), rgb(0 0 0 / 54%) 58%, rgb(0 0 0 / 18%));
-    }
+  .friend-exchange__content {
+    padding: 0 1rem 1rem;
+  }
 
-    .friend-card-link {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 34px;
-      height: 34px;
-      color: #111;
-      pointer-events: none;
-      background: rgb(255 255 255 / 90%);
-      border-radius: 999px;
-      box-shadow: 0 8px 18px rgb(0 0 0 / 22%);
-      opacity: 0;
-      transform: translateY(-4px) scale(.82);
-      transition: opacity 200ms ease, transform 200ms ease, background 200ms ease;
-    }
+  .friend-exchange__body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    padding-block-start: 1rem;
+  }
 
-    .friend-card-link:hover {
-      background: #fff;
-      transform: translateY(0) scale(1.04);
-    }
+  .friend-exchange__info {
+    display: grid;
+    gap: .42rem;
+    margin: 0;
+    font-size: .82rem;
+    line-height: 1.5;
+    min-width: 0;
+  }
 
-    .friend-bento-card:hover .friend-card-link,
-    .friend-bento-card.is-open .friend-card-link,
-    .friend-bento-card:focus-within .friend-card-link {
-      pointer-events: auto;
-      opacity: 1;
-      transform: none;
-    }
+  .friend-exchange__info > div {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: .55rem;
+  }
 
-    @media (max-width: 639px) {
-      .friends-bento-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+  .friend-exchange__info dt {
+    color: var(--muted-foreground);
+  }
 
-      .friend-bento-card:hover {
-        transform: none;
-      }
-    }
+  .friend-exchange__info dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
 
-    @media (prefers-reduced-motion: reduce) {
-      .friend-bento-card,
-      .friend-card-media img,
-      .friend-card-shade,
-      .friend-card-desc,
-      .friend-card-link {
-        transition: none;
-      }
-    }
-  </style>
+  .friend-exchange__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem;
+  }
 
-  <script is:inline data-astro-rerun>
-    (function() {
-      window.__friendsCleanup && window.__friendsCleanup()
-
-      const cleanups = []
-
-      const shuffled = (items) => {
-        const result = [...items]
-        for (let i = result.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1))
-          ;[result[i], result[j]] = [result[j], result[i]]
-        }
-        return result
-      }
-
-      const featuredCount = (count) => count < 7 ? 0 : Math.max(1, Math.round(count / 7))
-
-      const gridColumnCount = (grid) => {
-        const gap = 12
-        const minTrack = 132
-        const width = grid.getBoundingClientRect().width || Math.min(1180, Math.max(320, window.innerWidth - 48))
-        return Math.max(2, Math.floor((width + gap) / (minTrack + gap)))
-      }
-
-      const shapePool = (count, columns) => {
-        const target = featuredCount(count)
-        if (!target || columns < 4) return []
-        const wide = { type: "wide", w: 2, h: 1 }
-        const tall = { type: "tall", w: 1, h: 2 }
-        const large = { type: "large", w: 2, h: 2 }
-        if (columns < 5) return Array.from({ length: Math.min(target, 2) }, () => wide)
-        if (target === 1) return [large]
-        if (target === 2) return [large, wide]
-        if (target === 3) return [large, wide, tall]
-        if (target === 4) return [large, large, wide, tall]
-        return [large, large, wide, wide, tall].slice(0, Math.min(target, 5))
-      }
-
-      const rectsOverlap = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
-
-      const placeFeatures = (assignments, columns, count) => {
-        const area = count + assignments.reduce((sum, item) => sum + item.w * item.h - 1, 0)
-        const rows = Math.ceil(area / columns)
-        const placed = []
-        for (const assignment of shuffled(assignments).sort((a, b) => (b.w * b.h) - (a.w * a.h))) {
-          const candidates = []
-          for (let y = 0; y <= rows - assignment.h; y++) {
-            for (let x = 0; x <= columns - assignment.w; x++) {
-              const candidate = { ...assignment, x, y }
-              const startsLooseRow = x > 0 && !placed.some((item) => item.y <= y && item.y + item.h > y && item.x < x)
-              if (startsLooseRow && y > rows * 0.45) continue
-              if (!placed.some((item) => rectsOverlap(item, candidate))) candidates.push(candidate)
-            }
-          }
-          if (!candidates.length) return null
-          const lowerLine = rows * 0.48
-          const scored = candidates.map((candidate) => {
-            const cx = candidate.x + candidate.w / 2
-            const cy = candidate.y + candidate.h / 2
-            const distance = placed.length
-              ? Math.min(...placed.map((item) => Math.hypot(cx - (item.x + item.w / 2), cy - (item.y + item.h / 2))))
-              : 0
-            let score = distance * 2.2 - candidate.y * 0.55 + Math.random() * 0.6
-            if (candidate.type === "large" && candidate.x + candidate.w >= columns) score -= 2.2
-            if (candidate.type === "large" && candidate.y > lowerLine) score -= 0.5
-            if (candidate.type === "wide" && candidate.y > lowerLine) score += 1.4
-            if (candidate.type === "wide" && candidate.x + candidate.w === columns) score -= 0.7
-            if (candidate.type === "tall" && candidate.y > lowerLine) score -= 3.4
-            if (candidate.type === "tall" && (candidate.x === 0 || candidate.x + candidate.w === columns)) score += 1.1
-            if (candidate.type === "tall" && candidate.x + candidate.w === columns && candidate.y <= lowerLine) score += 0.8
-            return { candidate, score }
-          }).sort((a, b) => b.score - a.score)
-          placed.push(scored[0].candidate)
-        }
-        return placed
-      }
-
-      const buildGrid = (layout, columns) => {
-        const height = Math.max(...layout.map((item) => item.y + item.h), 1)
-        const grid = Array.from({ length: height }, () => Array(columns).fill(false))
-        layout.forEach((item) => {
-          for (let y = item.y; y < item.y + item.h; y++) {
-            for (let x = item.x; x < item.x + item.w; x++) grid[y][x] = true
-          }
-        })
-        return grid
-      }
-
-      const fillSmallCards = (features, smallIndexes, columns) => {
-        const layout = [...features]
-        let y = 0
-        let x = 0
-        const occupied = (px, py) => layout.some((item) => px >= item.x && px < item.x + item.w && py >= item.y && py < item.y + item.h)
-        smallIndexes.forEach((index) => {
-          while (occupied(x, y)) {
-            x++
-            if (x >= columns) { x = 0; y++ }
-          }
-          layout.push({ index, type: "small", x, y, w: 1, h: 1 })
-          x++
-          if (x >= columns) { x = 0; y++ }
-        })
-        return layout
-      }
-
-      const scoreLayout = (layout, columns) => {
-        const grid = buildGrid(layout, columns)
-        const height = grid.length
-        const features = layout.filter((item) => item.type !== "small")
-        let holes = 0
-        let emptyRows = 0
-        let leadingGaps = 0
-        let lowerLeadingGaps = 0
-        for (let y = 0; y < height; y++) {
-          const row = grid[y]
-          let lastFilled = -1
-          for (let x = row.length - 1; x >= 0; x--) {
-            if (row[x]) { lastFilled = x; break }
-          }
-          for (let x = 0; x < lastFilled; x++) if (!row[x]) holes++
-        }
-        for (let y = 0; y < height - 1; y++) if (grid[y].every((cell) => !cell)) emptyRows++
-        grid.forEach((row, y) => {
-          const firstFilled = row.findIndex(Boolean)
-          if (firstFilled <= 0) return
-          leadingGaps += firstFilled
-          if (y > height * 0.55) lowerLeadingGaps += firstFilled
-        })
-        const finalEmpty = grid[height - 1].filter((cell) => !cell).length
-        const lastSmallRow = Math.max(...layout.filter((item) => item.type === "small").map((item) => item.y), 0)
-        const floatingFeature = features.filter((item) => item.y > lastSmallRow + 1).length
-        const featureDistance = features.reduce((sum, item, i) => {
-          return sum + features.slice(i + 1).reduce((part, other) => {
-            return part + Math.hypot((item.x + item.w / 2) - (other.x + other.w / 2), (item.y + item.h / 2) - (other.y + other.h / 2))
-          }, 0)
-        }, 0)
-        const leftWeight = features.reduce((sum, item) => sum + (item.x + item.w / 2 < columns / 2 ? item.w * item.h : 0), 0)
-        const rightWeight = features.reduce((sum, item) => sum + (item.x + item.w / 2 >= columns / 2 ? item.w * item.h : 0), 0)
-        const balance = Math.abs(leftWeight - rightWeight)
-        const badTall = features.filter((item) => item.type === "tall" && item.y > height * 0.48).length
-        const edgeLarge = features.filter((item) => item.type === "large" && item.x + item.w >= columns).length
-        return featureDistance * 1.8 - holes * 11 - emptyRows * 80 - leadingGaps * 10 - lowerLeadingGaps * 16 - finalEmpty * 0.8 - height * 3.5 - balance * 0.9 - badTall * 10 - edgeLarge * 4 - floatingFeature * 90
-      }
-
-      const createFeaturedAssignments = (count, columns) => {
-        const shapes = shapePool(count, columns)
-        if (!shapes.length) return []
-        const indexes = shuffled(Array.from({ length: count }, (_, index) => index)).slice(0, shapes.length)
-        return indexes.map((index, shapeIndex) => ({ ...shapes[shapeIndex], index }))
-      }
-
-      const normalizeAssignments = (assignments, count, columns) => {
-        if (columns < 4) return []
-        const shapes = shapePool(count, columns)
-        return assignments.slice(0, shapes.length).map((assignment, index) => ({
-          ...shapes[index],
-          index: assignment.index,
-        }))
-      }
-
-      const buildBestLayout = (count, columns, assignments) => {
-        if (!assignments.length) return new Map(Array.from({ length: count }, (_, index) => [index, { index, type: "small", x: index % columns, y: Math.floor(index / columns), w: 1, h: 1 }]))
-
-        let best = null
-        for (let attempt = 0; attempt < 500; attempt++) {
-          const featuredIndexes = assignments.map((item) => item.index)
-          const smallIndexes = Array.from({ length: count }, (_, index) => index).filter((index) => !featuredIndexes.includes(index))
-          const features = placeFeatures(assignments, columns, count)
-          if (!features) continue
-          const layout = fillSmallCards(features, smallIndexes, columns)
-          const score = scoreLayout(layout, columns)
-          if (!best || score > best.score) best = { layout, score }
-        }
-        return new Map((best?.layout || []).map((item) => [item.index, item]))
-      }
-
-      const setOpen = (card, open) => {
-        const link = card.querySelector(".friend-card-link")
-        card.classList.toggle("is-open", open)
-        if (link) link.setAttribute("aria-hidden", "true")
-      }
-
-      const grid = document.querySelector("[data-friends-grid]")
-      if (grid) {
-        const cards = Array.from(grid.querySelectorAll("[data-friend-card]"))
-        const initialColumns = gridColumnCount(grid)
-        const featuredAssignments = createFeaturedAssignments(cards.length, Math.max(initialColumns, 7))
-        const layoutCache = new Map()
-        let currentColumns = 0
-
-        const applyBentoLayout = () => {
-          const columns = gridColumnCount(grid)
-          if (columns === currentColumns) return
-          currentColumns = columns
-
-          const assignments = normalizeAssignments(featuredAssignments, cards.length, columns)
-          const cacheKey = `${columns}:${assignments.map((item) => `${item.index}-${item.type}`).join("|")}`
-          const layout = layoutCache.get(cacheKey) || buildBestLayout(cards.length, columns, assignments)
-          layoutCache.set(cacheKey, layout)
-
-          grid.style.gridTemplateColumns = `repeat(${columns}, minmax(0, 1fr))`
-          cards.forEach((card, index) => {
-            const item = layout.get(index)
-            card.classList.remove("is-featured", "is-large", "is-wide", "is-tall", "is-open")
-            if (!item) return
-            card.style.gridColumn = `${item.x + 1} / span ${item.w}`
-            card.style.gridRow = `${item.y + 1} / span ${item.h}`
-            if (item.type !== "small") card.classList.add("is-featured", `is-${item.type}`)
-            setOpen(card, false)
-          })
-        }
-
-        cards.forEach((card) => {
-          const surface = card.querySelector(".friend-card-surface")
-          if (!surface) return
-          const focusHandler = () => setOpen(card, true)
-          surface.addEventListener("focus", focusHandler)
-          cleanups.push(() => surface.removeEventListener("focus", focusHandler))
-        })
-
-        const documentClickHandler = (event) => {
-          if (event.target.closest("[data-friend-card]")) return
-          cards.forEach((card) => setOpen(card, false))
-        }
-        document.addEventListener("click", documentClickHandler)
-        cleanups.push(() => document.removeEventListener("click", documentClickHandler))
-
-        let resizeTimer = 0
-        const resizeHandler = () => {
-          window.clearTimeout(resizeTimer)
-          resizeTimer = window.setTimeout(applyBentoLayout, 160)
-        }
-        window.addEventListener("resize", resizeHandler)
-        cleanups.push(() => window.removeEventListener("resize", resizeHandler))
-
-        applyBentoLayout()
-      }
-
-      const resetButton = (button) => {
-        if (!button) return
-        const copyIcon = button.querySelector("[data-copy-icon]")
-        const checkIcon = button.querySelector("[data-check-icon]")
-        const label = button.querySelector("[data-copy-label]")
-        if (copyIcon) copyIcon.classList.remove("hidden")
-        if (checkIcon) checkIcon.classList.add("hidden")
-        if (label) label.textContent = "复制全部"
-      }
-
-      const toggleCopied = (button, labelText) => {
-        const copyIcon = button.querySelector("[data-copy-icon]")
-        const checkIcon = button.querySelector("[data-check-icon]")
-        const label = button.querySelector("[data-copy-label]")
-        if (copyIcon) copyIcon.classList.add("hidden")
-        if (checkIcon) checkIcon.classList.remove("hidden")
-        if (label) label.textContent = labelText
-        setTimeout(() => resetButton(button), 2000)
-      }
-
-      const handleCopy = async (button) => {
-        const text = button.getAttribute("data-copy-text") || ""
-        if (!text) return
-        try {
-          await navigator.clipboard.writeText(text)
-          toggleCopied(button, "已复制")
-        } catch {
-          toggleCopied(button, "复制失败")
-        }
-      }
-
-      const copyAll = document.querySelector("[data-copy-all]")
-
-      if (copyAll) {
-        const handler = () => handleCopy(copyAll)
-        copyAll.addEventListener("click", handler)
-        cleanups.push(() => copyAll.removeEventListener("click", handler))
-      }
-
-      window.__friendsCleanup = () => cleanups.forEach((cleanup) => cleanup())
-    })()
-  </script>
-</div>
+  @media (prefers-reduced-motion: reduce) {
+    .friend-link,
+    .friend-exchange__chevron { transition: none; }
+  }
+</style>

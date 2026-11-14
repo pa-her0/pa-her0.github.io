@@ -15,8 +15,7 @@ const primaryItems = [
   { name: "Articles", href: articleHref },
   { name: "Progress", href: "/learning/" },
   { name: "Projects", href: "/projects/" },
-  { name: "Friends", href: "/friends/" },
-  { name: "Guestbook", href: "/messages/" },
+  { name: "Friends & Guestbook", href: "/friends/" },
   { name: "About", href: "/about/" },
 ]
 const desktopItems = reading ? primaryItems.filter((item) => item.href !== articleHref) : primaryItems
@@ -34,7 +33,7 @@ const mobileItems = [
     {reading ? (
       <div class="site-header__reading-brand" aria-label="Jiely 文章">
         <a href="/#home-main" data-astro-prefetch aria-label="Jiely 首页">
-          <SiteBrand />
+          <SiteBrand client:load />
         </a>
         <span class="site-header__reading-separator" aria-hidden="true">/</span>
         <a href={articleHref} data-astro-prefetch lang="en" aria-current="page">Articles</a>
@@ -42,7 +41,7 @@ const mobileItems = [
     ) : (
       <a href="/#home-main" data-astro-prefetch class="group flex items-center gap-2.5 justify-self-start" aria-label={minimal ? "Jiely 首页" : "Whalefall 首页"}>
         {minimal ? (
-        <SiteBrand />
+          <SiteBrand client:load />
         ) : (
           <>
             <div class="relative h-8 w-9 overflow-hidden transition-transform duration-300 group-hover:scale-105" aria-hidden="true">

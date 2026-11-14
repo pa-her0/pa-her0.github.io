@@ -1,17 +1,154 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro"
 import FriendsPage from "@/components/pages/FriendsPage.astro"
-import Comments from "@/components/Comments.astro"
+import SiteHeader from "@/components/site-header.astro"
+import TwikooComments from "@/components/TwikooComments.astro"
 import { Footer } from "@/components/footer"
+import { Separator } from "@/components/ui/separator"
+import { ArrowDown, MessageSquare, Users } from "lucide-react"
 
-const title = "友链 | Jiely 的博客"
-const description = "与更多创作者建立连接，发现有趣的内容"
+const title = "友链与留言 | Jiely 的博客"
+const description = "逛逛朋友们的博客，也欢迎在这里留下想说的话。"
 ---
 
-<BaseLayout {title} {description}>
-  <div class="site-page">
-  <FriendsPage />
-  <Comments />
-  <Footer />
+<BaseLayout {title} {description} fontProfile="interface">
+  <div class="site-page friends-page">
+    <SiteHeader />
+    <main class="friends-page__main">
+      <header class="friends-page__intro">
+        <h1>友链与留言</h1>
+        <p>{description}</p>
+        <nav aria-label="页内导航" class="friends-page__jump">
+          <a href="#friend-links">友情链接</a>
+          <a href="#guestbook">留言板 <ArrowDown aria-hidden="true" /></a>
+        </nav>
+      </header>
+
+      <section id="friend-links" tabindex="-1" aria-labelledby="friend-links-title">
+        <h2 id="friend-links-title" class="friends-page__section-heading">
+          <Users aria-hidden="true" />
+          友情链接
+        </h2>
+        <FriendsPage />
+      </section>
+
+      <Separator className="friends-page__rule" />
+
+      <section id="guestbook" tabindex="-1" aria-labelledby="guestbook-title">
+        <h2 id="guestbook-title" class="friends-page__section-heading">
+          <MessageSquare aria-hidden="true" />
+          留言板
+        </h2>
+        <TwikooComments slug="messages" title="留言板" variant="guestbook" />
+      </section>
+    </main>
+    <Footer />
   </div>
 </BaseLayout>
+
+<style>
+  .friends-page__main {
+    width: min(calc(100% - clamp(2rem, 6vw, 4rem)), 64rem);
+    min-width: 0;
+    margin-inline: auto;
+    padding-block: clamp(5.75rem, 9vw, 7.25rem) clamp(3rem, 7vw, 5rem);
+  }
+
+  .friends-page__intro {
+    display: grid;
+    gap: .58rem;
+    margin-block-end: clamp(1.75rem, 3.8vw, 2.3rem);
+  }
+
+  .friends-page__intro h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -.04em;
+    line-height: 1.16;
+  }
+
+  .friends-page__intro p {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: clamp(.92rem, 2vw, 1rem);
+    line-height: 1.7;
+  }
+
+  .friends-page__jump {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .6rem;
+    margin-block-start: .42rem;
+  }
+
+  .friends-page__jump a {
+    display: inline-flex;
+    align-items: center;
+    gap: .38rem;
+    min-height: 2.35rem;
+    padding-inline: .9rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--panel-background);
+    color: var(--muted-foreground);
+    font-size: .8rem;
+    font-weight: 600;
+    transition: color .18s ease, border-color .18s ease;
+  }
+
+  .friends-page__jump a:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .friends-page__jump a:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  .friends-page__jump svg {
+    width: .86rem;
+    height: .86rem;
+  }
+
+  .friends-page__section-heading {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin: 0 0 1rem;
+    font-size: clamp(1.3rem, 2.5vw, 1.65rem);
+    font-weight: 650;
+    letter-spacing: -.025em;
+  }
+
+  .friends-page__section-heading svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    color: var(--primary);
+  }
+
+  .friends-page__main :global(.friends-page__rule) {
+    margin-block: clamp(1.45rem, 3vw, 2.05rem);
+  }
+
+  #friend-links,
+  #guestbook {
+    min-width: 0;
+    scroll-margin-top: 5.5rem;
+    outline: none;
+  }
+
+  #guestbook {
+    min-height: calc(100svh - 10rem);
+  }
+
+  :global(body:has(.friends-page) .article-actions__prompt) {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .friends-page__jump a { transition: none; }
+  }
+</style>

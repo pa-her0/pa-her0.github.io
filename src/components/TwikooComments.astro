@@ -33,21 +33,19 @@ const commentPath =
       aria-live="polite"
       hidden
     >
-      <div class="guestbook-notes__heading">
-        <div>
-          <p>SELECTED NOTES</p>
-          <h2 id="guestbook-notes-title">留言拾光</h2>
-        </div>
-        <p>从留言板里，摘下几句短短的话。</p>
-      </div>
       <div class="guestbook-notes__board">
+        <h3 id="guestbook-notes-title">留言拾光</h3>
         <div class="guestbook-notes__grid" data-guestbook-notes-grid></div>
       </div>
     </section>
   )}
   <header class="pure-twikoo__heading">
-    <h2 class="pure-twikoo__title">评论</h2>
-    <p>欢迎留下你的想法，友善交流。</p>
+    {variant === 'guestbook' ? (
+      <h3 class="pure-twikoo__title">写留言</h3>
+    ) : (
+      <h2 class="pure-twikoo__title">评论</h2>
+      <p>欢迎留下你的想法，友善交流。</p>
+    )}
   </header>
   <div id="tcomment" aria-live="polite"></div>
   <p class="pure-twikoo__error" data-twikoo-error hidden>
@@ -533,58 +531,41 @@ const commentPath =
     font-size: 0.78rem;
   }
 
+  .pure-twikoo.pure-twikoo--guestbook {
+    margin-top: 0;
+  }
+
+  .pure-twikoo--guestbook .pure-twikoo__title {
+    font-size: 1.05rem;
+    font-weight: 650;
+  }
+
   .guestbook-notes {
-    margin: 0 0 3.5rem;
+    margin: 0 0 clamp(1.45rem, 3vw, 2rem);
   }
 
   .guestbook-notes[hidden] {
     display: none;
   }
 
-  .guestbook-notes__heading {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 2rem;
-    margin-bottom: 1.15rem;
-  }
-
-  .guestbook-notes__heading > div > p {
-    margin: 0 0 0.3rem;
-    color: var(--muted-foreground);
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.16em;
-  }
-
-  .guestbook-notes__heading h2 {
-    margin: 0;
-    color: var(--foreground);
-    font-family: var(--font-serif-cn);
-    font-size: clamp(1.45rem, 3vw, 2rem);
-    font-weight: 600;
-    letter-spacing: -0.03em;
-  }
-
-  .guestbook-notes__heading > p {
-    margin: 0 0 0.2rem;
-    color: var(--muted-foreground);
-    font-size: 0.82rem;
+  .guestbook-notes__board > h3 {
+    position: relative;
+    margin: 0 0 1.1rem;
+    font-size: 1rem;
+    font-weight: 650;
+    letter-spacing: -.02em;
   }
 
   .guestbook-notes__board {
     position: relative;
     overflow: hidden;
-    border: 1px solid color-mix(in oklab, var(--border) 78%, transparent);
-    border-radius: calc(var(--radius) * 1.85);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--panel-radius);
     background:
       radial-gradient(circle at 8% 12%, color-mix(in oklab, #f4b9a8 15%, transparent), transparent 28%),
       radial-gradient(circle at 92% 5%, color-mix(in oklab, #b8dcef 18%, transparent), transparent 28%),
       color-mix(in oklab, var(--muted) 52%, var(--background));
-    padding: clamp(1.25rem, 4vw, 2.35rem) clamp(1rem, 3.5vw, 2rem);
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 58%, transparent),
-      0 20px 52px color-mix(in oklab, var(--foreground) 5%, transparent);
+    padding: clamp(1rem, 3vw, 1.55rem);
   }
 
   .guestbook-notes__board::before {
@@ -603,7 +584,7 @@ const commentPath =
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
     gap: clamp(0.8rem, 2vw, 1.25rem);
     align-items: start;
   }
@@ -770,6 +751,13 @@ const commentPath =
     box-shadow:
       inset 0 1px 0 color-mix(in oklab, white 58%, transparent),
       0 12px 30px color-mix(in oklab, var(--foreground) 4%, transparent);
+  }
+
+  .pure-twikoo--guestbook :global(.tk-submit) {
+    border-color: var(--panel-border);
+    border-radius: var(--panel-radius);
+    background: var(--panel-background);
+    box-shadow: none;
   }
 
   :global(.pure-twikoo .tk-submit .tk-row) {
@@ -1164,18 +1152,6 @@ const commentPath =
       margin-top: 0.25rem;
     }
 
-    .guestbook-notes {
-      margin-bottom: 2.75rem;
-    }
-
-    .guestbook-notes__heading {
-      display: block;
-    }
-
-    .guestbook-notes__heading > p {
-      margin-top: 0.45rem;
-    }
-
     .guestbook-notes__board {
       padding: 1.35rem 0.85rem;
     }
@@ -1227,12 +1203,6 @@ const commentPath =
 
     :global(.pure-twikoo .tk-submit-action-icon.__markdown::after) {
       content: 'Markdown';
-    }
-  }
-
-  @media (min-width: 641px) and (max-width: 900px) {
-    .guestbook-notes__grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 

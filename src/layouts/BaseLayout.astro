@@ -2,9 +2,11 @@
 import "@/styles/global.css"
 import "@/styles/site-interior.css"
 import "@/styles/site-brand.css"
+import "@/styles/polish.css"
 import { ClientRouter } from "astro:transitions"
 import CursorTrail from "@/components/CursorTrail.astro"
 import SiteBentoMotion from "@/components/SiteBentoMotion.astro"
+import PageStickers from "@/components/PageStickers.astro"
 import HomeTransition from "@/components/HomeTransition.astro"
 import { ArticleActions } from "@/components/article-actions"
 import { getLatestPublishedPostHref } from "@/lib/posts"
@@ -209,6 +211,7 @@ const resolvedTwitterDescription = twitterDescription || description
   <body class:list={["bg-background text-foreground", { "font-profile-interface": useInterfaceProfile }]}>
     <HomeTransition />
     <slot />
+    <PageStickers reading={showArticleActions} />
     <ArticleActions
       articleMode={showArticleActions}
       latestPostHref={latestPostHref}

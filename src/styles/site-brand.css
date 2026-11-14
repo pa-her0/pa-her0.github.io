@@ -1,49 +1,61 @@
 .jiely-brand {
-  --brand-mark-height: 2.25rem;
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  gap: calc(var(--brand-mark-height) * 0.12);
+  display: inline-grid;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  place-items: center;
   line-height: 0;
   user-select: none;
 }
 
-.jiely-brand__orange,
-.jiely-brand__wordmark {
+.live-orb {
+  position: relative;
   display: block;
-  flex: none;
-  height: var(--brand-mark-height);
-  max-width: none;
-  object-fit: contain;
-  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+  inline-size: 1.875rem;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #7c5cff;
+  color: #fafafa;
+  pointer-events: none;
 }
 
-.jiely-brand__orange {
-  width: var(--brand-mark-height);
-  transform-origin: 50% 80%;
+.live-orb__gaze {
+  position: absolute;
+  inset: 0;
+  translate: var(--orb-look-x, 0%) var(--orb-look-y, 0%);
+  scale: var(--orb-eye-width, 1) 1;
+  transition: translate 160ms ease-out, scale 160ms ease-out;
 }
 
-.jiely-brand__wordmark {
-  width: calc(var(--brand-mark-height) * 2.4);
+.live-orb__eye {
+  position: absolute;
+  top: 46%;
+  left: 35%;
+  inline-size: 8.5%;
+  block-size: 24%;
+  translate: -50% -50%;
+  border-radius: 999px;
+  background: currentColor;
+  animation: live-orb-blink 6.2s ease-in-out infinite;
 }
 
-.site-header a:is(:hover, :focus-visible) .jiely-brand__orange {
-  transform: translateY(-1px) rotate(-10deg);
+.live-orb__eye + .live-orb__eye {
+  left: 65%;
 }
 
-.site-header a:is(:hover, :focus-visible) .jiely-brand__wordmark {
-  transform: translateY(-1px);
+@keyframes live-orb-blink {
+  0%, 92%, 96%, 100% { scale: 1; }
+  94% { scale: 1 .13; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .jiely-brand__orange,
-  .jiely-brand__wordmark {
+  .live-orb__gaze {
+    translate: none;
+    scale: none;
     transition: none;
   }
 
-  .site-header a:is(:hover, :focus-visible) .jiely-brand__orange,
-  .site-header a:is(:hover, :focus-visible) .jiely-brand__wordmark {
-    transform: none;
+  .live-orb__eye {
+    animation: none;
   }
 }

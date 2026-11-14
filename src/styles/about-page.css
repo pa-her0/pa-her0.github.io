@@ -1,231 +1,184 @@
-/* The illustrated journal lives only on About; the homepage keeps its voxel styles. */
 @font-face {
   font-family: "Caveat";
   src: url("/fonts/caveat-variable.ttf") format("truetype");
   font-weight: 400 700;
   font-display: swap;
 }
-.about-scrapbook {
-  --journal-ink: #4d5f91;
-  --journal-muted: #808493;
-  --journal-lilac: #aaa1d0;
-  --journal-hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
-  --bento-ink: #4d5f91;
-  --bento-muted: #808493;
-  --bento-line: #e5e2f0;
-  position: relative;
-  isolation: isolate;
-  min-height: calc(100svh - 6rem);
-  padding: 6.5rem max(1.5rem, 3vw) 4rem;
-  color: #353c4c;
+
+.site-page.about-page {
+  background: var(--background);
 }
-.site-page.about-page { overflow-x: clip; background: #fff; }
-.about-scrapbook :where(a, button, section[role="tabpanel"], input):focus-visible {
-  outline: 2px dashed var(--journal-lilac);
-  outline-offset: 5px;
-}
-.about-scrapbook__board {
+
+.about-page__main {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(1.5rem, 3vw, 3rem);
+  min-height: calc(100svh - 4.75rem);
+  place-items: center;
+  padding: clamp(5.75rem, 11svh, 8rem) 1.25rem clamp(2.75rem, 7svh, 5.25rem);
+}
+
+.about-card {
+  --about-inset: clamp(.8rem, 2.5vw, 1.15rem);
+  --about-cover-height: clamp(9.5rem, 34vw, 13rem);
+  --about-footer-gap: .8rem;
+  --about-corner: clamp(1.35rem, 4vw, 1.85rem);
+  position: relative;
+  width: min(100%, 35rem);
+  perspective: 70rem;
+}
+
+.about-card__rotator {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 620ms cubic-bezier(.22, .75, .23, 1);
+}
+
+.about-card[data-flipped="true"] .about-card__rotator {
+  transform: rotateY(180deg);
+}
+
+.about-card .about-card__face {
+  grid-area: 1 / 1;
+  gap: 0;
+  min-width: 0;
+  padding: var(--about-inset);
+  border-radius: var(--about-corner);
+  background: var(--paper-warm);
+  box-shadow: 0 14px 36px -18px color-mix(in srgb, var(--foreground) 25%, transparent);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  cursor: pointer;
+}
+
+.about-card__face--back {
+  transform: rotateY(180deg);
+}
+
+.about-card__cover {
+  position: relative;
+  height: var(--about-cover-height);
+  overflow: clip;
+  border-radius: calc(var(--about-corner) - .5rem);
+  background:
+    radial-gradient(ellipse at 48% 16%, var(--paper-warm), transparent 68%),
+    linear-gradient(125deg, var(--secondary), color-mix(in srgb, var(--primary) 15%, var(--card)));
+}
+
+.about-card__cover-control {
+  position: absolute;
+  z-index: 1;
+  inset: calc(var(--about-inset) + 1px) calc(var(--about-inset) + 1px) auto;
+  height: var(--about-cover-height);
+  cursor: pointer;
+}
+
+.about-card__cover-control:focus-visible {
+  outline: none;
+}
+
+.about-card:has(.about-card__cover-control:focus-visible) .about-card__face {
+  border-color: var(--ring);
+}
+
+.about-card__face--back .about-card__cover {
+  background:
+    radial-gradient(ellipse at 50% 18%, var(--paper-warm), transparent 64%),
+    linear-gradient(130deg, color-mix(in srgb, var(--primary) 18%, var(--card)), var(--muted));
+}
+
+.about-card__cover img {
+  position: absolute;
+  top: 7%;
+  left: 52%;
+  width: auto;
+  max-width: none;
+  height: 145%;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--foreground) 18%, transparent));
+}
+
+.about-card .about-card__intro {
+  gap: .5rem;
+  padding: 1.45rem .15rem .8rem;
+  text-align: center;
+}
+
+.about-card .about-card__greeting {
+  font-size: clamp(1.35rem, 3.8vw, 1.85rem);
+  line-height: 1.15;
+}
+
+.about-card__greeting span {
+  margin-inline-start: .15em;
+  color: var(--primary);
+  font: 700 1.48em/.82 "Caveat", "Segoe Print", cursive;
+}
+
+.about-card .about-card__copy {
+  display: grid;
+  gap: .55rem;
+  padding: 0 clamp(.25rem, 3vw, 1.65rem) 1.3rem;
+  color: var(--muted-foreground);
+  font-size: .875rem;
+  line-height: 1.75;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+.about-card__destinations {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .5rem;
+  margin-block: .5rem 1.3rem;
+}
+
+.about-card .about-card__footer {
+  display: grid;
+  gap: var(--about-footer-gap);
+  margin-top: auto;
+  padding: 0;
+}
+
+.about-card__links {
+  display: flex;
+  min-height: 2.25rem;
   align-items: center;
-  width: min(100%, 79rem);
-  margin-inline: auto;
+  gap: .35rem;
 }
-.about-scrapbook__scene {
-  position: relative; min-width: 0; align-self: start; margin-top: 2rem;
-  height: calc(min(58svh, 32rem) + 5.5rem);
+
+.about-card__links [data-slot="button"] {
+  border-radius: 999px;
 }
-.about-scrapbook__note {
-  position: absolute; top: .5rem; left: 6%; margin: 0;
-  color: var(--journal-muted); transform: rotate(-8deg);
-  font: 400 22px/1.1 var(--journal-hand);
+
+@media (max-width: 767px) {
+  .about-page__main {
+    align-items: start;
+    padding-top: 7.25rem;
+  }
+
+  .about-card__links a {
+    min-height: 2.75rem;
+  }
+
+  .about-card__links a[aria-label] {
+    min-width: 2.75rem;
+  }
 }
-.about-scrapbook__note span { display: block; color: var(--journal-ink); font-size: 1.7em; font-weight: 600; }
-.about-scrapbook__character {
-  position: absolute; left: 50%; top: 3.5rem;
-  width: min(100%, 58svh, 32rem); transform: translateX(-50%);
+
+@media (max-width: 380px) {
+  .about-page__main { padding-inline: 1rem; }
+  .about-card__destinations { margin-inline: -1.1rem; }
 }
-.about-scrapbook .scrapbook-person {
-  position: relative; display: block; width: 100%; aspect-ratio: 1;
-  padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
-}
-.about-scrapbook .scrapbook-person__drawing {
-  position: relative; display: block; width: 100%; height: 100%;
-  transform-origin: 42% 95%; animation: about-character-breathe 5s ease-in-out infinite;
-}
-.about-scrapbook .scrapbook-person img { display: block; width: 100%; height: 100%; user-select: none; pointer-events: none; }
-.about-scrapbook .scrapbook-person__canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; opacity: 0; pointer-events: none; }
-.about-scrapbook .scrapbook-person__drawing[data-playing="true"] { animation: none; }
-.about-scrapbook .scrapbook-person__drawing[data-playing="true"] .scrapbook-person__portrait { opacity: 0; }
-.about-scrapbook .scrapbook-person__drawing[data-playing="true"] .scrapbook-person__canvas { opacity: 1; }
-.about-scrapbook .scrapbook-person:focus-visible { outline: none; }
-.about-scrapbook .scrapbook-person:focus-visible::after { content: ""; position: absolute; inset: 20% 25% 0; border: 2px dashed var(--journal-lilac); border-radius: 46% 45% 25% 25%; }
-.about-scrapbook .scrapbook-cat {
-  position: absolute; z-index: 2; left: 2%; bottom: 1rem; width: 9rem;
-  padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
-}
-.about-scrapbook .scrapbook-cat img { display: block; width: 100%; height: auto; transform-origin: 50% 92%; user-select: none; }
-.about-scrapbook .scrapbook-cat img[data-petted="true"] { animation: about-cat-nuzzle 1.4s ease-in-out; }
-.about-scrapbook .scrapbook-cat > span {
-  position: absolute; right: 0; top: -8%; color: #d29780; opacity: 0;
-  font: 32px var(--journal-hand); transform: translateY(8px) rotate(12deg);
-  transition: opacity 400ms ease, transform 600ms ease;
-}
-.about-scrapbook .scrapbook-cat:is(:hover, :focus-visible) > span { opacity: 1; transform: translateY(-4px) rotate(12deg); }
-.about-scrapbook__star { position: absolute; width: 22px; left: 3%; top: 38%; fill: rgb(231 190 101 / 35%); stroke: #d4aa66; stroke-width: 2; transform: rotate(-14deg); pointer-events: none; }
-.about-scrapbook__aside { position: absolute; left: 33%; bottom: -1rem; color: var(--journal-muted); font: 24px var(--journal-hand); transform: rotate(-5deg); }
-.about-scrapbook__aside span { margin-left: 12px; color: #d8b273; }
-.about-journal { min-width: 0; padding-top: .5rem; }
-.about-journal__tabs { display: flex; align-items: end; justify-content: center; gap: clamp(1rem, 2.7vw, 3rem); margin: 0 0 2rem; }
-.about-journal__tab {
-  position: relative; display: flex; flex-direction: column; align-items: center;
-  width: 7.5rem; padding: 0; border: 0; background: none; color: var(--journal-ink);
-  cursor: pointer; -webkit-tap-highlight-color: transparent;
-}
-.about-journal__tab img {
-  display: block; width: 6.5rem; height: 6.5rem; object-fit: contain; user-select: none;
-  transform: rotate(-5deg); opacity: .7;
-  filter: drop-shadow(2px 5px 3px rgb(65 75 94 / 6%));
-  transition: opacity 450ms ease, transform 650ms cubic-bezier(.22, 1.4, .4, 1), filter 650ms ease;
-}
-.about-journal__tab:nth-child(2) img { transform: rotate(4deg); }
-.about-journal__tab:nth-child(3) img { transform: rotate(-4deg); }
-.about-journal__tab > span { position: relative; margin-top: -.15rem; font: 600 29px/1.05 var(--journal-hand); white-space: nowrap; }
-.about-journal__tab > span::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 6px; z-index: -1;
-  border-radius: 45%; background: rgb(194 181 232 / 42%); transform: scaleX(0) rotate(-2deg);
-  transform-origin: left; transition: transform 450ms ease;
-}
-.about-journal__tab[aria-selected="true"] > span::after { transform: scaleX(1) rotate(-2deg); }
-.about-journal__tab small { margin-top: .6rem; font-size: 10px; letter-spacing: .12em; color: var(--journal-muted); opacity: .65; }
-.about-journal__tab:is(:hover, :focus-visible, [aria-selected="true"]) img { transform: translateY(-5px) rotate(0deg); opacity: 1; filter: drop-shadow(3px 10px 5px rgb(65 75 94 / 12%)); }
-.about-journal__tab:active img { transform: scale(.96); transition-duration: 150ms; }
-.about-journal__tab:focus-visible { border-radius: 20px; }
-.about-sheet {
-  position: relative; min-height: 32rem; padding: 2.4rem 2.5rem 3rem;
-  border: 1px solid rgb(225 222 229 / 60%); border-radius: 3px 12px 6px 4px;
-  background: #fff;
-  box-shadow: 2px 9px 28px -18px rgb(75 71 99 / 24%), 5px 5px 0 -1px #f5f2ed, 5px 5px 0 0 rgb(225 222 229 / 55%);
-}
-.about-sheet__tape {
-  position: absolute; z-index: 1; width: 6.5rem; height: 1.7rem; top: -.9rem; left: calc(50% - 3.25rem);
-  transform: rotate(-4deg); background: rgb(189 178 215 / 45%);
-  clip-path: polygon(0 6%, 98% 0, 96% 12%, 100% 23%, 96% 38%, 100% 50%, 97% 64%, 100% 83%, 97% 100%, 1% 93%, 4% 78%, 0 64%, 3% 46%, 0 26%);
-}
-.about-sheet section[hidden] { display: none; }
-.about-sheet__content { position: relative; animation: about-journal-in 440ms cubic-bezier(.2,.8,.2,1) both; }
-.about-sheet__index { display: block; margin-bottom: .8rem; color: #9894a3; font: 10px var(--font-mono, monospace); letter-spacing: .13em; }
-.about-sheet__title { margin: 0 0 .9rem; color: var(--journal-ink); font: 600 clamp(42px, 4vw, 59px)/1.05 var(--journal-hand); letter-spacing: -.025em; }
-.about-sheet__title > span { color: #c69567; }
-.about-sheet__lead { margin: 0 0 1.4rem; color: #69647e; font-size: 14px; line-height: 1.8; }
-.about-sheet__prose { font-size: 14px; line-height: 1.95; color: #686c79; }
-.about-sheet__prose p { margin: 0 0 1rem; }
-.about-sheet__interests { display: flex; flex-wrap: wrap; gap: .55rem; margin: 1.45rem 0 1.7rem; }
-.about-sheet__interests span { padding: .3rem .7rem; border: 1px solid #e9e5ed; border-radius: 6px; color: #736b8e; font-size: 11px; transform: rotate(-2deg); background: #faf8fc; }
-.about-sheet__interests span:nth-child(2) { transform: rotate(2deg); }
-.about-sheet__location { display: flex; align-items: center; gap: .45rem; margin: 0; color: var(--journal-muted); font-size: 12px; }
-.about-sheet__links { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; margin-top: 1.8rem; padding-top: 1.2rem; border-top: 1px dashed #e8e3e6; }
-.about-sheet__links a { display: inline-flex; align-items: center; gap: .4rem; color: var(--journal-ink); font-size: 12px; text-decoration: none; transition: color 250ms ease, transform 450ms ease; }
-.about-sheet__links a:hover { color: #6c63ff; transform: translateY(-2px); }
-.about-sheet__links .about-sheet__resume { margin-left: auto; font: 600 24px var(--journal-hand); }
-.about-sheet__page { position: absolute; right: 1.5rem; bottom: 1rem; color: #b0a9b4; font: 10px var(--font-mono, monospace); letter-spacing: .12em; }
-.about-journal__stack { display: flex; flex-wrap: wrap; gap: .7rem 1.25rem; margin: 1.7rem 0; }
-.about-journal__stack > div { display: flex; align-items: center; gap: .45rem; color: #676276; font-size: 12px; }
-.about-journal__stack img { object-fit: contain; }
-.about-journal__stack svg { flex: none; color: var(--journal-ink); }
-.about-journal__activity { margin: 1.8rem 0 0; }
-.about-journal__activity .activity-snake { min-height: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-.about-journal__activity .bento-activity-heading { margin-bottom: .7rem; color: #8c8795; font-size: 10px; letter-spacing: .07em; }
-.about-journal__activity .activity-snake__board { height: 6.3rem; flex: none; }
-.about-journal__activity .activity-snake__empty { fill: #eeedf3; }
-.about-journal__activity .activity-snake__food[data-level="1"] { fill: #dedaf4; }
-.about-journal__activity .activity-snake__food[data-level="2"] { fill: #b7afd9; }
-.about-journal__activity .activity-snake__food[data-level="3"] { fill: #998fc6; }
-.about-journal__activity .activity-snake__food[data-level="4"] { fill: #786ba7; }
-.about-journal__activity > p { margin: .8rem 0 0; color: #8c8795; font-size: 11px; text-align: right; }
-.about-journal__activity > p strong { font-weight: 600; color: #776995; }
-.about-memory__gallery { display: grid; grid-template-columns: minmax(0, 1fr) 2.6rem; gap: .9rem; margin: 1.2rem 0 1.4rem; align-items: center; }
-.about-memory__photo { min-width: 0; margin: 0; }
-.about-memory__photo > img { display: block; width: 100%; height: 13rem; object-fit: contain; padding: .5rem; background: #f1f3f4; border: 1px solid #eeebed; border-radius: 3px; animation: about-journal-in 350ms ease both; }
-.about-memory__photo figcaption { display: flex; align-items: baseline; gap: .55rem; margin-top: .55rem; color: #8c8795; font-size: 10px; }
-.about-memory__photo figcaption span { font: 600 18px var(--journal-hand); color: var(--journal-ink); }
-.about-memory__thumbs { display: grid; gap: .45rem; }
-.about-memory__thumbs button { width: 2.6rem; height: 2.6rem; padding: 2px; border: 1px solid transparent; border-radius: 4px; background: none; opacity: .5; cursor: pointer; transition: opacity 300ms ease, transform 450ms ease; }
-.about-memory__thumbs button:is(:hover, [aria-pressed="true"]) { opacity: 1; transform: rotate(5deg); border-color: #b9afcd; }
-.about-memory__thumbs img { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; }
-.about-music { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 1rem; padding-top: 1.2rem; border-top: 1px dashed #e8e3e6; align-items: start; }
-.about-music__art { position: relative; display: grid; place-items: center; margin-top: .2rem; }
-.about-music__art img { width: 4.5rem; height: 4.5rem; border-radius: 50%; object-fit: cover; border: 4px solid #4a465d; animation: about-record 18s linear infinite paused; }
-.about-music[data-playing="true"] .about-music__art img { animation-play-state: running; }
-.about-music__art > span { position: absolute; width: .65rem; height: .65rem; border-radius: 50%; background: #fffefa; box-shadow: 0 0 0 3px rgb(255 255 255 / 35%); }
-.about-music__body { min-width: 0; }
-.about-music__state { display: flex; gap: .35rem; align-items: center; margin: 0 0 .4rem; color: #998bb0; font-size: 9px; letter-spacing: .04em; }
-.about-music__state svg { width: 13px; height: 13px; }
-.about-music__body h3 { margin: 0; overflow: hidden; color: #52566b; font-size: 15px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
-.about-music__body > p:not(.about-music__state, .about-music__error), .about-music__body > span { display: block; margin: .2rem 0 0; overflow: hidden; color: #92909a; font-size: 10px; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; }
-.about-music__controls { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; margin-top: .7rem; }
-.about-music__controls button { display: grid; place-items: center; width: 2rem; height: 2rem; border: 0; border-radius: 50%; color: #827394; background: #f1edf5; cursor: pointer; transition: transform 450ms ease, background 300ms ease; }
-.about-music__controls button:nth-child(2) { color: white; background: #a092b7; }
-.about-music__controls button:hover { transform: translateY(-2px); background: #ded6e9; }
-.about-music__controls button:nth-child(2):hover { background: #86749e; }
-.about-music__controls svg { width: 17px; height: 17px; }
-.about-music__controls a { display: inline-flex; align-items: center; gap: .2rem; margin-left: auto; color: #98929e; font-size: 9px; text-decoration: none; }
-.about-music__progress { display: block; width: 100%; height: 3px; margin-top: .8rem; appearance: none; border: 0; border-radius: 10px; background: #e8e2ec; accent-color: #a092b7; }
-.about-music__progress::-webkit-slider-thumb { width: 8px; height: 8px; appearance: none; border-radius: 50%; background: #a092b7; }
-.about-music__error { color: #8c7397; font-size: 10px; margin-top: .8rem; }
-@keyframes about-character-breathe { 0%, 100% { transform: rotate(-.25deg); } 50% { transform: translateY(-3px) rotate(.3deg); } }
-@keyframes about-cat-nuzzle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-7deg) translateY(-5px); } 55% { transform: rotate(4deg) translateY(-2px); } 75% { transform: rotate(-2deg); } }
-@keyframes about-journal-in { from { opacity: 0; transform: translateY(7px) rotate(.4deg); } to { opacity: 1; transform: none; } }
-@keyframes about-record { to { transform: rotate(1turn); } }
-@media (min-width: 1600px) { .about-scrapbook { padding-top: 8rem; } }
-@media (min-width: 901px) and (max-height: 800px) {
-  .about-scrapbook { padding-top: 5rem; }
-  .about-journal__tabs { margin-bottom: 1.5rem; }
-  .about-journal__tab img { width: 5.25rem; height: 5.25rem; }
-  .about-journal__tab > span { font-size: 27px; }
-  .about-sheet { min-height: 28rem; padding: 1.8rem 2rem 2.5rem; }
-}
-@media (max-width: 1100px) and (min-width: 901px) {
-  .about-sheet { padding-inline: 1.65rem; }
-  .about-scrapbook .scrapbook-cat { width: 7rem; bottom: 3rem; }
-  .about-journal__tabs { gap: 1rem; }
-}
-@media (max-width: 900px) {
-  .about-scrapbook { padding-top: 5rem; }
-  .about-scrapbook__board { grid-template-columns: 1fr; max-width: 38rem; gap: 1.5rem; }
-  .about-scrapbook__scene { width: min(100%, 30rem); height: 23rem; margin: 0 auto; }
-  .about-scrapbook__character { top: 0; left: 50%; width: 23rem; transform: translateX(-50%); }
-  .about-scrapbook__note { top: 2rem; left: -4%; font-size: 18px; }
-  .about-scrapbook__aside { display: none; }
-  .about-scrapbook .scrapbook-cat { width: 6rem; left: 4%; bottom: .2rem; }
-  .about-scrapbook__star { top: 42%; left: 2%; width: 17px; }
-}
-@media (max-width: 540px) {
-  .about-scrapbook { padding: 4.8rem 1.15rem 3rem; }
-  .about-scrapbook__scene { height: 18.5rem; }
-  .about-scrapbook__character { width: min(100%, 19rem); }
-  .about-scrapbook__note { display: none; }
-  .about-scrapbook .scrapbook-cat { width: 5rem; left: 6%; bottom: 0; }
-  .about-scrapbook__board { gap: .75rem; }
-  .about-journal__tabs { gap: .75rem; margin-bottom: 1.5rem; }
-  .about-journal__tab { width: 5.5rem; }
-  .about-journal__tab img { width: 4.7rem; height: 4.7rem; }
-  .about-journal__tab > span { font-size: 25px; }
-  .about-journal__tab small { font-size: 9px; }
-  .about-sheet { min-height: 30rem; padding: 2rem 1.4rem 3rem; }
-  .about-sheet__title { font-size: 43px; }
-  .about-sheet__prose { font-size: 13px; }
-  .about-sheet__lead { font-size: 12px; }
-  .about-sheet__links { gap: 1rem; }
-  .about-journal__stack { gap: .7rem 1rem; }
-  .about-memory__gallery { grid-template-columns: minmax(0,1fr) 2.2rem; gap: .65rem; }
-  .about-memory__photo > img { height: 12rem; }
-  .about-memory__thumbs button { width: 2.2rem; height: 2.2rem; }
-  .about-music { grid-template-columns: 3.2rem minmax(0,1fr); gap: .7rem; }
-  .about-music__art img { width: 3.2rem; height: 3.2rem; border-width: 3px; }
-  .about-music__controls a { margin-left: 0; }
-}
+
 @media (prefers-reduced-motion: reduce) {
-  .about-scrapbook *, .about-scrapbook *::before, .about-scrapbook *::after { animation: none !important; transition: none !important; }
+  .about-card .about-card__rotator,
+  .about-card[data-flipped="true"] .about-card__rotator,
+  .about-card__face--back {
+    transform: none;
+    transition: none;
+  }
+
+  .about-card__face[aria-hidden="true"] {
+    visibility: hidden;
+  }
 }

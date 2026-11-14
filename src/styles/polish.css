@@ -1,0 +1,41 @@
+/* Small, quiet touches that make the site feel alive without changing its minimal layout.
+   Everything here is progressive enhancement and switches off for reduced motion. */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The little orb in the header greets you: it hops on hover and squishes when pressed. */
+  .jiely-brand { transition: transform 420ms cubic-bezier(.34, 1.56, .64, 1); }
+  .jiely-brand:hover { transform: translateY(-2px) rotate(-6deg) scale(1.08); }
+  .jiely-brand:active { transform: translateY(1px) scale(.92, .86); transition-duration: 90ms; }
+
+  /* Springy pills: section tabs, tags and filter chips lift slightly on hover. */
+  .article-index__section-tabs a,
+  .site-page :where(.tag, .article-tag, .chip, [data-tag]) {
+    transition: color 160ms ease, background-color 160ms ease, transform 320ms cubic-bezier(.34, 1.56, .64, 1);
+  }
+  .article-index__section-tabs a:hover,
+  .site-page :where(.tag, .article-tag, .chip, [data-tag]):hover { transform: translateY(-1px); }
+  .article-index__section-tabs a:active { transform: scale(.94); }
+
+  /* Cards feel pressable. site-bento-motion already animates `scale`. */
+  .site-page :where(.site-panel, .article-preview, .project-file, .friend-bento-card, .thoughts-entry-card, .article-item > a, .guestbook-note):active { scale: .988; }
+
+  /* Page titles slide in one after another. */
+  .article-index__intro > * { animation: polish-rise .6s cubic-bezier(.22, 1, .36, 1) both; }
+  .article-index__intro > :nth-child(2) { animation-delay: 70ms; }
+  .article-index__intro > :nth-child(3) { animation-delay: 140ms; }
+
+  /* Nav underline overshoots slightly, like a rubber band. */
+  .site-header nav a > span.absolute { transition-timing-function: cubic-bezier(.34, 1.56, .64, 1) !important; transition-duration: 380ms !important; }
+
+  /* Home hint pill gently bobs. */
+  .voxel-playground__hint { animation: polish-bob 3.2s ease-in-out infinite; }
+}
+
+@keyframes polish-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes polish-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -4px; }
+}
