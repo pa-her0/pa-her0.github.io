@@ -1,5 +1,5 @@
 export type BrickForm = "box" | "stair" | "eye" | "cheek" | "mouth"
-export type BrickTone = "violet" | "lilac" | "plum" | "ivory" | "ink" | "cream" | "blush" | "sun"
+export type BrickTone = "violet" | "lilac" | "plum" | "ivory" | "ink" | "cream" | "blush" | "sun" | "eyeFrame" | "eyePupil" | "eyeSparkle"
 export type QuarterTurn = 0 | 1 | 2 | 3
 
 export const BRICK_KIT = [
@@ -32,12 +32,15 @@ export type BrickPiece = {
   z: number
   turn?: QuarterTurn
   tone?: BrickTone
+  /** Horizontal pupil offset in local eye coordinates; highlights move with it. */
+  gaze?: number
 }
 
 export const BRICK_DEFINITIONS = Object.fromEntries([...BRICK_KIT, ...DECORATIONS].map((brick) => [brick.id, brick])) as Record<BrickKind, BrickDefinition>
 export const BRICK_PALETTE: Record<BrickTone, string> = {
   violet: "#7468ff", lilac: "#bdb6ff", plum: "#5a4fd6", ivory: "#fffaf0", ink: "#26223a",
   cream: "#fff8e8", blush: "#ff9db8", sun: "#ffc547",
+  eyeFrame: "#e9e7ee", eyePupil: "#251834", eyeSparkle: "#ffffff",
 }
 export const BRICK_GRID = { half: 14, height: 20, limit: 440 }
 

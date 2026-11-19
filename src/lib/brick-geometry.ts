@@ -3,9 +3,10 @@ import type { BufferGeometry } from "three"
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js"
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js"
 import { BRICK_DEFINITIONS, type BrickKind, type BrickTone } from "@/data/brick-kit"
+import { BRICK_EYE_PATCHES } from "@/data/brick-eye"
 
 export const BRICK_UNIT = 36
-export type BrickGeometryPart = { geometry: BufferGeometry; tone?: BrickTone; stud?: boolean }
+export type BrickGeometryPart = { geometry: BufferGeometry; tone?: BrickTone; stud?: boolean; gaze?: boolean }
 
 const scaled = (geometry: BufferGeometry) => geometry.scale(BRICK_UNIT, BRICK_UNIT, BRICK_UNIT)
 
@@ -14,13 +15,14 @@ export function createBrickGeometry(kind: BrickKind): BrickGeometryPart[] {
   const { width: w, height: h, depth: d, form } = BRICK_DEFINITIONS[kind]
   const gap = 0.03
   if (form === "eye") {
-    // A big glossy bead: ink pupil, two sparkles.
-    return [
-      { geometry: new RoundedBoxGeometry(0.96, 0.96, 0.1, 2, 0.04), tone: "ivory" as const },
-      { geometry: new RoundedBoxGeometry(0.78, 0.84, 0.05, 2, 0.05).translate(0, -0.02, 0.06), tone: "ink" as const },
-      { geometry: new RoundedBoxGeometry(0.26, 0.26, 0.03, 2, 0.04).translate(-0.12, 0.16, 0.095), tone: "ivory" as const },
-      { geometry: new RoundedBoxGeometry(0.12, 0.12, 0.03, 2, 0.02).translate(0.16, -0.2, 0.095), tone: "ivory" as const },
-    ].map(({ geometry, tone }) => ({ geometry: scaled(geometry.scale(w, h, 1)), tone }))
+    return BRICK_EYE_PATCHES.map(({ points, depth, z, tone, gaze }) => {
+      const outline = new Shape().moveTo(...points[0])
+      points.slice(1).forEach(([x, y]) => outline.lineTo(x, y))
+      outline.closePath()
+      const geometry = new ExtrudeGeometry(outline, { depth, steps: 1, bevelEnabled: false })
+        .translate(0, 0, z - depth / 2).scale(w, h, 1)
+      return { geometry: scaled(geometry), tone, gaze }
+    })
   }
   if (form === "cheek") {
     return [{ geometry: scaled(new RoundedBoxGeometry(0.74, 0.46, 0.06, 2, 0.04)), tone: "blush" as const }]

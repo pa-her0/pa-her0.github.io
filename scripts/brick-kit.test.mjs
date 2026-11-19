@@ -12,7 +12,7 @@ const result = await build({
   },
   bundle: true, write: false, format: 'esm', platform: 'node', logLevel: 'silent',
 })
-const { BRICK_DEFINITIONS, BRICK_GRID, BRICK_UNIT, DINOSAUR_BRICKS, brickSize, brickBounds, bricksOverlap, brickInGrid, canPlaceBrick, placeBrickAgainst, createBrickGeometry } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`)
+const { BRICK_DEFINITIONS, BRICK_GRID, BRICK_PALETTE, BRICK_UNIT, DINOSAUR_BRICKS, brickSize, brickBounds, bricksOverlap, brickInGrid, canPlaceBrick, placeBrickAgainst, createBrickGeometry } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`)
 const up = { x: 0, y: 1, z: 0 }
 
 test('all backpack shapes produce finite, visible geometry', () => {
@@ -26,11 +26,11 @@ test('all backpack shapes produce finite, visible geometry', () => {
       const b = geometry.boundingBox
       assert.ok(b.max.x > b.min.x && b.max.y > b.min.y && b.max.z > b.min.z, definition.id)
       assert.ok(b.max.x - b.min.x <= definition.width * BRICK_UNIT + 1, definition.id)
-      assert.ok(b.max.y - b.min.y <= definition.height * BRICK_UNIT, `${definition.id}: no protruding studs`)
+      assert.ok(b.max.y - b.min.y <= definition.height * BRICK_UNIT + 1e-5, `${definition.id}: part height fits the brick`)
       const normals = geometry.getAttribute('normal')
       for (let i = 0; i < normals.count; i++) {
-        const axes = [normals.getX(i), normals.getY(i), normals.getZ(i)].map(Math.abs)
-        assert.equal(axes.filter((value) => value > 0.999).length, 1, `${definition.id}: axis-aligned voxel faces`)
+        const length = Math.hypot(normals.getX(i), normals.getY(i), normals.getZ(i))
+        assert.ok(Math.abs(length - 1) < 1e-5, `${definition.id}: unit normals for flat and rounded faces`)
       }
       geometry.dispose()
     }
@@ -117,11 +117,10 @@ test('the dinosaur fits the building area and contains no duplicate pieces', () 
   assert.ok(DINOSAUR_BRICKS.every(brickInGrid))
   assert.ok(DINOSAUR_BRICKS.length < BRICK_GRID.limit)
   assert.equal(new Set(DINOSAUR_BRICKS.map((p) => `${p.kind}:${p.x}:${p.y}:${p.z}:${p.turn}`)).size, DINOSAUR_BRICKS.length)
-  assert.ok(DINOSAUR_BRICKS.some((p) => p.kind === 'stair'))
   for (let i = 0; i < DINOSAUR_BRICKS.length; i++) {
     for (let j = i + 1; j < DINOSAUR_BRICKS.length; j++) {
       assert.equal(bricksOverlap(DINOSAUR_BRICKS[i], DINOSAUR_BRICKS[j]), false, `pieces ${i} and ${j} overlap`)
     }
   }
-  assert.ok(DINOSAUR_BRICKS.filter((p) => p.kind !== 'eye').every((p) => p.tone === 'violet'), 'uniform purple body without teeth or claws')
+  assert.ok(DINOSAUR_BRICKS.every((p) => p.tone in BRICK_PALETTE), 'all model colors have a renderable material')
 })

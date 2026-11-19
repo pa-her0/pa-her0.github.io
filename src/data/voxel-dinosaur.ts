@@ -64,7 +64,7 @@ for (const z of [-3, 3]) fill(8, 9, 5, 5, z, z, "lilac")
 blob(8.4, 10.2, 0.5, 4.0, 3.2, 3.4, "violet", 2.7)
 
 // A flat face panel: pad the front so the painted details sit flush.
-const eyes = [{ z: -2 }, { z: 1.5 }]
+const eyes = [{ z: -2, gaze: -0.025 }, { z: 1.5, gaze: 0.025 }]
 const faceFront = Math.max(...[8, 9, 10, 11].flatMap((y) => [-2, -1, 0, 1, 2].map((z) => frontOf(y, z))))
 for (const y of [8, 9, 10, 11]) for (const z of [-2, -1, 0, 1, 2]) for (let x = frontOf(y, z); x < faceFront; x++) voxels.set(id(x, y, z), "violet")
 
@@ -106,7 +106,7 @@ for (const y of [...layers.keys()].sort((a, b) => a - b)) {
 }
 
 // Painted face details (decals sit on the padded front panel).
-eyes.forEach(({ z }) => pieces.push({ kind: "eye", x: faceFront, y: 10, z, turn: 1, tone: "ivory" }))
+eyes.forEach(({ z, gaze }) => pieces.push({ kind: "eye", x: faceFront, y: 10, z, gaze, turn: 1, tone: "eyeFrame" }))
 for (const z of [-2, 2]) pieces.push({ kind: "cheek", x: faceFront, y: 8.2, z, turn: 1, tone: "blush" })
 pieces.push({ kind: "mouth", x: faceFront, y: 8.1, z: 0, turn: 1, tone: "ink" })
 

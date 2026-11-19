@@ -4,6 +4,7 @@ import { memo, useEffect, useRef, useState } from "react"
 import type { VoxelScene } from "@/lib/voxel-scene"
 import { DINOSAUR_BRICKS, DINOSAUR_CENTER_X } from "@/data/voxel-dinosaur"
 import { BRICK_PALETTE, brickVolumes, type BrickKind, type QuarterTurn } from "@/data/brick-kit"
+import { BRICK_EYE_PATCHES } from "@/data/brick-eye"
 import { BrickBackpack } from "@/components/ui/brick-backpack"
 
 // Rendered before WebGL is ready, and retained when graphics are unavailable.
@@ -25,13 +26,28 @@ const VoxelBackdrop = memo(function VoxelBackdrop() {
         const x = 580 + (bounds.minX - DINOSAUR_CENTER_X) * 27 - bounds.minZ * 11
         const y = 505 - bounds.minY * 27 - bounds.minZ * 6
         const w = width * 27, h = height * 27, dx = depth * -11, dy = depth * -6
+        if (piece.kind === "eye") {
+          return (
+            <g key={index} transform={`translate(${x + w / 2 + dx / 2} ${y - h / 2 + dy / 2})`}>
+              {BRICK_EYE_PATCHES.map((patch, patchIndex) => (
+                <polygon
+                  key={patchIndex}
+                  fill={BRICK_PALETTE[patch.tone]}
+                  points={patch.points.map(([px, py]) => {
+                    const eyeX = px + (patch.gaze ? piece.gaze ?? 0 : 0)
+                    return `${eyeX * depth * 11},${eyeX * depth * 6 - py * h}`
+                  }).join(" ")}
+                />
+              ))}
+            </g>
+          )
+        }
         return (
           <g key={index} transform={`translate(${x} ${y})`} fill={BRICK_PALETTE[piece.tone ?? "violet"]} stroke="var(--home-bg)" strokeWidth=".7">
             <path d={`M0 0H${w}V${-h}H0Z`} />
             <path d={`M0 ${-h}l${dx} ${dy}h${w}l${-dx} ${-dy}Z`} />
             <path d={`M0 ${-h}l${dx} ${dy}h${w}l${-dx} ${-dy}Z`} fill="white" fillOpacity=".2" />
             <path d={`M0 0l${dx} ${dy}v${-h}l${-dx} ${-dy}Z`} fill="black" fillOpacity=".1" />
-            {piece.kind === "eye" && <><rect x="1" y={-h + 1} width={w - 2} height={h - 2} fill="#fff" /><rect x={w / 4} y={-h * 0.75} width={w / 2} height={h / 2} fill="#2c263d" /></>}
           </g>
         )
       })}

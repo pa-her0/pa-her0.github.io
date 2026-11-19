@@ -7,7 +7,7 @@ import {
 import { SVGRenderer } from "three/addons/renderers/SVGRenderer.js"
 import { DINOSAUR_BRICKS, DINOSAUR_CENTER_X, DINOSAUR_SIZE } from "@/data/voxel-dinosaur"
 import {
-  BRICK_GRID, BRICK_PALETTE, brickSize, brickVolumes, canPlaceBrick, defaultBrickTone, placeBrickAgainst,
+  BRICK_DEFINITIONS, BRICK_GRID, BRICK_PALETTE, brickSize, brickVolumes, canPlaceBrick, defaultBrickTone, placeBrickAgainst,
   type BrickKind, type BrickPiece, type BrickTone, type QuarterTurn,
 } from "@/data/brick-kit"
 import { BRICK_UNIT, createBrickGeometry, type BrickGeometryPart } from "@/lib/brick-geometry"
@@ -108,6 +108,7 @@ export function createVoxelScene(canvas: HTMLDivElement, options: SceneOptions):
       const mesh = new Mesh(part.geometry, ghost ? previewMaterial : materialFor(part.tone ?? piece.tone ?? defaultBrickTone(piece.kind)))
       mesh.castShadow = !ghost
       mesh.receiveShadow = !ghost
+      if (part.gaze) mesh.position.x = (piece.gaze ?? 0) * BRICK_DEFINITIONS[piece.kind].width * BRICK_UNIT
       // Studs are decoration: they must never steer where the next brick snaps.
       if (part.stud) mesh.raycast = () => undefined
       group.add(mesh)
