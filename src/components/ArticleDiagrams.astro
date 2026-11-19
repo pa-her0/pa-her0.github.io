@@ -5,13 +5,17 @@
   let diagramId = 0
 
   function loadMermaid() {
-    mermaidPromise ??= import("mermaid").then(({ default: mermaid }) => {
+    mermaidPromise ??= Promise.all([
+      import("mermaid"),
+      document.fonts?.ready,
+    ]).then(([{ default: mermaid }]) => {
       mermaid.initialize({
         startOnLoad: false,
         securityLevel: "strict",
         suppressErrorRendering: true,
         theme: "neutral",
         fontFamily: '"PingFang SC", "Microsoft YaHei", system-ui, sans-serif',
+        themeVariables: { fontSize: "16px" },
       })
       return mermaid
     }).catch((error) => {
@@ -60,9 +64,34 @@
         if (!figure.isConnected) return
         const { svg } = await mermaid.render(`article-diagram-${++diagramId}`, definition)
         if (!figure.isConnected) return
-        canvas.innerHTML = svg
-        canvas.setAttribute("aria-label", "文章流程图，可横向滚动查看")
+        // Keep article typography out of Mermaid's measured HTML labels.
+        const root = canvas.shadowRoot ?? canvas.attachShadow({ mode: "open" })
+        root.innerHTML = `<style>
+          :host { font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 400; line-height: 1.5; text-indent: 0; text-align: initial; }
+          svg { display: block; width: var(--diagram-natural-width, 100%); max-width: 100% !important; height: auto; margin-inline: auto; }
+          :host([data-scale="actual"]) svg { max-width: none !important; }
+          p { margin: 0; padding: 0; font-size: inherit; line-height: inherit; text-indent: 0; }
+        </style>${svg}`
+        const graphic = root.querySelector("svg")
+        const width = Number(graphic?.getAttribute("viewBox")?.trim().split(/[\s,]+/)[2])
+        if (Number.isFinite(width) && width > 0) {
+          canvas.style.setProperty("--diagram-natural-width", `${Math.ceil(width)}px`)
+        }
+        canvas.textContent = ""
+        canvas.dataset.scale = "fit"
+        canvas.setAttribute("aria-label", "文章流程图，原始大小模式下可横向滚动查看")
         canvas.tabIndex = 0
+        const scaleButton = figure.querySelector<HTMLButtonElement>(".article-diagram__scale")
+        if (scaleButton) {
+          scaleButton.hidden = false
+          scaleButton.onclick = () => {
+            const actual = canvas.dataset.scale !== "actual"
+            canvas.dataset.scale = actual ? "actual" : "fit"
+            scaleButton.setAttribute("aria-pressed", String(actual))
+            scaleButton.textContent = actual ? "适应宽度" : "原始大小"
+            canvas.scrollLeft = 0
+          }
+        }
         figure.dataset.diagramState = "ready"
       } catch {
         canvas.hidden = true
@@ -100,23 +129,20 @@
     border: 1px solid var(--border);
     border-radius: 0.75rem;
     overflow: hidden;
+    scroll-margin-top: 7rem;
   }
   .article-diagram__canvas:not([hidden]) {
-    display: grid;
-    place-items: center;
-    min-height: 12rem;
+    display: block;
+    min-width: 0;
+    min-height: 0;
     padding: 1rem;
     overflow-x: auto;
     color: var(--muted-foreground);
     font-size: 0.875rem;
     background: #fff;
   }
-  .article-diagram__canvas svg {
-    display: block;
-    width: 100%;
-    min-width: 36rem;
-    height: auto;
-    margin: auto;
+  .article-diagram__canvas[aria-busy="true"] {
+    min-height: 12rem;
   }
   .article-diagram__canvas:focus-visible {
     outline: 2px solid var(--ring);
@@ -130,6 +156,25 @@
   }
   .article-diagram summary {
     cursor: pointer;
+  }
+  .article-diagram__scale {
+    margin: 0.5rem 1rem;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.45rem;
+    color: var(--foreground);
+    background: var(--card);
+    font: inherit;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .article-diagram__scale:hover {
+    background: var(--secondary);
+  }
+  .article-diagram__scale:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
   .article-diagram [hidden] {
     display: none;
