@@ -779,7 +779,7 @@
   grid-column: 1 / -1;
 }
 
-.learning-detail-unit--course ul {
+.learning-detail-unit.learning-detail-unit--course ul {
   grid-template-columns: 1fr;
 }
 
@@ -851,6 +851,48 @@
   line-height: 1.4;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.learning-detail-task__content {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 0.3rem;
+}
+
+.learning-detail-task--outcome {
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.learning-detail-task--outcome .learning-detail-task__state,
+.learning-detail-task--outcome .learning-detail-task__check {
+  margin-top: 0.35rem;
+}
+
+.learning-detail-task--outcome .learning-detail-task__label {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.learning-detail-task--outcome.is-complete .learning-detail-task__label {
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.learning-detail-task__outcome {
+  color: var(--content-secondary);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.learning-detail-result {
+  grid-column: 1 / -1;
+}
+
+.learning-detail-result [data-slot="alert-description"] {
+  gap: 0.75rem;
 }
 
 .learning-detail-task.is-complete .learning-detail-task__label {

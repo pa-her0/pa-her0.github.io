@@ -16,6 +16,7 @@ import remarkGithubAdmonitionsToDirectives from "remark-github-admonitions-to-di
 import remarkMath from "remark-math"
 import remarkSectionize from "remark-sectionize"
 import { remarkShiftHeadings } from "./src/plugins/remark-shift-headings.mjs"
+import { remarkEncyclopediaDiagrams } from "./src/plugins/remark-encyclopedia-diagrams.mjs"
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs"
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs"
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js"
@@ -172,6 +173,7 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [
       remarkMath,
+      remarkEncyclopediaDiagrams,
       remarkReadingTime,
       remarkExcerpt,
       remarkShiftHeadings,

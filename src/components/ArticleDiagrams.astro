@@ -1,0 +1,137 @@
+<article-diagrams hidden></article-diagrams>
+
+<script>
+  let mermaidPromise: Promise<typeof import("mermaid")["default"]> | undefined
+  let diagramId = 0
+
+  function loadMermaid() {
+    mermaidPromise ??= import("mermaid").then(({ default: mermaid }) => {
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "strict",
+        suppressErrorRendering: true,
+        theme: "neutral",
+        fontFamily: '"PingFang SC", "Microsoft YaHei", system-ui, sans-serif',
+      })
+      return mermaid
+    }).catch((error) => {
+      mermaidPromise = undefined
+      throw error
+    })
+    return mermaidPromise
+  }
+
+  class ArticleDiagrams extends HTMLElement {
+    observer?: IntersectionObserver
+    queue = Promise.resolve()
+
+    connectedCallback() {
+      const figures = this.closest("article")?.querySelectorAll<HTMLElement>(".article-diagram")
+      if (!figures?.length || this.observer) return
+
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return
+          this.observer?.unobserve(entry.target)
+          this.queue = this.queue.then(() => this.draw(entry.target as HTMLElement))
+        })
+      }, { rootMargin: "800px 0px" })
+
+      figures.forEach((figure) => {
+        const canvas = figure.querySelector<HTMLElement>(".article-diagram__canvas")
+        const source = figure.querySelector("details")
+        if (!canvas || !source || figure.dataset.diagramState === "ready") return
+        canvas.hidden = false
+        canvas.textContent = "流程图正在加载…"
+        canvas.setAttribute("aria-busy", "true")
+        source.open = false
+        this.observer?.observe(figure)
+      })
+    }
+
+    async draw(figure: HTMLElement) {
+      const source = figure.querySelector("details")
+      const canvas = figure.querySelector<HTMLElement>(".article-diagram__canvas")
+      const definition = source?.querySelector("code")?.textContent
+      if (!figure.isConnected || !source || !canvas || !definition) return
+
+      try {
+        const mermaid = await loadMermaid()
+        if (!figure.isConnected) return
+        const { svg } = await mermaid.render(`article-diagram-${++diagramId}`, definition)
+        if (!figure.isConnected) return
+        canvas.innerHTML = svg
+        canvas.setAttribute("aria-label", "文章流程图，可横向滚动查看")
+        canvas.tabIndex = 0
+        figure.dataset.diagramState = "ready"
+      } catch {
+        canvas.hidden = true
+        source.open = true
+        figure.dataset.diagramState = "error"
+      } finally {
+        canvas.removeAttribute("aria-busy")
+      }
+    }
+
+    disconnectedCallback() {
+      this.observer?.disconnect()
+      this.observer = undefined
+    }
+  }
+
+  if (!customElements.get("article-diagrams")) {
+    customElements.define("article-diagrams", ArticleDiagrams)
+  }
+</script>
+
+<style is:global>
+  .article-reading-page--encyclopedia .article-reading__prose table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .agent-chapter-anchor {
+    display: block;
+    scroll-margin-top: 7rem;
+  }
+  .article-reading__prose .article-diagram {
+    margin: 1.5rem 0 2rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .article-diagram__canvas:not([hidden]) {
+    display: grid;
+    place-items: center;
+    min-height: 12rem;
+    padding: 1rem;
+    overflow-x: auto;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    background: #fff;
+  }
+  .article-diagram__canvas svg {
+    display: block;
+    width: 100%;
+    min-width: 36rem;
+    height: auto;
+    margin: auto;
+  }
+  .article-diagram__canvas:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: -3px;
+  }
+  .article-diagram details {
+    padding: 0.75rem 1rem;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    background: var(--card);
+  }
+  .article-diagram summary {
+    cursor: pointer;
+  }
+  .article-diagram [hidden] {
+    display: none;
+  }
+</style>

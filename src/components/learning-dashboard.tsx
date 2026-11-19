@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight,
+  BookOpen,
   Check,
   Circle,
   LockKeyhole,
@@ -31,6 +32,7 @@ import {
 } from "@/lib/learning-progress";
 import { buildLearningInsights } from "@/lib/learning-insights";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   DraggableWidgetGrid,
@@ -106,6 +108,7 @@ function TaskItem({
     <li
       className={cn(
         "learning-detail-task",
+        task.outcome && "learning-detail-task--outcome",
         complete && "is-complete",
         current && "is-current",
       )}
@@ -124,7 +127,14 @@ function TaskItem({
         </span>
       )}
 
-      <span className="learning-detail-task__label">{task.label}</span>
+      <span className="learning-detail-task__content">
+        <span className="learning-detail-task__label">{task.label}</span>
+        {task.outcome ? (
+          <span className="learning-detail-task__outcome">
+            {task.summary ? `${task.summary} · ` : ""}{task.outcome}
+          </span>
+        ) : null}
+      </span>
 
       {canEdit && !complete && !current ? (
         <Button type="button" variant="ghost" size="sm" onClick={onSetCurrent}>
@@ -135,11 +145,11 @@ function TaskItem({
         <Button asChild variant="ghost" size="icon-sm">
           <a
             href={task.href}
-            target="_blank"
-            rel="noreferrer"
+            target={task.href.startsWith("/") ? undefined : "_blank"}
+            rel={task.href.startsWith("/") ? undefined : "noreferrer"}
             aria-label={`打开${task.label}`}
           >
-            <ArrowUpRight />
+            {task.outcome ? <BookOpen /> : <ArrowUpRight />}
           </a>
         </Button>
       ) : null}
@@ -180,13 +190,13 @@ function UnitGroup({
             {completed}/{unit.tasks.length}
           </span>
           <Button asChild variant="ghost" size="icon-sm">
-            <a href={unit.href} target="_blank" rel="noreferrer" aria-label={`${unit.title} · ${unit.sourceLabel ?? "打开题单"}`} title={unit.sourceLabel ?? "打开题单"}>
+            <a href={unit.href} target={unit.href.startsWith("/") ? undefined : "_blank"} rel={unit.href.startsWith("/") ? undefined : "noreferrer"} aria-label={`${unit.title} · ${unit.sourceLabel ?? "打开题单"}`} title={unit.sourceLabel ?? "打开题单"}>
               <ArrowUpRight />
             </a>
           </Button>
         </div>
         {unit.layout === "list" ? (
-          <a className="learning-detail-unit__source" href={unit.href} target="_blank" rel="noreferrer">
+          <a className="learning-detail-unit__source" href={unit.href} target={unit.href.startsWith("/") ? undefined : "_blank"} rel={unit.href.startsWith("/") ? undefined : "noreferrer"}>
             {unit.description} <ArrowUpRight aria-hidden="true" />
           </a>
         ) : null}
@@ -238,8 +248,24 @@ function TrackDialog({
   );
   const activeGroup = groups.find((group) => group.id === groupId) ?? groups[0];
   const sourceUnit = track?.units.find((unit) => activeGroup.unitIds.includes(unit.id));
+  const sourceHref = track?.completion ? track.sourceHref : sourceUnit?.href ?? track?.sourceHref;
   const renderUnits = (unitIds: string[]) => track ? (
     <div className="learning-detail-dialog__units">
+      {track.completion ? (
+        <Alert className="learning-detail-result" role="status">
+          <Check aria-hidden="true" />
+          <AlertTitle>{stats?.percentage === 100 ? "笔记整理已完成" : "完成后的学习成果"}</AlertTitle>
+          <AlertDescription>
+            <p>{track.completion.summary}</p>
+            <Button asChild variant="outline" size="sm">
+              <a href={track.completion.href}>
+                <BookOpen data-icon="inline-start" />
+                {track.completion.label}
+              </a>
+            </Button>
+          </AlertDescription>
+        </Alert>
+      ) : null}
       {track.units.filter((unit) => unitIds.includes(unit.id)).map((unit) => (
         <UnitGroup key={unit.id} track={track} unit={unit} progress={progress}
           canEdit={canEdit} onToggle={onToggle} onSetCurrent={onSetCurrent} />
@@ -267,16 +293,16 @@ function TrackDialog({
               </small>
             </div>
             <div>
-              <span>正在进行</span>
+              <span>{stats.percentage === 100 ? "完成状态" : "正在进行"}</span>
               <strong>{currentTask?.label ?? "全部完成"}</strong>
               <small>
                 {currentTask ? track.units.find((unit) => unit.id === currentTask.unitId)?.title : "这一方向已经完成"}
               </small>
             </div>
             <Button asChild variant="outline" size="sm">
-              <a href={sourceUnit?.href ?? track.sourceHref} target="_blank" rel="noreferrer">
-                {sourceUnit?.sourceLabel ?? track.sourceLabel}
-                <ArrowUpRight data-icon="inline-end" />
+              <a href={sourceHref} target={sourceHref?.startsWith("/") ? undefined : "_blank"} rel={sourceHref?.startsWith("/") ? undefined : "noreferrer"}>
+                {track.completion ? track.sourceLabel : sourceUnit?.sourceLabel ?? track.sourceLabel}
+                {track.completion ? <BookOpen data-icon="inline-start" /> : <ArrowUpRight data-icon="inline-end" />}
               </a>
             </Button>
           </div>

@@ -16,6 +16,7 @@ export interface LearningTask {
   id: string
   label: string
   summary?: string
+  outcome?: string
   href?: string
 }
 
@@ -37,6 +38,7 @@ export interface LearningTrack {
   sourceLabel: string
   sourceHref: string
   units: LearningUnit[]
+  completion?: { summary: string; href: string; label: string }
   groups?: { id: string; label: string; unitIds: string[] }[]
 }
 
@@ -195,7 +197,7 @@ const aiInfraUnits: LearningUnit[] = [
 ]
 
 const regionalVpHref = "https://vjudge.net/contest"
-const agentCourseHref = "https://huggingface.co/learn/agents-course/unit0/introduction"
+export const agentEncyclopediaHref = "/notes/llm/agent-technical-encyclopedia/"
 
 // Starter checklists: the contest year, location and problem set can be recorded in the track note.
 const regionalVpUnits: LearningUnit[] = [
@@ -221,27 +223,77 @@ const regionalVpUnits: LearningUnit[] = [
 
 const agentUnits: LearningUnit[] = [
   {
-    id: "agent-foundation", title: "Agent 基础", description: "理解模型如何从回答问题走向完成任务。", href: agentCourseHref,
+    id: "agent-architecture",
+    title: "Agent 技术、架构与企业落地",
+    description: "第一部分 · 从产品边界到系统架构、训练与企业应用",
+    href: `${agentEncyclopediaHref}#agent-architecture`,
+    sourceLabel: "阅读这一部分",
+    layout: "list",
     tasks: [
-      { id: "agent-foundation-loop", label: "理解 Agent 执行循环", summary: "梳理观察、推理、行动与反馈之间的关系。" },
-      { id: "agent-foundation-tools", label: "实现工具调用", summary: "定义工具参数，处理调用结果与失败重试。" },
-      { id: "agent-foundation-prompt", label: "设计任务指令", summary: "明确目标、上下文、输出格式与完成条件。" },
+      { id: "agent-notes-01", label: "01. Agent 基础与产品边界", outcome: "整理自主性等级、任务边界、终止条件、业务价值与常见失败模式。", href: `${agentEncyclopediaHref}#agent-chapter-01` },
+      { id: "agent-notes-02", label: "02. Agent 全栈架构与分层职责", outcome: "形成 Model、Runtime、Harness、Framework、Application 五层架构及三平面的职责对照。", href: `${agentEncyclopediaHref}#agent-chapter-02` },
+      { id: "agent-notes-03", label: "03. 模型能力与推理机制", outcome: "梳理模型结构、注意力、推理、约束解码、搜索与长上下文机制。", href: `${agentEncyclopediaHref}#agent-chapter-03` },
+      { id: "agent-notes-04", label: "04. Prompt Engineering 与指令管理", outcome: "整理分层指令、提示词版本、工具描述、输出协议与回归测试方法。", href: `${agentEncyclopediaHref}#agent-chapter-04` },
+      { id: "agent-notes-05", label: "05. Context Engineering 上下文工程", outcome: "沉淀上下文选择、压缩、渐进式披露、缓存与跨会话交接的设计笔记。", href: `${agentEncyclopediaHref}#agent-chapter-05` },
+      { id: "agent-notes-06", label: "06. 规划、推理与执行控制模式", outcome: "对照 ReAct、计划执行、反思、状态机与搜索式规划的适用边界。", href: `${agentEncyclopediaHref}#agent-chapter-06` },
+      { id: "agent-notes-07", label: "07. Tool Use 与 Agent–Computer Interface", outcome: "整理工具接口、结构化调用、错误反馈与大工具集选择的机制和取舍。", href: `${agentEncyclopediaHref}#agent-chapter-07` },
+      { id: "agent-notes-08", label: "08. MCP、A2A 与 Agent 互操作协议", outcome: "梳理协议分工、传输、能力协商、连接生命周期与工具接入工程。", href: `${agentEncyclopediaHref}#agent-chapter-08` },
+      { id: "agent-notes-09", label: "09. Runtime：Agent 运行时", outcome: "整理执行循环、状态持久化、调度、重试、隔离和中断恢复。", href: `${agentEncyclopediaHref}#agent-chapter-09` },
+      { id: "agent-notes-10", label: "10. Harness Engineering 与长任务执行", outcome: "形成长任务初始化、增量推进、环境管理与跨会话交接的参考方案。", href: `${agentEncyclopediaHref}#agent-chapter-10` },
+      { id: "agent-notes-11", label: "11. Memory：Agent 记忆系统", outcome: "归纳记忆类型、写入、检索、更新、遗忘与权限隔离的设计方法。", href: `${agentEncyclopediaHref}#agent-chapter-11` },
+      { id: "agent-notes-12", label: "12. RAG、搜索与企业知识系统", outcome: "整理检索训练、近邻索引、重排、数据更新与企业知识服务参考架构。", href: `${agentEncyclopediaHref}#agent-chapter-12` },
+      { id: "agent-notes-13", label: "13. Multi-Agent Systems 多智能体系统", outcome: "对照编排协作、上下文交接、DAG 调度与质量、成本和延迟的权衡。", href: `${agentEncyclopediaHref}#agent-chapter-13` },
+      { id: "agent-notes-14", label: "14. Browser、Computer Use 与移动端 Agent", outcome: "整理视觉定位、动作空间、坐标系、状态校验与人工接管的工程边界。", href: `${agentEncyclopediaHref}#agent-chapter-14` },
+      { id: "agent-notes-15", label: "15. Coding Agent 与软件工程工作流", outcome: "梳理代码定位、仓库图、开发环境、补丁验证与代码协作流程。", href: `${agentEncyclopediaHref}#agent-chapter-15` },
+      { id: "agent-notes-16", label: "16. 文档、数据与多模态 Agent", outcome: "整理文档、表格、演示文稿与语音任务的计算、呈现和渲染验证方法。", href: `${agentEncyclopediaHref}#agent-chapter-16` },
+      { id: "agent-notes-17", label: "17. Skills、插件与可复用工作流", outcome: "沉淀能力包结构、按需加载、路由、Token 预算和跨任务复用机制。", href: `${agentEncyclopediaHref}#agent-chapter-17` },
+      { id: "agent-notes-18", label: "18. 安全、身份、权限与企业治理", outcome: "整理提示注入、最小权限、沙箱威胁模型、租户隔离与审批治理。", href: `${agentEncyclopediaHref}#agent-chapter-18` },
+      { id: "agent-notes-19", label: "19. Observability 与 AgentOps", outcome: "形成 Trace、日志、评分、采样存储、成本归集与反馈管道的架构笔记。", href: `${agentEncyclopediaHref}#agent-chapter-19` },
+      { id: "agent-notes-20", label: "20. 生产部署、可靠性与系统工程", outcome: "整理幂等、恢复、事件历史、确定性重放与版本迁移的可靠性方案。", href: `${agentEncyclopediaHref}#agent-chapter-20` },
+      { id: "agent-notes-21", label: "21. 性能、成本与模型服务优化", outcome: "汇总 vLLM、SGLang、KV Cache、调度、量化与推理压测的机制和排障顺序。", href: `${agentEncyclopediaHref}#agent-chapter-21` },
+      { id: "agent-notes-22", label: "22. 框架、SDK 与企业平台技术地图", outcome: "形成控制模式、扩展边界、可观测性与评测能力的框架选型对照。", href: `${agentEncyclopediaHref}#agent-chapter-22` },
+      { id: "agent-notes-23", label: "23. Agent 训练、后训练与强化学习", outcome: "整理训练目标、轨迹数据、算法损失、Rollout、分布式训练与实验诊断。", href: `${agentEncyclopediaHref}#agent-chapter-23` },
+      { id: "agent-notes-24", label: "24. 自改进 Agent 与 RSI", outcome: "梳理提示词、上下文、代码与权重的改进层级，以及生成、评估和选择循环。", href: `${agentEncyclopediaHref}#agent-chapter-24` },
+      { id: "agent-notes-25", label: "25. Agent 产品交互与人机协作", outcome: "整理任务委托、进度反馈、人工接管、信任校准与成果验收的交互原则。", href: `${agentEncyclopediaHref}#agent-chapter-25` },
+      { id: "agent-notes-26", label: "26. 企业典型场景与参考架构", outcome: "汇总企业场景的组件分工、工具与数据权限、核心指标和参考方案。", href: `${agentEncyclopediaHref}#agent-chapter-26` },
     ],
   },
   {
-    id: "agent-workflow", title: "工作流与记忆", description: "让多步骤任务有状态、有上下文、可恢复。", href: agentCourseHref,
+    id: "agent-evaluation",
+    title: "Agent 测评体系与 Benchmark",
+    description: "第二部分 · 从任务设计、评分与归因到持续评测和报告",
+    href: `${agentEncyclopediaHref}#agent-evaluation`,
+    sourceLabel: "阅读这一部分",
+    layout: "list",
     tasks: [
-      { id: "agent-workflow-state", label: "搭建多步骤工作流", summary: "实践任务拆分、路由、状态管理与人工确认。" },
-      { id: "agent-workflow-memory", label: "加入检索与记忆", summary: "区分对话上下文、长期记忆与知识检索。" },
-      { id: "agent-workflow-cooperate", label: "尝试多 Agent 协作", summary: "明确角色边界、交接信息与终止条件。" },
+      { id: "agent-notes-27", label: "27. Agent 测评的对象与层级", outcome: "整理模型、组件、Harness、系统和业务层的评测对象与责任边界。", href: `${agentEncyclopediaHref}#agent-chapter-27` },
+      { id: "agent-notes-28", label: "28. 评测数据集、任务与环境设计", outcome: "形成任务采样、数据切分、环境状态、难度分布与数据权限的设计笔记。", href: `${agentEncyclopediaHref}#agent-chapter-28` },
+      { id: "agent-notes-29", label: "29. 测评指标与成功标准", outcome: "梳理结果、过程、约束、副作用，以及质量、稳定性、成本和延迟指标。", href: `${agentEncyclopediaHref}#agent-chapter-29` },
+      { id: "agent-notes-30", label: "30. Graders：自动评分与人工评审", outcome: "整理代码评分、模型裁判、人类评审、裁判校准与评分器验证方法。", href: `${agentEncyclopediaHref}#agent-chapter-30` },
+      { id: "agent-notes-31", label: "31. 执行轨迹评测与失败归因", outcome: "建立从执行 Trace 到错误分类、根因分析与可复现失败样例的整理框架。", href: `${agentEncyclopediaHref}#agent-chapter-31` },
+      { id: "agent-notes-32", label: "32. 统计方法、公平对比与可复现性", outcome: "归纳重复试验、置信区间、配对比较、预算控制与实验版本记录。", href: `${agentEncyclopediaHref}#agent-chapter-32` },
+      { id: "agent-notes-33", label: "33. 离线、线上与持续评测闭环", outcome: "整理离线回归、线上监测、人工反馈与改进验证的持续评测流程。", href: `${agentEncyclopediaHref}#agent-chapter-33` },
+      { id: "agent-notes-34", label: "34. 组件与场景专项测评", outcome: "汇总工具、RAG、记忆、Skills、协作、GUI、Coding、研究和文档任务的专项标准。", href: `${agentEncyclopediaHref}#agent-chapter-34` },
+      { id: "agent-notes-35", label: "35. Agent 安全与鲁棒性测评", outcome: "整理注入、越权、数据外泄、审批绕过、工具故障与防护回归的测试维度。", href: `${agentEncyclopediaHref}#agent-chapter-35` },
+      { id: "agent-notes-36", label: "36. 测评框架与评测基础设施", outcome: "形成 Runner、Environment、Grader、Reporter 与主流评测平台的技术地图。", href: `${agentEncyclopediaHref}#agent-chapter-36` },
+      { id: "agent-notes-37", label: "37. Agent Benchmark 图谱与原始资料", outcome: "整理工具、代码、浏览器、办公、记忆、安全和长任务基准的原始资料索引。", href: `${agentEncyclopediaHref}#agent-chapter-37` },
+      { id: "agent-notes-38", label: "38. 面向产品岗位的 Benchmark 选读与组合", outcome: "归纳按产品场景组合公开 Benchmark、私有验收集与业务指标的阅读路线。", href: `${agentEncyclopediaHref}#agent-chapter-38` },
+      { id: "agent-notes-39", label: "39. 企业 Agent 评测方案与报告模板", outcome: "沉淀实验设置、指标结果、失败分析、发布建议和评测局限的报告模板。", href: `${agentEncyclopediaHref}#agent-chapter-39` },
     ],
   },
   {
-    id: "agent-project", title: "实践与评估", description: "用一个小项目，把学习沉淀为可验证的能力。", href: agentCourseHref,
+    id: "agent-research",
+    title: "技术报告与前沿研究",
+    description: "第三部分 · 厂商技术报告、自改进研究与资料索引",
+    href: `${agentEncyclopediaHref}#agent-research`,
+    sourceLabel: "阅读这一部分",
+    layout: "list",
     tasks: [
-      { id: "agent-project-build", label: "完成一个 Agent 小项目", summary: "从学习助手、资料整理或自动化任务开始。" },
-      { id: "agent-project-evaluate", label: "建立评估样例", summary: "检查成功率、工具调用、耗时与成本。" },
-      { id: "agent-project-review", label: "记录失败案例与复盘", summary: "整理不稳定环节，并验证改进前后的表现。" },
+      { id: "agent-notes-40", label: "40. Anthropic：架构、Harness、上下文与测评", outcome: "整理有效 Agent、上下文工程、工具设计、长任务 Harness 与评测的原始资料。", href: `${agentEncyclopediaHref}#agent-chapter-40` },
+      { id: "agent-notes-41", label: "41. OpenAI：Agent 系统、Codex Harness 与评测", outcome: "汇总 Agent 系统、代码工作环境、工具与技能组合，以及评测改进闭环的阅读笔记。", href: `${agentEncyclopediaHref}#agent-chapter-41` },
+      { id: "agent-notes-42", label: "42. DeepSeek：推理训练、Agent 数据与高效模型架构", outcome: "整理模型架构、推理强化学习、Agent 数据合成与高效推理的技术报告线索。", href: `${agentEncyclopediaHref}#agent-chapter-42` },
+      { id: "agent-notes-43", label: "43. Kimi／Moonshot：Agent 训练、并行协作与长上下文", outcome: "汇总推理训练、Agent 协作、长上下文与模型结构演进的技术资料。", href: `${agentEncyclopediaHref}#agent-chapter-43` },
+      { id: "agent-notes-44", label: "44. RSI 与自改进系统：补充原始论文", outcome: "整理 ADAS、SICA、DGM、GEPA、ACE 与 AlphaEvolve 的研究问题和原始论文入口。", href: `${agentEncyclopediaHref}#agent-chapter-44` },
     ],
   },
 ]
@@ -276,12 +328,17 @@ export const learningTracks: LearningTrack[] = [
   },
   {
     id: "agent",
-    title: "Agent学习",
+    title: "Agent 学习",
     shortTitle: "Agent 学习",
-    description: "从工具调用到工作流、记忆与评估，一步步做出能完成实际任务的 Agent。",
-    sourceLabel: "打开 Agent 课程",
-    sourceHref: agentCourseHref,
+    description: "《Agent 产品技术百科》44 章笔记，覆盖技术架构、测评体系与前沿研究。",
+    sourceLabel: "阅读 Agent 产品技术百科",
+    sourceHref: agentEncyclopediaHref,
     units: agentUnits,
+    completion: {
+      summary: "已完成《Agent 产品技术百科》44 章笔记，形成技术与架构知识体系、Agent 测评方案与报告模板，以及技术报告和原始研究资料索引。",
+      href: `${agentEncyclopediaHref}#agent-learning-results`,
+      label: "查看完整成果",
+    },
   },
 ]
 

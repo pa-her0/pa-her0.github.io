@@ -11,7 +11,7 @@ const result = await build({
   },
   bundle: true, write: false, format: 'esm', platform: 'node', logLevel: 'silent',
 })
-const { learningTracks, learningTasks, normalizeLearningProgress, resolveLearningTrackId, getTrackStats, buildLearningInsights } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`)
+const { learningTracks, learningTasks, normalizeLearningProgress, resolveLearningTrackId, getTrackStats, getCurrentTask, buildLearningInsights } = await import(`data:text/javascript;base64,${Buffer.from(result.outputFiles[0].text).toString('base64')}`)
 
 test('the three competitions share one direction without changing or duplicating task IDs', () => {
   assert.deepEqual(learningTracks.map((track) => track.id), ['algorithm', 'ai-infra', 'agent'])
@@ -77,4 +77,32 @@ test('the published snapshot retains every recorded completion after migration',
   assert.deepEqual(progress.completedAt, snapshot.completedAt)
   const counted = learningTracks.reduce((total, track) => total + getTrackStats(track.id, progress).completed, 0)
   assert.equal(counted, Object.keys(snapshot.completedAt).length)
+})
+
+test('Agent tasks match all 44 notebook chapters and link to their published content', async () => {
+  const article = await readFile(new URL('../src/content/posts/2026/11/agent-technical-encyclopedia.md', import.meta.url), 'utf8')
+  const agent = learningTracks.find((track) => track.id === 'agent')
+  const tasks = agent.units.flatMap((unit) => unit.tasks)
+  const chapters = [...article.matchAll(/^### (\d{2}\. .+)$/gm)].map((match) => match[1].replace(/〔[^〕]+〕$/, '').trim())
+  assert.deepEqual(agent.units.map((unit) => unit.tasks.length), [26, 13, 5])
+  assert.equal(tasks.length, 44)
+  assert.deepEqual(tasks.map((task) => task.label), chapters)
+  for (const task of tasks) {
+    assert.ok(task.outcome?.trim())
+    assert.ok(task.href.startsWith(agent.sourceHref))
+    assert.ok(article.includes(`id="${task.href.split('#')[1]}"`), task.href)
+  }
+  assert.match(article, /^draft: false$/m)
+  assert.match(article, /^learningTrack: agent$/m)
+  assert.match(article, /^section: note$/m)
+})
+
+test('the finished Agent notebook counts as 44 completed chapters without a pending task', async () => {
+  const snapshot = JSON.parse(await readFile(new URL('../src/data/learning-progress.json', import.meta.url), 'utf8'))
+  const progress = normalizeLearningProgress(snapshot)
+  assert.deepEqual(getTrackStats('agent', progress), { completed: 44, total: 44, percentage: 100 })
+  assert.equal(getCurrentTask('agent', progress), undefined)
+  const cleared = normalizeLearningProgress({ ...progress, completedAt: {} })
+  assert.equal(getTrackStats('agent', cleared).completed, 0)
+  assert.equal(getCurrentTask('agent', cleared).id, 'agent-notes-01')
 })
