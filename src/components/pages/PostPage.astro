@@ -6,7 +6,6 @@ import { Footer } from "@/components/footer"
 import Disclaimer from "@/components/Disclaimer.astro"
 import PasswordProtection from "@/components/PasswordProtection.astro"
 import TwikooComments from "@/components/TwikooComments.astro"
-import AgentLearningSummary from "@/components/AgentLearningSummary.astro"
 import ArticleDiagrams from "@/components/ArticleDiagrams.astro"
 import { getGitModifiedDate } from "@/lib/git-dates"
 import { resolvePostUpdatedDate } from "@/lib/post-updated"
@@ -90,7 +89,6 @@ if (post.data.encrypted && post.data.password) {
   <div class:list={["site-page", "article-reading-page", { "article-reading-page--encyclopedia": post.slug === "agent-technical-encyclopedia" }]}>
     <SiteHeader reading />
     <ArticleContent post={post} {Content} {words} {minutes}>
-      {post.slug === "agent-technical-encyclopedia" && !encryptedData ? <AgentLearningSummary /> : null}
       {post.slug === "agent-technical-encyclopedia" && !encryptedData ? <ArticleDiagrams /> : null}
       <div class="mb-8">
         <Disclaimer disclaimers={post.data.disclaimer} publishedDate={post.data.published} />

@@ -336,7 +336,7 @@ export const learningTracks: LearningTrack[] = [
     units: agentUnits,
     completion: {
       summary: "已完成《Agent 产品技术百科》44 章笔记，形成技术与架构知识体系、Agent 测评方案与报告模板，以及技术报告和原始研究资料索引。",
-      href: `${agentEncyclopediaHref}#agent-learning-results`,
+      href: agentEncyclopediaHref,
       label: "查看完整成果",
     },
   },
