@@ -6,7 +6,7 @@ import SiteHeader from "@/components/site-header.astro"
 import { buildSidebarMeta, getSortedPosts, toPostMeta } from "@/lib/posts"
 
 const { currentPage = 1 } = Astro.props
-const title = `全部文章 · 第 ${currentPage} 页 | Jiely 的博客`
+const title = `全部文章 · 第 ${currentPage} 页 | Live Your Joy`
 const description = "全部文章、研究笔记与生活记录"
 const posts = await getSortedPosts(true)
 const articles = posts.map((post) => toPostMeta(post))

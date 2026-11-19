@@ -13,7 +13,7 @@ const posts = await getSortedPosts(true)
 const groups = buildNoteGroups(posts)
 const activeGroup = selectedSeries ? groups.find((group) => group.slug === selectedSeries) : undefined
 const visibleGroups = activeGroup ? [activeGroup] : groups
-const title = activeGroup ? `${activeGroup.name}笔记 | Jiely 的博客` : "笔记 | Jiely 的博客"
+const title = activeGroup ? `${activeGroup.name}笔记 | Live Your Joy` : "笔记 | Live Your Joy"
 const description = activeGroup?.description ?? "按专题整理的学习、算法、科研与开发笔记"
 ---
 

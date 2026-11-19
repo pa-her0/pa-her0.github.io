@@ -11,7 +11,7 @@ const posts = getLifePosts(allPosts)
 const years = [...new Set(posts.map((post) => toPostMeta(post).updated.slice(0, 4)))].sort().reverse()
 ---
 
-<BaseLayout title="生活 | Jiely 的博客" description="生活、阅读、思考与日常记录" fontProfile="interface">
+<BaseLayout title="生活 | Live Your Joy" description="生活、阅读、思考与日常记录" fontProfile="interface">
   <div class="site-page">
     <SiteHeader />
     <main class="content-hub">

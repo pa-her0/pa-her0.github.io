@@ -41,7 +41,7 @@ const description = buildMetaDescription(
   post.data.title,
   post.data.encrypted ?? false,
 )
-const title = `${post.data.title} | Jiely 的博客`
+const title = `${post.data.title} | Live Your Joy`
 const publishedIso = post.data.published ? new Date(post.data.published).toISOString() : ""
 const effectiveUpdated = resolvePostUpdatedDate(post.data.published, post.data.updated, getGitModifiedDate(post.id))
 const updatedIso = effectiveUpdated.toISOString()
@@ -58,7 +58,7 @@ const jsonLd = {
   dateModified: updatedIso || publishedIso || undefined,
   mainEntityOfPage: canonicalUrl,
   author: { "@type": "Person", name: "Jiely" },
-  publisher: { "@type": "Organization", name: "Jiely 的博客" },
+  publisher: { "@type": "Organization", name: "Live Your Joy" },
   keywords: tags.length ? tags.join(", ") : undefined,
   articleSection: category || undefined,
 }
